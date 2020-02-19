@@ -1,13 +1,68 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+
+@font-face {
+  font-family: 'Muli-Light';
+  src: url('views/fonts/Muli-Light.ttf') format('truetype') !important,
+    url('views/fonts/Muli-Light.woff') format('woff') !important, 
+    url('views/fonts/Muli-Light.woff2') format('woff2') !important, 
+    url("views/fonts/Muli-Light.otf") format("opentype") !important,
+    url("views/fonts/Muli-Light.svg") format("svg") !important;
+  font-style: normal;
+  font-weight: normal;
 }
 
-code {
+body {
+  margin: 0;
+  /* font-family: -apple-system, BlinkMacSystemFont, 'MuliExtraLight', 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif; */
+  font-family: 'Muli-Light' !important;
+  -webkit-font-smoothing: antialiased;
+  /* -moz-osx-font-smoothing: grayscale; */
+}
+
+/* *{
+  font-family: MuliExtraLight, sans-serif !important;
+} */
+
+/* code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+} */
+
+.sidebar{
+  width: 130px;
+  height: calc(100vh - 90px);
+  background-color: 'blue';
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  display: block;
+}
+
+.animated {
+  animation-duration: 1s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.fadeIn {
+  animation-name: fadeIn;
+}
+
+.sidebarMenu {
+  height: 70px;
+  width:100%;
+  justify-content: center;
+  display: flex;
+  flex-direction:column;
+  padding-left: 30px
 }
