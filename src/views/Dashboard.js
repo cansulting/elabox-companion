@@ -37,6 +37,7 @@ class Dashboard extends React.Component {
           minerDid:'...',
           latestNbOfTxDid: 0,
           latestSizeDid:0,
+          carrierIp: '',
 
           dropdownOpen: false,
           radioSelected: 2
@@ -74,11 +75,12 @@ class Dashboard extends React.Component {
                     let didRunning = responseJson.didRunning;
                     let carrierRunning = responseJson.carrierRunning;
                     let tokenRunning = responseJson.tokenRunning;
+                    let carrierIp = responseJson.carrierIp
                     fetch("http://elabox.local:3001/nbOfTx")
                       .then(response => response.json())
                       .then(responseJson => {
 
-                        this.setState({blockheight: nodeinfo.result, blockheightDid: nodeinfoDid.result, blocktime: blockTime, blocktimeDid: blockTimeDid, blockSizeList: blockSizeList, blockSizeListDid: blockSizeListDid, blockhash: blockHashFormatted, blockhashDid: blockHashFormattedDid, miner: blockMiner, minerDid: blockMinerDid, latestSize: blockSizeList[9], latestSizeDid: blockSizeListDid[9], nbOfTxList: responseJson.nbOfTxList, latestNbOfTx: responseJson.nbOfTxList[9], nbOfTxListDid: responseJson.nbOfTxListDid, latestNbOfTxDid: responseJson.nbOfTxListDid[9], elaRunning, didRunning, carrierRunning, tokenRunning })
+                        this.setState({blockheight: nodeinfo.result, blockheightDid: nodeinfoDid.result, blocktime: blockTime, blocktimeDid: blockTimeDid, blockSizeList: blockSizeList, blockSizeListDid: blockSizeListDid, blockhash: blockHashFormatted, blockhashDid: blockHashFormattedDid, miner: blockMiner, minerDid: blockMinerDid, latestSize: blockSizeList[9], latestSizeDid: blockSizeListDid[9], nbOfTxList: responseJson.nbOfTxList, latestNbOfTx: responseJson.nbOfTxList[9], nbOfTxListDid: responseJson.nbOfTxListDid, latestNbOfTxDid: responseJson.nbOfTxListDid[9], elaRunning, didRunning, carrierRunning, tokenRunning, carrierIp })
                       });
                   });
               });
@@ -309,8 +311,8 @@ class Dashboard extends React.Component {
             <Row>
               <Col xs="12" sm="4" lg="4">
                 {this.state.elaRunning 
-                ? <Widget02 header="Mainchain" mainText="Running" icon={mainchainLogo} color="success" variant="1" />
-                : <Widget02 header="Mainchain" mainText="Stopped" icon={mainchainLogo} color="danger" variant="1" />
+                ? <Widget02 header="ELA" mainText="Running" icon={mainchainLogo} color="success" variant="1" />
+                : <Widget02 header="ELA" mainText="Stopped" icon={mainchainLogo} color="danger" variant="1" />
                 }
               </Col>
             </Row>
@@ -421,6 +423,10 @@ class Dashboard extends React.Component {
                 }
               </Col>
             </Row>
+
+            <CardGroup className="mb-4">
+              <Widget04 icon="fa fa-gears" header={this.state.carrierIp} >Carrier IP Address</Widget04>
+            </CardGroup>
         </div>
     )
   }

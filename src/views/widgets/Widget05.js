@@ -16,6 +16,11 @@ const defaultProps = {
 };
 
 class Widget05 extends Component {
+
+  // constructor(props){
+  //   super(props)
+  // }
+
   render() {
 
     // eslint-disable-next-line
@@ -52,16 +57,16 @@ class Widget05 extends Component {
                 {vals[3] != "" ?
                     <Row>   
                         <Col xs="6" style={{justifyContent:'center', display:'flex' }}>
-                            <Button color="success">{vals[2]}</Button>
+                          <Button onClick={this.props.onGreenPress} color="success">{vals[2]}</Button>
                         </Col>
                         <Col xs="6" style={{justifyContent:'center', display:'flex' }}>
-                            <Button color="danger">{vals[3]}</Button>
+                            <Button onClick={this.props.onRedPress} color="danger">{vals[3]}</Button>
                         </Col>
                     </Row>
                 :
                 <Row>   
                         <Col xs="12" style={{justifyContent:'center', display:'flex' }}>
-                            <Button color="success">{vals[2]}</Button>
+                            <Button onClick={this.props.onGreenPress} color="success">{vals[2]}</Button>
                         </Col>
                     </Row>                  
                 }

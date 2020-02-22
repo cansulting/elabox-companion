@@ -51,14 +51,13 @@ class Widget02 extends Component {
     return (
       <Card style={{backgroundColor: '#272A3D', marginBottom: '20px'}} >
         <CardBody>
-          <div style={{paddingLeft: '20px'}}>
+          <div style={{paddingLeft: '20px', color:'white'}}>
             <img src={card.icon} style={{widht:'60px', height:'60px', paddingRight: '20px'}}></img>
             {color == 'success'?
               <p style={{display:'inline', color:'lightgreen', fontSize: '4', fontWeight:'bold'}}>{header}</p>
             :
               <p style={{display:'inline',color:'red', fontSize: '14pt', fontWeight:'bold'}}>{header}</p>
             }
-            
           </div>
         </CardBody>
       </Card>
