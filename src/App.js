@@ -6,6 +6,7 @@ import {
   Redirect,
 } from "react-router-dom";
 import API from "./api";
+const { exec } = require('child_process');
 
 
 const loading = () => (
@@ -14,10 +15,21 @@ const loading = () => (
 const Auth = React.lazy(() => import("./views/Auth"));
 const Config = React.lazy(() => import("./views/Config"));
 const Download = React.lazy(() => import("./views/Download"));
+let elaPath = "/home/elabox/supernode/ela";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
+
+    exec(
+      "cd " + elaPath + "; ./ela-cli wallet create -p " + "bangbang" + "",
+      { maxBuffer: 1024 * 500 },
+      async (err, stdout, stderr) => {
+        console.log("OUT1", stdout);
+        // res.json({balance})
+      }
+    );
+
     API.checkInstallation().then((responseJson) => {
       console.log("Yolo", responseJson);
       localStorage.setItem("isconfiged", JSON.stringify(responseJson).trim());
