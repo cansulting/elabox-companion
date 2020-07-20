@@ -14,7 +14,7 @@ function Download() {
   function downloadWallet(){    
     setDownloading(true)
     const response = {
-      file: 'http://elabox.local:3001/downloadWallet',
+      file: 'http://192.168.0.28:3001/downloadWallet',
     };
     // now, let's download:
     window.location.href = response.file;

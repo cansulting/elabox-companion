@@ -14,7 +14,7 @@ function Auth() {
 
     // useEffect(() => {
     //   // Your code here
-    //   fetch("http://elabox.local:3001/checkInstallation")
+    //   fetch("http://192.168.0.28:3001/checkInstallation")
     //       .then(response => response.json())
     //       .then(responseJson => {
     //         localStorage.setItem('isconfiged', responseJson.stdout.trim())
