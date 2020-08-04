@@ -18,7 +18,7 @@ class App extends React.Component {
       fetch("http://elabox.local:3001/checkInstallation")
         .then(response => response.json())
         .then(responseJson => {
-          localStorage.setItem('isconfiged', responseJson.stdout.trim())
+          localStorage.setItem('isconfiged', responseJson.configed.trim())
           this.setState({loading: false})
         })
     }
