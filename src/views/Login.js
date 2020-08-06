@@ -54,7 +54,7 @@ function Login() {
         <img src={elaboxLogo} style={{width:'200px', height:'200px', paddingRight: '10px'}} />
         <div style={{paddingTop: '20px'}}>
           <Input type="password" id="pwd" name="pwd" placeholder="********" required onChange={ (e) => handleChange(e) } />
-          <Button onClick={login} style={{marginTop: '20px'}}>Sign_In</Button>
+          <Button onClick={login} style={{marginTop: '20px'}}>Sign In</Button>
         </div>
       </center>
     </div>
