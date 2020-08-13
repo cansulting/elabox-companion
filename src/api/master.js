@@ -10,7 +10,18 @@ class API {
   checkUpdate = () => {
     return new Promise(async (resolve, reject) => {
       try {
-        const response = await this.axios.post("/checkUpdate");
+        const response = await this.axios.get("/checkUpdate");
+        return resolve(response.data);
+      } catch (error) {
+        return reject(error);
+      }
+    });
+  };
+
+  updateNow = () => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await this.axios.get("/updateNow");
         return resolve(response.data);
       } catch (error) {
         return reject(error);

@@ -17,7 +17,9 @@ class Settings extends Component {
       'carrierRestartModal': false,
       update: false,
       checkUpdateModal: false,
-      networkErrorModal: false
+      networkErrorModal: false,
+      updateNowModal: false,
+      errorUpdateModal: false,
 
     }
   }
@@ -178,8 +180,45 @@ class Settings extends Component {
     })
   }
 
+  openUpdateNowModal = () => {
+    this.setState({
+      updateNowModal: true
+    })
+  }
+
+  closeUpdateNowModal = () => {
+    this.setState({
+      updateNowModal: false
+    })
+  }
+
+  openErrorUpdateModal = () => {
+    this.setState({
+      errorUpdateModal: true
+    })
+  }
+
+  closeErrorUpdateModal = () => {
+    this.setState({
+      errorUpdateModal: false
+    })
+  }
+
+  updateNow = async () => {
+
+    try {
+      const data = await master.updateNow()
+      setTimeout(() => {
+        window.open("http://elabox.local")
+      }, 5000)
+
+    } catch (error) {
+      this.openErrorUpdateModal()
+    }
+  }
+
   render() {
-    const { update, checkUpdateModal, networkErrorModal } = this.state;
+    const { update, checkUpdateModal, networkErrorModal, updateNowModal, errorUpdateModal } = this.state;
     return (
       <div id='main' style={{ paddingLeft: '18%', height: '100%', width: '100%', backgroundColor: '#1E1E26' }} className="animated fadeIn w3-container">
 
@@ -244,6 +283,31 @@ class Settings extends Component {
             <Button color="success" onClick={this.closeNetworkErrorModal} >OK</Button>
           </ModalFooter>
         </Modal>
+        <Modal isOpen={errorUpdateModal}>
+          <ModalHeader>Network Error</ModalHeader>
+          <ModalBody>
+            <center>There was a Network Error please check your internet connection</center>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="success" onClick={this.closeErrorUpdateModal} >OK</Button>
+          </ModalFooter>
+        </Modal>
+        <Modal isOpen={updateNowModal}>
+          <ModalHeader>Update Elabox</ModalHeader>
+          <ModalBody>
+            <center>
+              <b>PLEASE READ CAREFULY</b><br />
+              Installing the new updates can take up to 30 minutes<br />
+              Do not turn off the Elabox<br /><br />
+
+              Click Update Now to update the Elabox<br />
+            </center>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="success" onClick={this.updateNow} >Update Now</Button>
+            <Button color="danger" onClick={this.closeUpdateNowModal} >Cancel</Button>
+          </ModalFooter>
+        </Modal>
 
         <Modal isOpen={this.state.didRestartModal}>
           <ModalHeader>Restart DID sidechain</ModalHeader>
@@ -275,6 +339,7 @@ class Settings extends Component {
             <Button color="danger" onClick={this.closeResyncDid} >Cancel</Button>
           </ModalFooter>
         </Modal>
+
 
         <Modal isOpen={this.state.carrierRestartModal}>
           <ModalHeader>Restart Carrier</ModalHeader>
@@ -340,7 +405,7 @@ class Settings extends Component {
 
         <Row style={{ marginTop: '20px' }}>
           <Col xs="12" sm="6" lg="4">
-            <Widget05 dataBox={() => ({ title: 'Check for updates', variant: 'facebook', Restart: 'Check', Resync: update ? "Update Now" : '' })} onGreenPress={this.checkUpdate}>
+            <Widget05 dataBox={() => ({ title: 'Check for updates', variant: 'facebook', Restart: 'Check', Resync: update ? "Update Now" : '' })} onGreenPress={this.checkUpdate} onRedPress={this.openUpdateNowModal}>
             </Widget05>
           </Col>
         </Row>
