@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Modal, ModalBody, ModalFooter, Input, ModalHeader, Badge, Line, Card, CardBody, CardHeader, Col, Pagination, PaginationItem, PaginationLink, Row, Table, Form, FormGroup, Label, FormText, FormFeedback } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalFooter, Input, ModalHeader, Badge, Line, Card, CardBody, CardHeader, Col, Pagination, PaginationItem, PaginationLink, Row, Table, Form, FormGroup, Label, FormText, FormFeedback, Alert } from 'reactstrap';
 import Widget05 from './widgets/Widget05';
 
 import master from "../api/master"
@@ -27,6 +27,8 @@ class HelpCentre extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      success: false,
+      failure: false
 
     }
   }
@@ -37,9 +39,22 @@ class HelpCentre extends Component {
       <Formik
         initialValues={{ email: '', name: '', problem: '' }}
         onSubmit={async (values) => {
-          console.log(values)
-          console.log(await master.submitForm(values))
+          this.setState({ success: false, failure: false })
+          try {
+            const response = await master.submitForm(values)
+            if (response.ok) {
+              this.setState({ success: true })
 
+            }
+            else {
+              this.setState({ failure: true })
+
+            }
+          } catch (err) {
+
+            this.setState({ failure: true })
+
+          }
         }}
         validationSchema={Schema}
         render={({
@@ -54,9 +69,15 @@ class HelpCentre extends Component {
           isSubmitting
         }) => {
 
-          // console.log("Palne", values, touched, errors)
+          const { success, failure } = this.state
           return (
             <div id='main' style={{ paddingLeft: '18%', height: '100%', width: '100%', backgroundColor: '#1E1E26' }} className="animated fadeIn w3-container">
+              {success && <Alert color="success">
+                Success! An Elabox Support representative will reach out to you shortly.
+                </Alert>}
+              {failure && <Alert color="danger">
+                Please check your network connection
+            </Alert>}
               <Row >
                 <Col>
                   <Card style={{ backgroundColor: '#272A3D', color: 'white', fontSize: '16px', marginTop: '40px' }}>
