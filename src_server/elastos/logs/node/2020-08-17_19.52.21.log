@@ -1,33 +1,0 @@
-2020/08/17 19:52:21.516351 [1;35m[INF][m GID 1, Node version: v0.5.1
-2020/08/17 19:52:21.521470 [1;35m[INF][m GID 1, go version go1.13.8 linux/arm64
-2020/08/17 19:52:21.521755 [1;35m[INF][m GID 1, Loading block database from 'elastos/data/blocks'
-2020/08/17 19:52:22.460111 [1;35m[INF][m GID 1, Block database loaded
-2020/08/17 19:52:22.465496 [1;35m[INF][m GID 1, Loading block index...
-2020/08/17 19:52:22.499024 [1;35m[INF][m GID 1, block count: 18384
-2020/08/17 19:52:22.874270 [1;35m[INF][m GID 1, Forward scan (highest known 1, next unknown 100001)
-2020/08/17 19:52:22.874536 [1;35m[INF][m GID 1, Binary scan (highest known 1, next unknown 50001)
-2020/08/17 19:52:22.874749 [1;35m[INF][m GID 1, Binary scan (highest known 1, next unknown 25001)
-2020/08/17 19:52:22.875266 [1;35m[INF][m GID 1, Binary scan (highest known 12501, next unknown 25001)
-2020/08/17 19:52:22.875520 [1;35m[INF][m GID 1, Binary scan (highest known 12501, next unknown 18751)
-2020/08/17 19:52:22.875730 [1;35m[INF][m GID 1, Binary scan (highest known 15626, next unknown 18751)
-2020/08/17 19:52:22.875943 [1;35m[INF][m GID 1, Binary scan (highest known 17188, next unknown 18751)
-2020/08/17 19:52:22.876113 [1;35m[INF][m GID 1, Binary scan (highest known 17969, next unknown 18751)
-2020/08/17 19:52:22.876283 [1;35m[INF][m GID 1, Binary scan (highest known 18360, next unknown 18751)
-2020/08/17 19:52:22.876439 [1;35m[INF][m GID 1, Binary scan (highest known 18360, next unknown 18555)
-2020/08/17 19:52:22.876590 [1;35m[INF][m GID 1, Binary scan (highest known 18360, next unknown 18457)
-2020/08/17 19:52:22.876730 [1;35m[INF][m GID 1, Binary scan (highest known 18360, next unknown 18408)
-2020/08/17 19:52:22.876972 [1;35m[INF][m GID 1, Binary scan (highest known 18384, next unknown 18408)
-2020/08/17 19:52:22.877173 [1;35m[INF][m GID 1, Binary scan (highest known 18384, next unknown 18396)
-2020/08/17 19:52:22.877321 [1;35m[INF][m GID 1, Binary scan (highest known 18384, next unknown 18390)
-2020/08/17 19:52:22.877461 [1;35m[INF][m GID 1, Binary scan (highest known 18384, next unknown 18387)
-2020/08/17 19:52:22.877608 [1;35m[INF][m GID 1, Binary scan (highest known 18384, next unknown 18385)
-2020/08/17 19:52:22.880398 [1;35m[INF][m GID 1, current block height -> 18383
-2020/08/17 19:52:22.880797 [1;35m[INF][m GID 30, [RecoverFromCheckPoints] recover start height:  500
-[ ========== BLOCKCHAIN INITIALIZE STARTED ========== ]
- 0 / 17883    0.00% 7941 / 17883   44.41% 17884 / 17883  100.01% 1s
-[ ========== BLOCKCHAIN INITIALIZE FINISHED ========== ]
-2020/08/17 19:52:24.122059 [1;35m[INF][m GID 1, Start the P2P networks
-2020/08/17 19:52:24.122408 [1;35m[INF][m GID 1, Start services
-2020/08/17 19:52:29.123047 [1;35m[INF][m GID 1, Start consensus
-2020/08/17 19:52:30.959783 [1;33m[WRN][m GID 1, server shutting down
-2020/08/17 19:52:30.969428 [1;35m[INF][m GID 13, Sync manager shutting down
