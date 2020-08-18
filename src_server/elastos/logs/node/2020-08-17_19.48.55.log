@@ -1,0 +1,29 @@
+2020/08/17 19:48:55.983123 [1;35m[INF][m GID 1, Node version: v0.5.1
+2020/08/17 19:48:55.991215 [1;35m[INF][m GID 1, go version go1.13.8 linux/arm64
+2020/08/17 19:48:55.999997 [1;35m[INF][m GID 1, Loading block database from 'elastos/data/blocks'
+2020/08/17 19:48:56.038416 [1;35m[INF][m GID 1, Block database loaded
+2020/08/17 19:48:56.055569 [1;35m[INF][m GID 1, Forward scan (highest known 0, next unknown 1)
+2020/08/17 19:48:56.055847 [1;35m[INF][m GID 1, Catching up indexes from height -1 to 0
+2020/08/17 19:48:56.056437 [1;35m[INF][m GID 1, Indexes caught up to height 0
+2020/08/17 19:48:56.058663 [1;35m[INF][m GID 1, current block height -> 0
+2020/08/17 19:48:56.058986 [1;33m[WRN][m GID 30, can't find file: elastos/data/checkpoints/txPool/default.txpcp
+2020/08/17 19:48:56.059107 [1;35m[INF][m GID 30, [RecoverFromCheckPoints] recover start height:  2
+2020/08/17 19:48:56.066411 [1;35m[INF][m GID 1, Start the P2P networks
+2020/08/17 19:48:56.066671 [1;35m[INF][m GID 1, Start services
+2020/08/17 19:49:01.067408 [1;35m[INF][m GID 1, Start consensus
+2020/08/17 19:49:01.382117 [1;35m[INF][m GID 52, New valid peer 47.91.95.186:20338 (outbound)
+2020/08/17 19:49:01.382448 [1;35m[INF][m GID 52, Syncing to block height 708690 from peer 47.91.95.186:20338
+2020/08/17 19:49:01.417419 [1;35m[INF][m GID 52, New valid peer 35.178.110.4:20338 (outbound)
+2020/08/17 19:49:01.653727 [1;35m[INF][m GID 52, New valid peer 47.89.191.182:20338 (outbound)
+2020/08/17 19:49:01.969447 [1;35m[INF][m GID 52, New valid peer 47.108.89.197:20338 (outbound)
+2020/08/17 19:49:04.354062 [1;35m[INF][m GID 52, [ConfirmBlock] block hash: 74d7a45a10a50dbd20beb18e893768e98ab1356ac71d7d7456e2f2c48ee140d6
+2020/08/17 19:49:04.354245 [1;35m[INF][m GID 52, [ConfirmBlock] block height: 708690
+2020/08/17 19:49:04.429824 [1;33m[WRN][m GID 1, server shutting down
+2020/08/17 19:49:04.434487 [1;35m[INF][m GID 52, Lost peer 47.108.89.197:20338 (outbound)
+2020/08/17 19:49:04.434723 [1;35m[INF][m GID 52, Lost peer 47.91.95.186:20338 (outbound)
+2020/08/17 19:49:04.435116 [1;35m[INF][m GID 52, Syncing to block height 708690 from peer 35.178.110.4:20338
+2020/08/17 19:49:04.435334 [1;35m[INF][m GID 52, Lost peer 35.178.110.4:20338 (outbound)
+2020/08/17 19:49:04.435502 [1;35m[INF][m GID 52, Syncing to block height 708690 from peer 47.89.191.182:20338
+2020/08/17 19:49:04.435620 [1;35m[INF][m GID 52, Lost peer 47.89.191.182:20338 (outbound)
+2020/08/17 19:49:04.435726 [1;33m[WRN][m GID 52, No sync peer candidates available
+2020/08/17 19:49:04.445271 [1;35m[INF][m GID 66, Sync manager shutting down

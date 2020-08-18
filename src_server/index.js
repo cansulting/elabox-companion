@@ -368,6 +368,24 @@ router.post('/restartDid', (req, res) => {
   });
 });
 
+router.get('/getVersion', (req, res) => {
+  const { version } = JSON.parse(fs.readFileSync("../package.json"))
+  res.send({ version })
+
+});
+
+router.get('/getOnion', async (req, res) => {
+  res.send({ onion: await getOnionAddress() })
+
+});
+
+router.get('/regenerateOnion', async (req, res) => {
+  await regenerateTor()
+  res.send({ onion: await getOnionAddress() })
+
+});
+
+
 const checkFile = (file) => {
   var prom = new Promise((resolve, reject) => {
     try {
@@ -384,6 +402,31 @@ const checkFile = (file) => {
 
   return prom;
 };
+
+
+const getOnionAddress = () => {
+
+  return new Promise((resolve, reject) => {
+    exec("echo elabox | sudo -S cat /var/lib/tor/elabox/hostname",
+      { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+
+        resolve(stdout.trim())
+      })
+  })
+}
+
+const regenerateTor = () => {
+
+  return new Promise((resolve, reject) => {
+    exec("echo elabox | sudo -S rm -rf /var/lib/tor/elabox",
+      { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+        exec("echo elabox | sudo -S systemctl restart tor@default", { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+          resolve()
+        })
+      })
+  })
+}
+
 
 
 

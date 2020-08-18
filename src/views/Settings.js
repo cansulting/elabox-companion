@@ -3,6 +3,8 @@ import { Button, Modal, ModalBody, ModalFooter, Input, ModalHeader, Badge, Line,
 import Widget05 from './widgets/Widget05';
 
 import master from "../api/master"
+import axios from "axios";
+
 
 class Settings extends Component {
 
@@ -20,8 +22,15 @@ class Settings extends Component {
       networkErrorModal: false,
       updateNowModal: false,
       errorUpdateModal: false,
-
+      version: '',
+      onion: '',
+      showOnion: false,
     }
+  }
+
+  componentWillMount() {
+    this.getVersion()
+    this.getOnion()
   }
 
 
@@ -67,7 +76,7 @@ class Settings extends Component {
     // e.preventDefault();
     this.setState({ mainchainRestartModal: false })
 
-    fetch('http://elabox.local:3001/restartMainchain', {
+    fetch('http://elabox.local:3001/restartDid', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -217,8 +226,39 @@ class Settings extends Component {
     }
   }
 
+
+  getVersion = () => {
+    axios.get("http://elabox.local:3001/getVersion").then((response) => {
+      this.setState({ version: response.data.version })
+    })
+
+
+  }
+
+  getOnion = () => {
+    axios.get("http://elabox.local:3001/getOnion").then((response) => {
+      this.setState({ onion: response.data.onion })
+    })
+
+
+  }
+
+  regenerateOnion = () => {
+    axios.get("http://elabox.local:3001/regenerateOnion").then((response) => {
+      this.setState({ onion: response.data.onion })
+    })
+
+
+  }
+
+  toggleOnion = () => {
+    this.setState({ showOnion: !this.state.showOnion })
+    console.log("toggleOnion")
+  }
+
   render() {
-    const { update, checkUpdateModal, networkErrorModal, updateNowModal, errorUpdateModal } = this.state;
+    const { update, checkUpdateModal, networkErrorModal, updateNowModal, errorUpdateModal, version, onion, showOnion } = this.state;
+    console.log("render", showOnion)
     return (
       <div id='main' style={{ paddingLeft: '18%', height: '100%', width: '100%', backgroundColor: '#1E1E26' }} className="animated fadeIn w3-container">
 
@@ -384,6 +424,11 @@ class Settings extends Component {
           <Col>
             <Card style={{ backgroundColor: '#272A3D', color: 'white', fontSize: '16px', marginTop: '40px' }}>
               <CardHeader>Backup your wallet file</CardHeader>
+              <CardBody>
+                You can download your wallet file at any time.<br />
+              The <b>keystore.dat</b> wallet file is the only way to recover your fund in case of problems.<br />
+                For better security keep your <b>keystore.dat</b> file on a USB stick not connected to a computer<br />
+              </CardBody>
             </Card>
           </Col>
         </Row>
@@ -399,6 +444,9 @@ class Settings extends Component {
           <Col>
             <Card style={{ backgroundColor: '#272A3D', color: 'white', fontSize: '16px', marginTop: '40px' }}>
               <CardHeader>Check for updates</CardHeader>
+              <CardBody>
+                You are currently running Elabox <b>v {version}</b>.<br />
+              </CardBody>
             </Card>
           </Col>
         </Row>
@@ -406,6 +454,26 @@ class Settings extends Component {
         <Row style={{ marginTop: '20px' }}>
           <Col xs="12" sm="6" lg="4">
             <Widget05 dataBox={() => ({ title: 'Check for updates', variant: 'facebook', Restart: 'Check', Resync: update ? "Update Now" : '' })} onGreenPress={this.checkUpdate} onRedPress={this.openUpdateNowModal}>
+            </Widget05>
+          </Col>
+        </Row>
+
+        <Row >
+          <Col>
+            <Card style={{ backgroundColor: '#272A3D', color: 'white', fontSize: '16px', marginTop: '40px' }}>
+              <CardHeader>Your onion address</CardHeader>
+              <CardBody>
+                You can access your Elabox from the outside using TOR browser.<br />
+                <b>Never share your onion address with anyone.</b><br />
+                <br />
+                {showOnion && onion}
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+        <Row style={{ marginTop: '20px' }}>
+          <Col xs="12" sm="6" lg="4">
+            <Widget05 dataBox={() => ({ title: 'Onion Address', variant: 'facebook', Restart: showOnion ? "Hide" : "Show", Resync: "Regenerate" })} onGreenPress={this.toggleOnion} onRedPress={this.regenerateOnion}>
             </Widget05>
           </Col>
         </Row>

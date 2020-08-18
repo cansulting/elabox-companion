@@ -1,0 +1,4 @@
+2020/08/17 19:52:13.321410 [1;35m[INF][m GID 1, Node version: v0.5.1
+2020/08/17 19:52:13.322393 [1;35m[INF][m GID 1, go version go1.13.8 linux/arm64
+2020/08/17 19:52:13.322869 [1;35m[INF][m GID 1, Loading block database from 'elastos/data/blocks'
+2020/08/17 19:52:13.323154 [1;31m[ERR][m GID 1, resource temporarily unavailable: resource temporarily unavailable
