@@ -24,3 +24,4 @@ yarn-error.log*
 /src_server/elastos
 /src_server/output
 package.json
+package-lock.json
