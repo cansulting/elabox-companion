@@ -3,8 +3,7 @@ import { Button, Modal, ModalBody, ModalFooter, Input, ModalHeader, Badge, Line,
 import Widget05 from './widgets/Widget05';
 
 import master from "../api/master"
-import axios from "axios";
-
+import backend from "../api/backend"
 
 class Settings extends Component {
 
@@ -47,17 +46,7 @@ class Settings extends Component {
     // e.preventDefault();
     this.setState({ mainchainRestartModal: false })
 
-    fetch('http://elabox.local:3001/restartMainchain', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        pwd: this.state.pwd
-      }),
-    })
-      .then(response => response.json())
+    backend.restartMainChain(this.state.pwd)
       .then(responseJson => {
         console.log(responseJson)
         if (responseJson.ok == 'ok') {
@@ -76,17 +65,7 @@ class Settings extends Component {
     // e.preventDefault();
     this.setState({ mainchainRestartModal: false })
 
-    fetch('http://elabox.local:3001/restartDid', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        pwd: this.state.pwd
-      }),
-    })
-      .then(response => response.json())
+    backend.restartDid()
       .then(responseJson => {
         console.log(responseJson)
         if (responseJson.ok == 'ok') {
@@ -106,17 +85,7 @@ class Settings extends Component {
     // e.preventDefault();
     this.setState({ mainchainRestartModal: false })
 
-    fetch('http://elabox.local:3001/restartMainchain', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        pwd: this.state.pwd
-      }),
-    })
-      .then(response => response.json())
+    backend.restartCarrier()
       .then(responseJson => {
         console.log(responseJson)
         if (responseJson.ok == 'ok') {
@@ -172,6 +141,7 @@ class Settings extends Component {
       const data = await master.checkUpdate()
       this.setState({ checkUpdateModal: true, update: data.available })
     } catch (error) {
+      console.error(error)
       this.setState({ networkErrorModal: true })
 
     }
@@ -228,7 +198,7 @@ class Settings extends Component {
 
 
   getVersion = () => {
-    axios.get("http://elabox.local:3001/getVersion").then((response) => {
+    backend.getVersion().then((response) => {
       this.setState({ version: response.data.version })
     })
 
@@ -236,7 +206,7 @@ class Settings extends Component {
   }
 
   getOnion = () => {
-    axios.get("http://elabox.local:3001/getOnion").then((response) => {
+    backend.getOnion().then((response) => {
       this.setState({ onion: response.data.onion })
     })
 
@@ -244,7 +214,7 @@ class Settings extends Component {
   }
 
   regenerateOnion = () => {
-    axios.get("http://elabox.local:3001/regenerateOnion").then((response) => {
+    backend.regenerateOnion().then((response) => {
       this.setState({ onion: response.data.onion })
     })
 

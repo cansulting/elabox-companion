@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Row, Col, Table, Card, CardBody, Form, CardFooter,CardDeck, CardHeader, Button, Input, Label, FormGroup, Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap'
+import { Row, Col, Table, Card, CardBody, Form, CardFooter, CardDeck, CardHeader, Button, Input, Label, FormGroup, Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap'
 // import BootstrapTable from 'react-bootstrap-table-next';
 import copy from 'copy-to-clipboard';
 import checkLogo from './images/check.png'
 import errorLogo from './images/error.png'
+import backend from "../api/backend"
 var QRCode = require('qrcode.react');
 
 
@@ -14,11 +15,11 @@ class Wallet extends Component {
     this.state = {
       'recipient': '',
       'amount': '',
-      'tx_list' : '',
+      'tx_list': '',
       'pwd': '',
-      'error1modal' : false,
-      'error2modal' : false,
-      'error3modal' : false,
+      'error1modal': false,
+      'error2modal': false,
+      'error3modal': false,
       'pwdmodal': false,
       'sentmodal': false,
       'errormodal': false
@@ -26,31 +27,19 @@ class Wallet extends Component {
 
     this.handleChange = this.handleChange.bind(this);
     let address = localStorage.getItem('address')
-    console.log("https://node1.elaphant.app/api/3/history/"+address+"?pageNum=1&pageSize=10&order=desc")
-    fetch("https://node1.elaphant.app/api/3/history/"+address+"?pageNum=1&pageSize=10&order=desc")
-      .then(response => response.json())
+    backend.txHistory(address)
       .then(responseJson => {
         let tx_list = responseJson.result.History
 
-        fetch('http://elabox.local:3001/getBalance', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          address,
-        }),
-      })
-        .then(response => response.json())
-        .then(responseJson => {
-          this.setState({tx_list, balance: responseJson.balance})
-        })
-        .catch(error => {
-          console.error(error);
-        });
+        backend.getBalance(address)
+          .then(responseJson => {
+            this.setState({ tx_list, balance: responseJson.balance })
+          })
+          .catch(error => {
+            console.error(error);
+          });
 
-    });
+      });
   }
 
   copyToClipboard() {
@@ -63,34 +52,23 @@ class Wallet extends Component {
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const { name } = target;
     await this.setState({
-      [ name ]: value,
+      [name]: value,
     });
   }
 
+
   submitForm = () => {
     // e.preventDefault();
-    this.setState({pwdmodal: false})
+    this.setState({ pwdmodal: false })
 
-    fetch('http://elabox.local:3001/sendTx', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        recipient: this.state.recipient,
-        amount: this.state.amount,
-        pwd: this.state.pwd
-      }),
-    })
-      .then(response => response.json())
+    backend.sendTx(this.state.recipient, this.state.amount, this.state.pwd)
       .then(responseJson => {
         console.log(responseJson)
-        if (responseJson.ok == 'ok'){
-          this.setState({sentmodal: true})
+        if (responseJson.ok == 'ok') {
+          this.setState({ sentmodal: true })
         }
-        else{
-          this.setState({errormodal: true})
+        else {
+          this.setState({ errormodal: true })
         }
       })
       .catch(error => {
@@ -101,46 +79,46 @@ class Wallet extends Component {
   checkForm = () => {
     let recipient = this.state.recipient
     let amount = this.state.amount
-    if (recipient.length != 34){
-      this.setState({error1modal: true})
+    if (recipient.length != 34) {
+      this.setState({ error1modal: true })
     }
     else {
       if (amount.length == 0) {
-        this.setState({error2modal: true})
+        this.setState({ error2modal: true })
       }
       else {
-        if (isNaN(amount)){
-          this.setState({error2modal: true})
+        if (isNaN(amount)) {
+          this.setState({ error2modal: true })
         }
         else {
-          if (amount.toString().split(".")[1].length > 8 ){
-            this.setState({error3modal: true})
+          if (amount.toString().split(".")[1].length > 8) {
+            this.setState({ error3modal: true })
           }
           else {
-            this.setState({pwdmodal: true})
+            this.setState({ pwdmodal: true })
           }
         }
       }
     }
   }
-  
+
   error1toggle = () => {
-    this.setState({error1modal: false})
+    this.setState({ error1modal: false })
   }
   error2toggle = () => {
-    this.setState({error2modal: false})
+    this.setState({ error2modal: false })
   }
   error3toggle = () => {
-    this.setState({error3modal: false})
+    this.setState({ error3modal: false })
   }
   senttoggle = () => {
-    this.setState({recipient:'', amount: '', sentmodal: false})
+    this.setState({ recipient: '', amount: '', sentmodal: false })
   }
   errortoggle = () => {
-    this.setState({errormodal: false})
+    this.setState({ errormodal: false })
   }
   pwdmodaltoggle = () => {
-    this.setState({pwdmodal: false})
+    this.setState({ pwdmodal: false })
   }
 
   render() {
@@ -148,198 +126,198 @@ class Wallet extends Component {
     let tx = this.state.tx_list
     let address = localStorage.getItem('address')
     return (
-        <div id='main' style={{paddingLeft:'18%', height:'100%', width:'100%', backgroundColor:'#1E1E26'}} className="animated fadeIn w3-container">
+      <div id='main' style={{ paddingLeft: '18%', height: '100%', width: '100%', backgroundColor: '#1E1E26' }} className="animated fadeIn w3-container">
 
-      <Modal isOpen={this.state.pwdmodal}>
-        <ModalHeader>Sending ELA</ModalHeader>
-        <ModalBody>
-          <center>
-            You are about to sendTx <br/>
-            <b>{this.state.amount} ELA </b><br/>
-            to <br/>
-            <b>{this.state.recipient}</b> <br/><br/>
-            Enter your wallet password to confirm<br/><br/>
-          </center>
-          <Input type="password" id="pwd" name="pwd" placeholder="Enter ELA wallet password" required  onChange={ (e) => this.handleChange(e) }/>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="success" onClick={this.submitForm} >Send</Button>
-          <Button color="danger" onClick={this.pwdmodaltoggle} >Cancel</Button>
-        </ModalFooter>
-      </Modal>
+        <Modal isOpen={this.state.pwdmodal}>
+          <ModalHeader>Sending ELA</ModalHeader>
+          <ModalBody>
+            <center>
+              You are about to sendTx <br />
+              <b>{this.state.amount} ELA </b><br />
+            to <br />
+              <b>{this.state.recipient}</b> <br /><br />
+            Enter your wallet password to confirm<br /><br />
+            </center>
+            <Input type="password" id="pwd" name="pwd" placeholder="Enter ELA wallet password" required onChange={(e) => this.handleChange(e)} />
+          </ModalBody>
+          <ModalFooter>
+            <Button color="success" onClick={this.submitForm} >Send</Button>
+            <Button color="danger" onClick={this.pwdmodaltoggle} >Cancel</Button>
+          </ModalFooter>
+        </Modal>
 
-      <Modal isOpen={this.state.sentmodal}>
-        <ModalHeader>Sent</ModalHeader>
-        <ModalBody>
-          <center>
-            <img src={checkLogo} style={{width:'50px', height:'50px'}} />
-          </center>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={this.senttoggle} >Close</Button>
-        </ModalFooter>
-      </Modal>
+        <Modal isOpen={this.state.sentmodal}>
+          <ModalHeader>Sent</ModalHeader>
+          <ModalBody>
+            <center>
+              <img src={checkLogo} style={{ width: '50px', height: '50px' }} />
+            </center>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={this.senttoggle} >Close</Button>
+          </ModalFooter>
+        </Modal>
 
-      <Modal isOpen={this.state.errormodal}>
-        <ModalHeader>Error</ModalHeader>
-        <ModalBody>
-          <center>
-            Something went wrong, please try again<br/><br/>
-            <img src={errorLogo} style={{width:'50px', height:'50px'}} />
-          </center>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={this.errortoggle} >Close</Button>
-        </ModalFooter>
-      </Modal>
+        <Modal isOpen={this.state.errormodal}>
+          <ModalHeader>Error</ModalHeader>
+          <ModalBody>
+            <center>
+              Something went wrong, please try again<br /><br />
+              <img src={errorLogo} style={{ width: '50px', height: '50px' }} />
+            </center>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={this.errortoggle} >Close</Button>
+          </ModalFooter>
+        </Modal>
 
-      <Modal isOpen={this.state.error1modal}>
-        <ModalHeader>Error ELA address</ModalHeader>
-        <ModalBody>
-          Please provide a correct ELA address
+        <Modal isOpen={this.state.error1modal}>
+          <ModalHeader>Error ELA address</ModalHeader>
+          <ModalBody>
+            Please provide a correct ELA address
         </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={this.error1toggle} >Ok</Button>
-        </ModalFooter>
-      </Modal>
+          <ModalFooter>
+            <Button color="primary" onClick={this.error1toggle} >Ok</Button>
+          </ModalFooter>
+        </Modal>
 
-      <Modal isOpen={this.state.error2modal}>
-        <ModalHeader>Error amount</ModalHeader>
-        <ModalBody>
-          Please provide amount of ELA to send
+        <Modal isOpen={this.state.error2modal}>
+          <ModalHeader>Error amount</ModalHeader>
+          <ModalBody>
+            Please provide amount of ELA to send
         </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={this.error2toggle} >Ok</Button>
-        </ModalFooter>
-      </Modal>
+          <ModalFooter>
+            <Button color="primary" onClick={this.error2toggle} >Ok</Button>
+          </ModalFooter>
+        </Modal>
 
-      <Modal isOpen={this.state.error3modal}>
-        <ModalHeader>Error amount</ModalHeader>
-        <ModalBody>
-          Too many decimals
+        <Modal isOpen={this.state.error3modal}>
+          <ModalHeader>Error amount</ModalHeader>
+          <ModalBody>
+            Too many decimals
         </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={this.error3toggle} >Ok</Button>
-        </ModalFooter>
-      </Modal>
+          <ModalFooter>
+            <Button color="primary" onClick={this.error3toggle} >Ok</Button>
+          </ModalFooter>
+        </Modal>
 
         <CardDeck>
-        {/* <Row>
+          {/* <Row>
           <Col xs="12" md="4"> */}
-            <Card style={{backgroundColor: '#272A3D', color:'white'}}>
-              <CardHeader>
-                <strong>Balance</strong> 
-              </CardHeader>
-              <CardBody >
-                <div className="h-100 d-flex flex-column text-center justify-content-center align-items-center">
+          <Card style={{ backgroundColor: '#272A3D', color: 'white' }}>
+            <CardHeader>
+              <strong>Balance</strong>
+            </CardHeader>
+            <CardBody >
+              <div className="h-100 d-flex flex-column text-center justify-content-center align-items-center">
                 <div className="p-2"><h1>{this.state.balance}</h1></div>
                 <div className="p-2"><h4>ELA</h4></div>
-                </div>
-                
-              </CardBody>
-            </Card>
-            <Card style={{backgroundColor: '#272A3D', color:'white'}}> 
-              <Form className="form" onSubmit={ (e) => this.submitForm(e) }>
-                <CardHeader>
-                  <strong>Send ELA</strong>
-                </CardHeader>
-                <CardBody>
-                  
-                    <Row>
-                      <Col xs="12">
-                        <FormGroup>
-                          <Label htmlFor="name">Recipient's address</Label>
-                          <Input type="text" id="recipient" name="recipient" placeholder="ELA wallet address" required onChange={ (e) => this.handleChange(e) } />
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col xs="12">
-                        <FormGroup>
-                          <Label htmlFor="ccnumber">Amount (in ELA)</Label>
-                          <Input type="text" id="amount" name="amount" placeholder="1" required  onChange={ (e) => this.handleChange(e) }/>
-                          fee: 0.001 ELA
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  
-                </CardBody>
-                <CardFooter>
-                  {/* <Button type="submit" size="sm" color="success"><i className="fa fa-dot-circle-o"></i> Send</Button> */}
-                  <Button color="success" onClick={this.checkForm} >Send</Button>
-                </CardFooter>
-              </Form>
-            </Card>
-            <Card style={{backgroundColor: '#272A3D', color:'white'}}>
+              </div>
+
+            </CardBody>
+          </Card>
+          <Card style={{ backgroundColor: '#272A3D', color: 'white' }}>
+            <Form className="form" onSubmit={(e) => this.submitForm(e)}>
               <CardHeader>
-                <strong>Receive ELA</strong>
+                <strong>Send ELA</strong>
               </CardHeader>
               <CardBody>
-                <center>
-                  <QRCode value={address} />
-                  {address}
-                </center>
+
+                <Row>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label htmlFor="name">Recipient's address</Label>
+                      <Input type="text" id="recipient" name="recipient" placeholder="ELA wallet address" required onChange={(e) => this.handleChange(e)} />
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label htmlFor="ccnumber">Amount (in ELA)</Label>
+                      <Input type="text" id="amount" name="amount" placeholder="1" required onChange={(e) => this.handleChange(e)} />
+                          fee: 0.001 ELA
+                        </FormGroup>
+                  </Col>
+                </Row>
 
               </CardBody>
               <CardFooter>
-                <Button color="success" onClick={this.copyToClipboard}>Copy to clipboard</Button>
-                {/* <Button type="submit" size="sm" color="success" onClick={this.copyToClipboard}><i className="fa fa-dot-circle-o"></i> Copy to clipboard</Button> */}
+                {/* <Button type="submit" size="sm" color="success"><i className="fa fa-dot-circle-o"></i> Send</Button> */}
+                <Button color="success" onClick={this.checkForm} >Send</Button>
               </CardFooter>
-            </Card>
-          </CardDeck>
-          
+            </Form>
+          </Card>
+          <Card style={{ backgroundColor: '#272A3D', color: 'white' }}>
+            <CardHeader>
+              <strong>Receive ELA</strong>
+            </CardHeader>
+            <CardBody>
+              <center>
+                <QRCode value={address} />
+                {address}
+              </center>
 
-          <Row style={{ paddingTop: '20px' }}>
+            </CardBody>
+            <CardFooter>
+              <Button color="success" onClick={this.copyToClipboard}>Copy to clipboard</Button>
+              {/* <Button type="submit" size="sm" color="success" onClick={this.copyToClipboard}><i className="fa fa-dot-circle-o"></i> Copy to clipboard</Button> */}
+            </CardFooter>
+          </Card>
+        </CardDeck>
+
+
+        <Row style={{ paddingTop: '20px' }}>
           <Col>
-            <Card style={{backgroundColor: '#272A3D', color:'white'}}>
+            <Card style={{ backgroundColor: '#272A3D', color: 'white' }}>
               <CardHeader>
                 <i className="fa fa-align-justify"></i> Recent transactions
               </CardHeader>
               <CardBody>
-                <Table responsive striped style={{color:'white'}}>
+                <Table responsive striped style={{ color: 'white' }}>
                   <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Amount</th>
-                    <th>Memo</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>More detail</th>
-                  </tr>
+                    <tr>
+                      <th>Type</th>
+                      <th>Amount</th>
+                      <th>Memo</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th>More detail</th>
+                    </tr>
                   </thead>
                   <tbody>
 
-                  {tx.length ? 
-                    tx.map(tx => (
-                      <tr key={tx.Txid}>
-                        <td>
-                          {tx.Type == "income" ? <i className="fa fa-arrow-up" style={{color:'green'}}></i> :  <i className="fa fa-arrow-down" style={{color:'red'}}></i>}
-                        </td>
-                        <td>{tx.Value / 100000000 }</td>
-                        <td>{tx.Memo.split("msg:")[1]}</td>
-                        {tx.CreateTime < 10 ? <td>-</td> : <td>{new Date(tx.CreateTime * 1000).toDateString()}</td>}
-                        {/* <td>{new Date(tx.CreateTime * 1000).toDateString()}</td> */}
-                        <td>{tx.Status}</td>
-                        <td> <a href={`https://blockchain.elastos.org/tx/${tx.Txid}`} >See more</a> </td>
-                      </tr>
-                    ))
-                    : 
-                    (<tr>
-                      <td>-</td>
-                      <td>-</td>
-                      <td>-</td>
-                      <td>-</td>
-                      <td>-</td>
-                      <td>-</td>
-                    </tr>)
-                  }
+                    {tx.length ?
+                      tx.map(tx => (
+                        <tr key={tx.Txid}>
+                          <td>
+                            {tx.Type == "income" ? <i className="fa fa-arrow-up" style={{ color: 'green' }}></i> : <i className="fa fa-arrow-down" style={{ color: 'red' }}></i>}
+                          </td>
+                          <td>{tx.Value / 100000000}</td>
+                          <td>{tx.Memo.split("msg:")[1]}</td>
+                          {tx.CreateTime < 10 ? <td>-</td> : <td>{new Date(tx.CreateTime * 1000).toDateString()}</td>}
+                          {/* <td>{new Date(tx.CreateTime * 1000).toDateString()}</td> */}
+                          <td>{tx.Status}</td>
+                          <td> <a href={`https://blockchain.elastos.org/tx/${tx.Txid}`} >See more</a> </td>
+                        </tr>
+                      ))
+                      :
+                      (<tr>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                      </tr>)
+                    }
                   </tbody>
                 </Table>
               </CardBody>
             </Card>
           </Col>
         </Row>
-        
+
       </div>
     );
   }

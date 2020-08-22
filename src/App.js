@@ -6,6 +6,9 @@ import {
   Redirect,
 } from "react-router-dom";
 
+import master from "./api/master"
+import backend from "./api/backend"
+
 const loading = () => (
   <div className="animated fadeIn pt-3 text-center">Loading...</div>
 );
@@ -16,12 +19,15 @@ const Download = React.lazy(() => import("./views/Download"));
 class App extends React.Component {
   constructor(props) {
     super(props);
-    fetch("http://elabox.local:3001/checkInstallation")
-      .then((response) => response.json())
-      .then((responseJson) => {
-        localStorage.setItem("isconfiged", responseJson.configed.trim());
-        this.setState({ loading: false });
-      });
+    try {
+      backend.checkInstallation()
+        .then((responseJson) => {
+          localStorage.setItem("isconfiged", responseJson.configed.trim());
+          this.setState({ loading: false });
+        });
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   state = {
@@ -92,13 +98,13 @@ function PrivateRoute({ children, ...rest }) {
         isConfiged == "true" ? (
           children
         ) : (
-          <Redirect
-            to={{
-              pathname: "/config",
-              state: { from: location },
-            }}
-          />
-        )
+            <Redirect
+              to={{
+                pathname: "/config",
+                state: { from: location },
+              }}
+            />
+          )
       }
     />
   );

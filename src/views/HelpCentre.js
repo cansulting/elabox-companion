@@ -3,7 +3,6 @@ import { Button, Modal, ModalBody, ModalFooter, Input, ModalHeader, Badge, Line,
 import Widget05 from './widgets/Widget05';
 
 import master from "../api/master"
-import axios from "axios";
 import { Formik } from 'formik'
 import * as Yup from 'yup';
 

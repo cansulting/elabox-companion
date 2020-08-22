@@ -3,7 +3,7 @@ import axios from "axios";
 class API {
   constructor() {
     this.axios = axios.create({
-      baseURL: "http://elabox.local:3002",
+      baseURL: "http://" + window.location.hostname + ":3002",
     });
   }
 
