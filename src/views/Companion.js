@@ -56,7 +56,7 @@ function Companion() {
     backend.serviceStatus().then(responseJson => {
 
       const { elaRunning, didRunning, carrierRunning } = responseJson
-      setServicesRunning(elaRunning && carrierRunning)
+      setServicesRunning(elaRunning && carrierRunning && didRunning)
 
     })
   }

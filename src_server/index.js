@@ -23,6 +23,7 @@ app.use(errorHandler({ dumpExceptions: true, showStack: true }));
 const router = express.Router();
 
 let elaPath = "/home/elabox/supernode/ela"
+let didPath = "/home/elabox/supernode/did"
 let keyStorePath = elaPath + "/keystore.dat"
 router.get('/', (req, res) => {
   res.send("HELLO WORLD");
@@ -373,11 +374,15 @@ const restartMainchain = (pwd) => {
   })
 }
 
+
+
 const restartDid = () => {
+  console.log("Restarting DID")
   return new Promise((resolve, reject) => {
     exec('pidof did', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
       exec('kill ' + stdout, { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
-        exec('nohup ' + elaPath + '/did > /dev/null 2>output &', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+        console.log("DIDpath", didPath + "/did")
+        shell.exec('nohup ./did > /dev/null 2>output &', { maxBuffer: 1024 * 500, cwd: didPath }, async (err, stdout, stderr) => {
           resolve({ success: 'ok' })
         });
       });
