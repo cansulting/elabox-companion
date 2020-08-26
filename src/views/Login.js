@@ -44,8 +44,13 @@ function Login() {
       <center>
         <img src={elaboxLogo} style={{ width: '200px', height: '200px', paddingRight: '10px' }} />
         <div style={{ paddingTop: '20px' }}>
-          <Input type="password" id="pwd" name="pwd" placeholder="********" required onChange={(e) => handleChange(e)} />
-          <Button onClick={login} style={{ marginTop: '20px' }}>Sign In</Button>
+          <form onSubmit={(e) => {
+            e.preventDefault()
+            login()
+          }}>
+            <Input type="password" id="pwd" name="pwd" placeholder="********" required onChange={(e) => handleChange(e)} />
+            <Button type="submit" style={{ marginTop: '20px' }}>Sign In</Button>
+          </form>
         </div>
       </center>
     </div>

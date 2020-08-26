@@ -41,18 +41,25 @@ class Dashboard extends React.Component {
       carrierIp: '',
 
       dropdownOpen: false,
-      radioSelected: 2
+      radioSelected: 2,
+      isMobile: props.isMobile,
+
     };
   }
 
 
   componentDidMount() {
+    console.log("componentDidMount")
     backend.latestBlock()
       .then(responseJson => {
+        console.log("componentDidMount1")
+
         let nodeinfo = JSON.parse(responseJson.nodeinfo);
         let nodeinfoDid = JSON.parse(responseJson.nodeinfodid);
         backend.blockSizes()
           .then(responseJson => {
+            console.log("componentDidMount2")
+
             // mainchain
             let blockSizeList = responseJson.blockSizeList
             let blockTime = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date(responseJson.blockTime * 1000));
@@ -68,12 +75,15 @@ class Dashboard extends React.Component {
 
             backend.serviceStatus()
               .then(responseJson => {
+                console.log("componentDidMount3")
+
                 console.log(blockMiner)
                 let elaRunning = responseJson.elaRunning;
                 let didRunning = responseJson.didRunning;
                 let carrierRunning = responseJson.carrierRunning;
                 let tokenRunning = responseJson.tokenRunning;
                 let carrierIp = responseJson.carrierIp
+                console.log("Carrier", carrierIp)
                 backend.nbOfTx()
                   .then(responseJson => {
 
@@ -302,9 +312,18 @@ class Dashboard extends React.Component {
         }
       }
     };
+    const { isMobile } = this.props;
 
     return (
-      <div id='main' style={{ paddingLeft: '18%', height: '100%', width: '100%', backgroundColor: '#1E1E26' }} className="animated fadeIn w3-container">
+      <div id='main' style={{
+        ...{
+          paddingLeft: "18%",
+          width: "100%",
+          backgroundColor: "#1E1E26",
+        },
+        ...(isMobile && { paddingLeft: undefined }),
+      }}
+        className="animated fadeIn w3-container">
         <Row>
           <Col xs="12" sm="4" lg="4">
             {this.state.elaRunning

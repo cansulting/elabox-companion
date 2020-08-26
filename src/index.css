@@ -1,22 +1,10 @@
 
-@font-face {
-  font-family: 'Muli-Light';
-  src: url('views/fonts/Muli-Light.ttf') format('truetype') !important,
-    url('views/fonts/Muli-Light.woff') format('woff') !important, 
-    url('views/fonts/Muli-Light.woff2') format('woff2') !important, 
-    url("views/fonts/Muli-Light.otf") format("opentype") !important,
-    url("views/fonts/Muli-Light.svg") format("svg") !important;
-  font-style: normal;
-  font-weight: normal;
-}
 
 body {
   margin: 0;
   /* font-family: -apple-system, BlinkMacSystemFont, 'MuliExtraLight', 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif; */
-  font-family: 'Muli-Light' !important;
-  -webkit-font-smoothing: antialiased;
   /* -moz-osx-font-smoothing: grayscale; */
 }
 

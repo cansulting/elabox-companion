@@ -5,15 +5,18 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const fs = require("fs");
+var shell = require('shelljs');
+var errorHandler = require('errorhandler')
 
 // define port number
 const port = process.env.PORT || 3001;
-const { exec } = require('child_process');
+const { exec, fork, spawn } = require('child_process');
 
 app.use(logger('dev'));
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(errorHandler({ dumpExceptions: true, showStack: true }));
 
 
 // create a routes folder and add routes there
@@ -46,6 +49,7 @@ router.get('/latestblock', (req, res) => {
     if (err) {
       //some err occurred
       console.error(err)
+      res.status(500)
     } else {
       // the *entire* stdout and stderr (buffered)
       // console.log(`stdout: ${stdout}`);
@@ -55,6 +59,8 @@ router.get('/latestblock', (req, res) => {
         if (err) {
           //some err occurred
           console.error(err)
+          res.status(500)
+
         }
         else {
           res.json({ nodeinfo, nodeinfodid: stdout });
@@ -320,7 +326,7 @@ router.get('/serviceStatus', (req, res) => {
         exec('pidof ela-bootstrapd', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
           { stdout == "" ? carrierRunning = false : carrierRunning = true }
           exec('curl -s ipinfo.io/ip', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
-            res.json({ elaRunning, didRunning, tokenRunning, carrierRunning, carrierIp: stdout })
+            res.json({ elaRunning, didRunning, tokenRunning, carrierRunning, carrierIp: stdout.trim() })
           });
         });
       });
@@ -347,25 +353,123 @@ router.get('/downloadWallet', function (req, res) {
 });
 
 
-router.post('/restartMainchain', (req, res) => {
-  let pwd = req.body.pwd
-  exec('pidof ela', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
-    exec('kill ' + stdout, { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
-      exec('echo ' + pwd + ' | nohup ' + elaPath + '/ela > /dev/null 2>output &', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
-        res.json({ success: 'ok' })
+const restartMainchain = (pwd) => {
+  return new Promise((resolve, reject) => {
+    shell.exec('pidof ela', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+      console.log("restartMainchain", stdout)
+
+      shell.exec('kill ' + stdout, { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+        console.log("restartMainchain", stdout)
+
+        shell.exec('echo ' + pwd + ' | nohup ' + elaPath + '/ela > /dev/null 2>output &', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+          if (err) {
+            console.error("restartMainchainErr", err)
+          }
+          console.log("restartMainchainOut", stdout)
+          resolve({ success: 'ok' })
+        });
       });
     });
+  })
+}
+
+const restartDid = () => {
+  return new Promise((resolve, reject) => {
+    exec('pidof did', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+      exec('kill ' + stdout, { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+        exec('nohup ' + elaPath + '/did > /dev/null 2>output &', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+          resolve({ success: 'ok' })
+        });
+      });
+    });
+  })
+}
+
+const runCarrier = () => {
+
+  console.log("Running Carrier Script")
+
+  var prom = new Promise((resolve, reject) => {
+    // shell.cd("/home/elabox/supernode/carrier/")
+    exec(
+      "echo elabox | sudo -S ./ela-bootstrapd --config=bootstrapd.conf --foreground",
+      { maxBuffer: 1024 * 500 * 10000, detached: true, cwd: "/home/elabox/supernode/carrier/" },
+
+      (err, stdout, stderr) => {
+        if (err) {
+          console.log("Failed CP", err);
+          // throw (err)
+
+        } else {
+          console.log("Success CP");
+          resolve(stdout.trim())
+        }
+      }
+    );
   });
+
+  return prom;
+}
+
+
+
+const restartCarrier = () => {
+
+  return new Promise((resolve, reject) => {
+    console.log("Running Carrier Script")
+
+    const install = fork("carrier.js", { detached: true });
+    install.unref()
+
+    install.on("message", (code) => {
+      console.log(`Carrier message ${code}`);
+    });
+
+    install.on("close", (code) => {
+      console.log(`Carrier child process exited with code ${code}`);
+    });
+
+    install.on("error", (code) => {
+      console.log(`Carrier child process error with code ${code}`);
+    });
+    console.log("Spawned");
+    resolve()
+  })
+
+}
+
+
+
+
+
+// setInterval(restartCarrier, 1000 * 5)
+
+router.post('/restartMainchain', async (req, res) => {
+  let pwd = req.body.pwd
+  res.json(await restartMainchain(pwd))
+
 });
 
-router.post('/restartDid', (req, res) => {
-  exec('pidof did', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
-    exec('kill ' + stdout, { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
-      exec('nohup ' + elaPath + '/did > /dev/null 2>output &', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
-        res.json({ success: 'ok' })
-      });
-    });
-  });
+
+
+
+router.post('/restartDid', async (req, res) => {
+  res.json(await restartDid())
+
+});
+
+router.post('/restartCarrier', async (req, res) => {
+  res.json(await restartCarrier())
+
+});
+
+
+router.post('/restartAll', async (req, res) => {
+  let pwd = req.body.pwd
+  const results = await Promise.all([restartMainchain(pwd), restartDid(), restartCarrier()])
+  console.log("RR", results)
+  res.json(results)
+
 });
 
 router.get('/getVersion', (req, res) => {
@@ -426,8 +530,6 @@ const regenerateTor = () => {
       })
   })
 }
-
-
 
 
 

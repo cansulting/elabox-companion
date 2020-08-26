@@ -227,10 +227,20 @@ class Settings extends Component {
   }
 
   render() {
+    const { isMobile } = this.props;
+
     const { update, checkUpdateModal, networkErrorModal, updateNowModal, errorUpdateModal, version, onion, showOnion } = this.state;
     console.log("render", showOnion)
     return (
-      <div id='main' style={{ paddingLeft: '18%', height: '100%', width: '100%', backgroundColor: '#1E1E26' }} className="animated fadeIn w3-container">
+      <div id='main' style={{
+        ...{
+          paddingLeft: "18%",
+          width: "100%",
+          backgroundColor: "#1E1E26",
+        },
+        ...(isMobile && { paddingLeft: undefined }),
+      }}
+        className="animated fadeIn w3-container">
 
         <Modal isOpen={this.state.mainchainRestartModal}>
           <ModalHeader>Restart Mainchain</ModalHeader>

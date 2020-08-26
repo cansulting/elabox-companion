@@ -122,11 +122,20 @@ class Wallet extends Component {
   }
 
   render() {
+    const { isMobile } = this.props;
+
 
     let tx = this.state.tx_list
     let address = localStorage.getItem('address')
     return (
-      <div id='main' style={{ paddingLeft: '18%', height: '100%', width: '100%', backgroundColor: '#1E1E26' }} className="animated fadeIn w3-container">
+      <div id='main' style={{
+        ...{
+          paddingLeft: "18%",
+          width: "100%",
+          backgroundColor: "#1E1E26",
+        },
+        ...(isMobile && { paddingLeft: undefined }),
+      }} className="animated fadeIn w3-container">
 
         <Modal isOpen={this.state.pwdmodal}>
           <ModalHeader>Sending ELA</ModalHeader>

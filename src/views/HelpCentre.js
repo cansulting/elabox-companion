@@ -27,13 +27,17 @@ class HelpCentre extends Component {
     super(props);
     this.state = {
       success: false,
-      failure: false
+      failure: false,
+      isMobile: props.isMobile,
+
 
     }
   }
 
 
   render() {
+    const { isMobile } = this.props;
+
     return (
       <Formik
         initialValues={{ email: '', name: '', problem: '' }}
@@ -69,8 +73,17 @@ class HelpCentre extends Component {
         }) => {
 
           const { success, failure } = this.state
+
           return (
-            <div id='main' style={{ paddingLeft: '18%', height: '100%', width: '100%', backgroundColor: '#1E1E26' }} className="animated fadeIn w3-container">
+            <div id='main' style={{
+              ...{
+                paddingLeft: "18%",
+                width: "100%",
+                backgroundColor: "#1E1E26",
+              },
+              ...(isMobile && { paddingLeft: undefined }),
+            }}
+              className="animated fadeIn w3-container">
               {success && <Alert color="success">
                 Success! An Elabox Support representative will reach out to you shortly.
                 </Alert>}

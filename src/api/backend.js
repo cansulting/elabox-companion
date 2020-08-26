@@ -55,6 +55,20 @@ class API {
         return fetch(`http://${PUBLIC_URI}/nbOfTx`).then((response) => response.json());
     };
 
+
+    restartAllServices = (pwd) => {
+        return fetch(`http://${PUBLIC_URI}/restartAll`, {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                pwd: pwd,
+            }),
+        }).then((response) => response.json());
+    };
+
     restartMainChain = (pwd) => {
         return fetch(`http://${PUBLIC_URI}/restartMainchain`, {
             method: "POST",
@@ -83,7 +97,7 @@ class API {
 
 
     restartCarrier = () => {
-        return fetch(`http://${PUBLIC_URI}/restartDid`, {
+        return fetch(`http://${PUBLIC_URI}/restartCarrier`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
