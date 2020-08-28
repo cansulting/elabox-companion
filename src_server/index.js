@@ -382,7 +382,7 @@ const restartDid = () => {
     exec('pidof did', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
       exec('kill ' + stdout, { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
         console.log("DIDpath", didPath + "/did")
-        shell.exec('nohup ./did > /dev/null 2>output &', { maxBuffer: 1024 * 500, cwd: didPath }, async (err, stdout, stderr) => {
+        shell.exec('cd '+didPath+'; nohup ./did > /dev/null 2>output &', { maxBuffer: 1024 * 500, cwd: didPath }, async (err, stdout, stderr) => {
           resolve({ success: 'ok' })
         });
       });
