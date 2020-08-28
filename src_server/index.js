@@ -31,7 +31,7 @@ router.get('/', (req, res) => {
 
 
 router.get('/synced', (req, res) => {
-  exec('ls /home/abilican/supernode/ela | grep keystore.dat', { maxBuffer: 1024 * 500 }, (err, stdout, stderr) => {
+  exec('ls /home/elabox/supernode/ela | grep keystore.dat', { maxBuffer: 1024 * 500 }, (err, stdout, stderr) => {
     if (err) {
       //some err occurred
       console.error(err)
@@ -362,7 +362,7 @@ const restartMainchain = (pwd) => {
       shell.exec('kill ' + stdout, { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
         console.log("restartMainchain", stdout)
 
-        shell.exec('echo ' + pwd + ' | nohup ' + elaPath + '/ela > /dev/null 2>output &', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+        shell.exec('cd ' +elaPath+ '; echo ' + pwd + ' | nohup ./ela > /dev/null 2>output &', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
           if (err) {
             console.error("restartMainchainErr", err)
           }
