@@ -83,7 +83,7 @@ function getBlockSize(height) {
         resolve(details.Result)
       }
     })
-  })
+  }).catch(error => { console.log(error) })
 }
 
 
@@ -98,7 +98,7 @@ function getBlockSizeDid(height) {
         resolve(details.Result)
       }
     })
-  })
+  }).catch(error => { console.log(error) })
 }
 
 
@@ -157,7 +157,7 @@ function getNbOfTx(height) {
         resolve(details.Result.Transactions.length)
       }
     })
-  })
+  }).catch(error => { console.log(error) })
 }
 
 
@@ -173,7 +173,7 @@ function getNbOfTxDid(height) {
         resolve(details.Result.Transactions.length)
       }
     })
-  })
+  }).catch(error => { console.log(error) })
 }
 
 
@@ -371,7 +371,7 @@ const restartMainchain = (pwd) => {
         });
       });
     });
-  })
+  }).catch(error => { console.log(error) })
 }
 
 
@@ -387,7 +387,7 @@ const restartDid = () => {
         });
       });
     });
-  })
+  }).catch(error => { console.log(error) })
 }
 
 const runCarrier = () => {
@@ -411,7 +411,7 @@ const runCarrier = () => {
         }
       }
     );
-  });
+  }).catch(error => { console.log(error) })
 
   return prom;
 }
@@ -439,7 +439,7 @@ const restartCarrier = () => {
     });
     console.log("Spawned");
     resolve()
-  })
+  }).catch(error => { console.log(error) })
 
 }
 
@@ -507,7 +507,7 @@ const checkFile = (file) => {
         resolve(false);
       }
     }
-  });
+  }).catch(error => { console.log(error) })
 
   return prom;
 };
@@ -521,7 +521,7 @@ const getOnionAddress = () => {
 
         resolve(stdout.trim())
       })
-  })
+  }).catch(error => { console.log(error) })
 }
 
 const regenerateTor = () => {
@@ -533,7 +533,7 @@ const regenerateTor = () => {
           resolve()
         })
       })
-  })
+  }).catch(error => { console.log(error) })
 }
 
 
