@@ -17,7 +17,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(errorHandler({ dumpExceptions: true, showStack: true }));
-
+const maxBufferSize = 1000
 
 // create a routes folder and add routes there
 const router = express.Router();
@@ -31,7 +31,7 @@ router.get('/', (req, res) => {
 
 
 router.get('/synced', (req, res) => {
-  exec('ls /home/elabox/supernode/ela | grep keystore.dat', { maxBuffer: 1024 * 500 }, (err, stdout, stderr) => {
+  exec('ls /home/elabox/supernode/ela | grep keystore.dat', { maxBuffer: 1024 * maxBufferSize }, (err, stdout, stderr) => {
     if (err) {
       //some err occurred
       console.error(err)
@@ -46,7 +46,7 @@ router.get('/synced', (req, res) => {
 
 
 router.get('/latestblock', (req, res) => {
-  exec('curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' ', { maxBuffer: 1024 * 500 }, (err, stdout, stderr) => {
+  exec('curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' ', { maxBuffer: 1024 * maxBufferSize }, (err, stdout, stderr) => {
     if (err) {
       //some err occurred
       console.error(err)
@@ -56,7 +56,7 @@ router.get('/latestblock', (req, res) => {
       // console.log(`stdout: ${stdout}`);
       // console.log(`stderr: ${stderr}`);
       let nodeinfo = stdout
-      exec('curl http://User:Password@localhost:20606 -H "Content-Type: application/json" -d \'{"method": "getcurrentheight"}\' ', { maxBuffer: 1024 * 500 }, (err, stdout, stderr) => {
+      exec('curl http://User:Password@localhost:20606 -H "Content-Type: application/json" -d \'{"method": "getcurrentheight"}\' ', { maxBuffer: 1024 * maxBufferSize }, (err, stdout, stderr) => {
         if (err) {
           //some err occurred
           console.error(err)
@@ -74,7 +74,7 @@ router.get('/latestblock', (req, res) => {
 
 function getBlockSize(height) {
   return new Promise(function (resolve, reject) {
-    exec('curl http://localhost:20334/api/v1/block/details/height/' + height + '', { maxBuffer: 1024 * 500 }, (err, stdout, stderr) => {
+    exec('curl http://localhost:20334/api/v1/block/details/height/' + height + '', { maxBuffer: 1024 * maxBufferSize }, (err, stdout, stderr) => {
       if (err) {
         reject(err)
       }
@@ -89,7 +89,7 @@ function getBlockSize(height) {
 
 function getBlockSizeDid(height) {
   return new Promise(function (resolve, reject) {
-    exec('curl http://localhost:20604/api/v1/block/details/height/' + height + '', { maxBuffer: 1024 * 500 }, (err, stdout, stderr) => {
+    exec('curl http://localhost:20604/api/v1/block/details/height/' + height + '', { maxBuffer: 1024 * maxBufferSize }, (err, stdout, stderr) => {
       if (err) {
         reject(err)
       }
@@ -120,7 +120,7 @@ router.get('/blocksizes', (req, res) => {
       if (counter == 10) {
         // res.json({blockSizeList: blockSizeList, blockTime : blockSize.time, blockHash: blockSize.hash, miner: blockSize.minerinfo })
 
-        exec('curl http://User:Password@localhost:20606 -H "Content-Type: application/json" -d \'{"method": "getcurrentheight"}\' ', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+        exec('curl http://User:Password@localhost:20606 -H "Content-Type: application/json" -d \'{"method": "getcurrentheight"}\' ', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
           if (err) {
             //some err occurred
             console.error(err)
@@ -147,7 +147,7 @@ router.get('/blocksizes', (req, res) => {
 
 function getNbOfTx(height) {
   return new Promise(function (resolve, reject) {
-    exec('curl http://localhost:20334/api/v1/block/transactions/height/' + height + '', { maxBuffer: 1024 * 500 }, (err, stdout, stderr) => {
+    exec('curl http://localhost:20334/api/v1/block/transactions/height/' + height + '', { maxBuffer: 1024 * maxBufferSize }, (err, stdout, stderr) => {
 
       if (err) {
         reject(err)
@@ -163,7 +163,7 @@ function getNbOfTx(height) {
 
 function getNbOfTxDid(height) {
   return new Promise(function (resolve, reject) {
-    exec('curl http://localhost:20604/api/v1/block/transactions/height/' + height + '', { maxBuffer: 1024 * 500 }, (err, stdout, stderr) => {
+    exec('curl http://localhost:20604/api/v1/block/transactions/height/' + height + '', { maxBuffer: 1024 * maxBufferSize }, (err, stdout, stderr) => {
 
       if (err) {
         reject(err)
@@ -178,7 +178,7 @@ function getNbOfTxDid(height) {
 
 
 router.get('/nbOfTx', (req, res) => {
-  exec('curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' ', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+  exec('curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' ', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
     if (err) {
       //some err occurred
       console.error(err)
@@ -195,7 +195,7 @@ router.get('/nbOfTx', (req, res) => {
         nbOfTxList.push(nbOfTx)
       }
       if (counter == 10) {
-        exec('curl http://User:Password@localhost:20606 -H "Content-Type: application/json" -d \'{"method": "getcurrentheight"}\' ', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+        exec('curl http://User:Password@localhost:20606 -H "Content-Type: application/json" -d \'{"method": "getcurrentheight"}\' ', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
           if (err) {
             //some err occurred
             console.error(err)
@@ -231,10 +231,10 @@ router.post('/sendTx', (req, res) => {
   exec(elaPath + '/ela-cli wallet buildtx -w ' + elaPath + '/keystore.dat --to ' + recipient + ' --amount ' + amount + ' --fee 0.001 --rpcuser User --rpcpassword Password ' + pwd, { maxBuffer: 1024 * 500 }, async (err, stdout) => {
     if (!err) {
       // 2 - signtx
-      exec(elaPath + '/ela-cli wallet signtx -w ' + elaPath + '/keystore.dat -f to_be_signed.txn -p ' + pwd, { maxBuffer: 1024 * 500 }, async (err, stdout) => {
+      exec(elaPath + '/ela-cli wallet signtx -w ' + elaPath + '/keystore.dat -f to_be_signed.txn -p ' + pwd, { maxBuffer: 1024 * maxBufferSize }, async (err, stdout) => {
         if (!err) {
           // 3 - sendtx
-          exec(elaPath + '/ela-cli wallet sendtx -f ready_to_send.txn --rpcuser User --rpcpassword Password', { maxBuffer: 1024 * 500 }, async (err, stdout) => {
+          exec(elaPath + '/ela-cli wallet sendtx -f ready_to_send.txn --rpcuser User --rpcpassword Password', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout) => {
             if (!err) {
               res.json({ ok: "ok" })
             }
@@ -258,7 +258,7 @@ router.post('/sendTx', (req, res) => {
 router.post('/login', (req, res) => {
   let pwd = req.body.pwd
 
-  exec(elaPath + '/ela-cli wallet a -w ' + elaPath + '/keystore.dat -p ' + pwd + '', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+  exec(elaPath + '/ela-cli wallet a -w ' + elaPath + '/keystore.dat -p ' + pwd + '', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
     console.log("err", err)
     console.log("stdout", stdout)
     // console.log(stdout.split('\n')[2].split(' ')[0])
@@ -275,7 +275,7 @@ router.post('/login', (req, res) => {
 router.post('/createWallet', (req, res) => {
   let pwd = req.body.pwd1
 
-  exec('cd ' + elaPath + '; ./ela-cli wallet create -p ' + pwd + '', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+  exec('cd ' + elaPath + '; ./ela-cli wallet create -p ' + pwd + '', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
     console.log(stdout)
     // res.json({balance})
     res.json({ ok: "ok" })
@@ -295,7 +295,7 @@ router.get('/downloadWallet', function (req, res) {
 
 router.post('/getBalance', (req, res) => {
   let address = req.body.address
-  exec('curl http://localhost:20334/api/v1/asset/balances/' + address, { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+  exec('curl http://localhost:20334/api/v1/asset/balances/' + address, { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
     let balanceInfo = JSON.parse(stdout);
     let balance = balanceInfo.Result;
     res.json({ balance })
@@ -339,9 +339,9 @@ router.get('/serviceStatus', (req, res) => {
 router.post('/update', (req, res) => {
   let version = req.body.version
   // create a tmp file to know that it's updating
-  exec('touch maintenance.txt', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+  exec('touch maintenance.txt', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
     // download zip of the new version
-    exec('wget ....' + version, { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+    exec('wget ....' + version, { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
     });
   });
 });
@@ -356,13 +356,13 @@ router.get('/downloadWallet', function (req, res) {
 
 const restartMainchain = (pwd) => {
   return new Promise((resolve, reject) => {
-    shell.exec('pidof ela', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+    shell.exec('pidof ela', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
       console.log("restartMainchain", stdout)
 
-      shell.exec('kill ' + stdout, { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+      shell.exec('kill ' + stdout, { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
         console.log("restartMainchain", stdout)
 
-        shell.exec('cd ' +elaPath+ '; echo ' + pwd + ' | nohup ./ela > /dev/null 2>output &', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+        shell.exec('cd ' +elaPath+ '; echo ' + pwd + ' | nohup ./ela > /dev/null 2>output &', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
           if (err) {
             console.error("restartMainchainErr", err)
           }
@@ -379,10 +379,10 @@ const restartMainchain = (pwd) => {
 const restartDid = () => {
   console.log("Restarting DID")
   return new Promise((resolve, reject) => {
-    exec('pidof did', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
-      exec('kill ' + stdout, { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+    exec('pidof did', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
+      exec('kill ' + stdout, { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
         console.log("DIDpath", didPath + "/did")
-        shell.exec('cd '+didPath+'; nohup ./did > /dev/null 2>output &', { maxBuffer: 1024 * 500, cwd: didPath }, async (err, stdout, stderr) => {
+        shell.exec('cd '+didPath+'; nohup ./did > /dev/null 2>output &', { maxBuffer: 1024 * maxBufferSize, cwd: didPath }, async (err, stdout, stderr) => {
           resolve({ success: 'ok' })
         });
       });
@@ -398,7 +398,7 @@ const runCarrier = () => {
     // shell.cd("/home/elabox/supernode/carrier/")
     exec(
       "echo elabox | sudo -S ./ela-bootstrapd --config=bootstrapd.conf --foreground",
-      { maxBuffer: 1024 * 500 * 10000, detached: true, cwd: "/home/elabox/supernode/carrier/" },
+      { maxBuffer: 1024 * maxBufferSize * 10000, detached: true, cwd: "/home/elabox/supernode/carrier/" },
 
       (err, stdout, stderr) => {
         if (err) {
@@ -517,7 +517,7 @@ const getOnionAddress = () => {
 
   return new Promise((resolve, reject) => {
     exec("echo elabox | sudo -S cat /var/lib/tor/elabox/hostname",
-      { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+      { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
 
         resolve(stdout.trim())
       })
@@ -528,8 +528,8 @@ const regenerateTor = () => {
 
   return new Promise((resolve, reject) => {
     exec("echo elabox | sudo -S rm -rf /var/lib/tor/elabox",
-      { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
-        exec("echo elabox | sudo -S systemctl restart tor@default", { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+      { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
+        exec("echo elabox | sudo -S systemctl restart tor@default", { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
           resolve()
         })
       })
