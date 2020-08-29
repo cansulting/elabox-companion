@@ -17,7 +17,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(errorHandler({ dumpExceptions: true, showStack: true }));
-const maxBufferSize = 1000
+const maxBufferSize = 10000
 
 // create a routes folder and add routes there
 const router = express.Router();
