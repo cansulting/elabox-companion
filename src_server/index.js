@@ -257,7 +257,7 @@ router.post('/sendTx', (req, res) => {
 
 router.post('/login', (req, res) => {
   let pwd = req.body.pwd
-
+  console.log("PASSWORD RECEIVED", pwd, req.body)
   exec(elaPath + '/ela-cli wallet a -w ' + elaPath + '/keystore.dat -p ' + pwd + '', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
     console.log("err", err)
     console.log("stdout", stdout)
@@ -273,7 +273,9 @@ router.post('/login', (req, res) => {
 
 
 router.post('/createWallet', (req, res) => {
-  let pwd = req.body.pwd1
+  let pwd = req.body.pwd
+  console.log("PASSWORD RECEIVED", pwd, req.body)
+
 
   exec('cd ' + elaPath + '; ./ela-cli wallet create -p ' + pwd + '', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
     console.log(stdout)
@@ -282,7 +284,6 @@ router.post('/createWallet', (req, res) => {
   });
 
   // console.log(pwd)
-  res.json({ ok: "ok" })
 
 });
 
@@ -296,6 +297,7 @@ router.get('/downloadWallet', function (req, res) {
 router.post('/getBalance', (req, res) => {
   let address = req.body.address
   exec('curl http://localhost:20334/api/v1/asset/balances/' + address, { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
+    console.log("getBalance", stdout)
     let balanceInfo = JSON.parse(stdout);
     let balance = balanceInfo.Result;
     res.json({ balance })
@@ -362,7 +364,7 @@ const restartMainchain = (pwd) => {
       shell.exec('kill ' + stdout, { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
         console.log("restartMainchain", stdout)
 
-        shell.exec('cd ' +elaPath+ '; echo ' + pwd + ' | nohup ./ela > /dev/null 2>output &', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
+        shell.exec('cd ' + elaPath + '; echo ' + pwd + ' | nohup ./ela > /dev/null 2>output &', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
           if (err) {
             console.error("restartMainchainErr", err)
           }
@@ -382,7 +384,7 @@ const restartDid = () => {
     exec('pidof did', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
       exec('kill ' + stdout, { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
         console.log("DIDpath", didPath + "/did")
-        shell.exec('cd '+didPath+'; nohup ./did > /dev/null 2>output &', { maxBuffer: 1024 * maxBufferSize, cwd: didPath }, async (err, stdout, stderr) => {
+        shell.exec('cd ' + didPath + '; nohup ./did > /dev/null 2>output &', { maxBuffer: 1024 * maxBufferSize, cwd: didPath }, async (err, stdout, stderr) => {
           resolve({ success: 'ok' })
         });
       });
