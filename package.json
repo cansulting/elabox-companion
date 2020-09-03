@@ -54,5 +54,8 @@
   },
   "devDependencies": {
     "husky": "^4.2.5"
+  },
+  "husky": {
+    "pre-commit": "npm i && npm run build && git add build"
   }
 }
