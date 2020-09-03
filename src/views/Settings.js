@@ -188,7 +188,7 @@ class Settings extends Component {
     try {
       const data = await master.updateNow()
       setTimeout(() => {
-        window.open("http://elabox.local")
+        window.open(`http://${window.location.hostname}`)
       }, 5000)
 
     } catch (error) {
