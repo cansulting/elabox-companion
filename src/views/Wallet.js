@@ -262,8 +262,9 @@ class Wallet extends Component {
               <strong>Receive ELA</strong>
             </CardHeader>
             <CardBody>
-              <center>
+              <center style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                 <QRCode value={address} />
+                <br />
                 {address}
               </center>
 

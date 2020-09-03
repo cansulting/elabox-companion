@@ -1,0 +1,11 @@
+/* Muli-Light @font-face kit */
+@font-face {
+  font-family: 'MuliLight';
+  src: url('views/fonts/Muli-Light.ttf') format('truetype') !important,
+    url('views/fonts/Muli-Light.woff') format('woff') !important, 
+    url('views/fonts/Muli-Light.woff2') format('woff2') !important, 
+    url("views/fonts/Muli-Light.otf") format("opentype") !important,
+    url("views/fonts/Muli-Light.svg") format("svg") !important;
+  font-style: normal;
+  font-weight: normal;
+}

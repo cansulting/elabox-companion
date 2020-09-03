@@ -15,6 +15,7 @@ function Login() {
 
     backend.login(pwd)
       .then(responseJson => {
+        console.log("Login", responseJson)
         if (responseJson.ok) {
           localStorage.setItem('logedin', true)
           localStorage.setItem('address', responseJson.address)

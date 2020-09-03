@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import * as Icon from 'react-feather';
 
 // import elaboxLogo from "./images/logo-wht.png";
 import dashboardLogo from "../../images/dashboard_white.png";
@@ -115,7 +116,7 @@ export default function SideBar({ isOpen, onClose }) {
           </li>
           <li>
             <div className="sidebarMenu">
-              <Link to="/help" style={{ textDecoration: 'none', color: 'white', fontSize: '18px' }}> <img src={settingsLogo} style={{ widht: '30px', height: '30px', paddingRight: '10px' }} />Help Center</Link>
+              <Link to="/help" style={{ textDecoration: 'none', color: 'white', fontSize: '18px' }}><span style={{ paddingRight: "10px" }}><Icon.HelpCircle height={30} width={30} /></span>Help Center</Link>
             </div>
           </li>        </ul>
       </div>
