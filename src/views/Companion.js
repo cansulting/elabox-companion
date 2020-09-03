@@ -76,6 +76,8 @@ function Companion() {
   else {
     checkServices()
 
+
+
   }
 
 
