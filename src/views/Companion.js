@@ -74,7 +74,7 @@ function Companion() {
     return <Redirect to="/login" />;
   }
   else {
-    // checkServices()
+    checkServices()
 
   }
 
