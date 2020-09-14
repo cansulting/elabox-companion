@@ -479,11 +479,6 @@ router.post('/restartAll', async (req, res) => {
 
 });
 
-router.get('/getVersion', (req, res) => {
-  const { version } = JSON.parse(fs.readFileSync("../package.json"))
-  res.send({ version })
-
-});
 
 router.get('/getOnion', async (req, res) => {
   res.send({ onion: await getOnionAddress() })
