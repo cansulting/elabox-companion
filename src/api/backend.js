@@ -146,9 +146,7 @@ class API {
         ).then((response) => response.json());
     };
 
-    getVersion = () => {
-        return axios.get(`http://${PUBLIC_URI}/getVersion`)
-    }
+
 
     getOnion = () => {
         return axios.get(`http://${PUBLIC_URI}/getOnion`)

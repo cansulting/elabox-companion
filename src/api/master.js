@@ -29,6 +29,11 @@ class API {
     });
   };
 
+  getVersion = () => {
+    return this.axios.get(`/getVersion`)
+  }
+
+
   submitForm = (data) => {
     return new Promise(async (resolve, reject) => {
       try {
