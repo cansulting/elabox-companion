@@ -324,15 +324,15 @@ router.get('/serviceStatus', (req, res) => {
     { stdout == "" ? elaRunning = false : elaRunning = true }
     exec('pidof did', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
       { stdout == "" ? didRunning = false : didRunning = true }
-      exec('pidof token', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
-        { stdout == "" ? tokenRunning = false : tokenRunning = true }
+      // exec('pidof token', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+      //   { stdout == "" ? tokenRunning = false : tokenRunning = true }
         exec('pidof ela-bootstrapd', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
           { stdout == "" ? carrierRunning = false : carrierRunning = true }
-          exec('curl -s ipinfo.io/ip', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
-            res.json({ elaRunning, didRunning, tokenRunning, carrierRunning, carrierIp: stdout.trim() })
-          });
+          // exec('curl -s ipinfo.io/ip', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+          //   res.json({ elaRunning, didRunning, tokenRunning, carrierRunning, carrierIp: stdout.trim() })
+          // });
         });
-      });
+      // });
     });
   });
 });
