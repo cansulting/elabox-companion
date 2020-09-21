@@ -369,6 +369,9 @@ const restartMainchain = (pwd) => {
           if (err) {
             console.error("restartMainchainErr", err)
           }
+          if (stderr) {
+            console.error("restartMainchainStdErr", stderr)
+          }
           console.log("restartMainchainOut", stdout)
           resolve({ success: 'ok' })
         });
