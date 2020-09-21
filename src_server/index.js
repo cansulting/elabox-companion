@@ -330,6 +330,7 @@ router.get('/serviceStatus', (req, res) => {
           { stdout == "" ? carrierRunning = false : carrierRunning = true }
           // exec('curl -s ipinfo.io/ip', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
           //   res.json({ elaRunning, didRunning, tokenRunning, carrierRunning, carrierIp: stdout.trim() })
+          res.json({ elaRunning, didRunning, carrierRunning })
           // });
         });
       // });
