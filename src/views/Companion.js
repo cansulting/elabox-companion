@@ -56,6 +56,7 @@ function Companion() {
     backend.serviceStatus().then(responseJson => {
 
       const { elaRunning, didRunning, carrierRunning } = responseJson
+      console.log("checkServices: ", elaRunning, didRunning, carrierRunning)
       setServicesRunning(elaRunning && carrierRunning && didRunning)
 
     })
