@@ -444,7 +444,7 @@ const restartCarrier = () => {
       console.log(`Carrier child process error with code ${code}`);
     });
     console.log("Spawned");
-    resolve()
+    resolve({ success: 'ok' })
   }).catch(error => { console.log(error) })
 
 }
