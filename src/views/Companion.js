@@ -125,7 +125,7 @@ function Companion() {
             Your Elabox services are turned off. Enter your password to restart them.<br />
             This process will take a few minutes<br /><br />
           </center>
-          <Input type="password" id="pwd" name="pwd" placeholder="Enter ELA wallet password" required onChange={(e) => setPwd(e.target.value)} />
+          <Input type="password" id="pwd" name="pwd" placeholder="Enter ELA wallet password" required autofocus onChange={(e) => setPwd(e.target.value)} />
         </ModalBody>
         <ModalFooter>
           <Button color="success" onClick={restartServices} >Restart</Button>
