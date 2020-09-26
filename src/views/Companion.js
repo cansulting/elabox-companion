@@ -56,15 +56,29 @@ function Companion() {
     backend.serviceStatus().then(responseJson => {
 
       const { elaRunning, didRunning, carrierRunning } = responseJson
-      console.log("checkServices: ", elaRunning, didRunning, carrierRunning)
-      setServicesRunning(elaRunning && carrierRunning && didRunning)
+      console.log("checkServices elaRunning: ", elaRunning)
+      console.log("checkServices didRunning: ", didRunning)
+      console.log("checkServices carrierRunning: ", carrierRunning)
+      // setServicesRunning(elaRunning && carrierRunning && didRunning)
+      if (!didRunning){
+        console.log("Restarting DID")
+        backend.restartDid()
+      }
+      if (!carrierRunning){
+        console.log("Restarting Carrier")
+        backend.restartCarrier()
+      }
+
+      // ask for the pwd only if ela is not running
+      setServicesRunning(elaRunning)
 
     })
   }
 
   const restartServices = () => {
-    console.log("Called")
-    backend.restartAllServices(pwd).then(responseJson => {
+    console.log("Restarting ela")
+    // restart ela
+    backend.restartMainChain(pwd).then(responseJson => {
       checkServices()
     })
 

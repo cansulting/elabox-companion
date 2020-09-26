@@ -320,13 +320,13 @@ router.get('/checkInstallation', async (req, res) => {
 
 
 router.get('/serviceStatus', (req, res) => {
-  exec('pidof ela', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+  exec('pidof -zx ela', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
     { stdout == "" ? elaRunning = false : elaRunning = true }
-    exec('pidof did', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+    exec('pidof -zx did', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
       { stdout == "" ? didRunning = false : didRunning = true }
       // exec('pidof token', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
       //   { stdout == "" ? tokenRunning = false : tokenRunning = true }
-        exec('pidof ela-bootstrapd', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+        exec('pidof -zx ela-bootstrapd', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
           { stdout == "" ? carrierRunning = false : carrierRunning = true }
           // exec('curl -s ipinfo.io/ip', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
           //   res.json({ elaRunning, didRunning, tokenRunning, carrierRunning, carrierIp: stdout.trim() })
@@ -359,7 +359,7 @@ router.get('/downloadWallet', function (req, res) {
 
 const restartMainchain = (pwd) => {
   return new Promise((resolve, reject) => {
-    shell.exec('pidof ela', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
+    shell.exec('pidof -zx ela', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
       console.log("restartMainchain", stdout)
 
       shell.exec('kill ' + stdout, { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
@@ -385,7 +385,7 @@ const restartMainchain = (pwd) => {
 const restartDid = () => {
   console.log("Restarting DID")
   return new Promise((resolve, reject) => {
-    exec('pidof did', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
+    exec('pidof -zx did', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
       exec('kill ' + stdout, { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
         console.log("DIDpath", didPath + "/did")
         shell.exec('cd ' + didPath + '; nohup ./did > /dev/null 2>output &', { maxBuffer: 1024 * maxBufferSize, cwd: didPath }, async (err, stdout, stderr) => {
