@@ -328,10 +328,10 @@ router.get('/serviceStatus', (req, res) => {
       //   { stdout == "" ? tokenRunning = false : tokenRunning = true }
         exec('pidof -zx ela-bootstrapd', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
           { stdout == "" ? carrierRunning = false : carrierRunning = true }
-          // exec('curl -s ipinfo.io/ip', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+          exec('curl -s ipinfo.io/ip', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
           //   res.json({ elaRunning, didRunning, tokenRunning, carrierRunning, carrierIp: stdout.trim() })
-          res.json({ elaRunning, didRunning, carrierRunning })
-          // });
+            res.json({ elaRunning, didRunning, carrierRunning, carrierIp: stdout.trim() })
+          });
         });
       // });
     });

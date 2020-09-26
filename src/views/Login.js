@@ -49,7 +49,7 @@ function Login() {
             e.preventDefault()
             login()
           }}>
-            <Input type="password" id="pwd" name="pwd" placeholder="********" required onChange={(e) => handleChange(e)} autoFocus={true} />
+            <Input type="password" id="pwd" name="pwd" placeholder="********" required onChange={(e) => handleChange(e)} autoFocus />
             <Button type="submit" style={{ marginTop: '20px' }}>Sign In</Button>
           </form>
         </div>

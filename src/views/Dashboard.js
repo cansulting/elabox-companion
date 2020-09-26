@@ -50,6 +50,16 @@ class Dashboard extends React.Component {
 
   componentDidMount() {
     console.log("componentDidMount")
+    backend.serviceStatus()
+              .then(responseJson => {
+                console.log("componentDidMount3")
+                let elaRunning = responseJson.elaRunning;
+                let didRunning = responseJson.didRunning;
+                let carrierRunning = responseJson.carrierRunning;
+                let tokenRunning = responseJson.tokenRunning;
+                let carrierIp = responseJson.carrierIp
+                console.log("Carrier", carrierIp)
+                this.setState({elaRunning, didRunning, carrierRunning, tokenRunning, carrierIp});
     backend.latestBlock()
       .then(responseJson => {
         console.log("componentDidMount1")
@@ -72,18 +82,6 @@ class Dashboard extends React.Component {
             let blockHashDid = responseJson.blockHashDid;
             let blockHashFormattedDid = blockHashDid.substring(0, 9) + "..." + blockHashDid.substring(54, 64);
             let blockMinerDid = responseJson.minerDid;
-
-            backend.serviceStatus()
-              .then(responseJson => {
-                console.log("componentDidMount3")
-
-                console.log(blockMiner)
-                let elaRunning = responseJson.elaRunning;
-                let didRunning = responseJson.didRunning;
-                let carrierRunning = responseJson.carrierRunning;
-                let tokenRunning = responseJson.tokenRunning;
-                let carrierIp = responseJson.carrierIp
-                console.log("Carrier", carrierIp)
                 backend.nbOfTx()
                   .then(responseJson => {
 
