@@ -145,9 +145,10 @@ class Settings extends Component {
   closeRestartCarrier = () => {
     this.setState({ carrierRestartModal: false });
   };
-  checkUpdate = async () => {
-    const data = await master.checkUpdate();
-  };
+
+  // checkUpdate = async () => {
+  //   const data = await master.checkUpdate();
+  // };
 
   checkUpdate = async () => {
     try {
