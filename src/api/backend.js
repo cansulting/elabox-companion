@@ -95,6 +95,18 @@ class API {
             .then(response => response.json())
     };
 
+    resyncDid = () => {
+        return fetch(`http://${PUBLIC_URI}/resyncDid`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+
+        })
+            .then(response => response.json())
+    };
+
 
     restartCarrier = () => {
         return fetch(`http://${PUBLIC_URI}/restartCarrier`, {

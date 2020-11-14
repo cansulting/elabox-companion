@@ -96,6 +96,25 @@ class Settings extends Component {
       });
   };
 
+  resyncDid = () => {
+    // e.preventDefault();
+    this.setState({ didResyncModal: false });
+
+    backend
+      .resyncDid()
+      .then((responseJson) => {
+        console.log(responseJson);
+        if (responseJson.ok == "ok") {
+          this.setState({ sentmodal: true });
+        } else {
+          this.setState({ errormodal: true });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   restartCarrier = () => {
     // e.preventDefault();
     this.setState({ mainchainRestartModal: false });
