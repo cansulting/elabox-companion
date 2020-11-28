@@ -215,6 +215,7 @@ class Settings extends Component {
   };
 
   updateNow = async () => {
+    this.closeUpdateNowModal()
     try {
       const data = await master.updateNow();
       setTimeout(() => {
