@@ -55,10 +55,10 @@ router.get("/ela", async (req, res) => {
   console.log("testing ela ");
 
   exec(
-    'curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' ',
+    `curl -X POST http://User:Password@$localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' `,
     { maxBuffer: 1024 * maxBufferSize },
     (err, stdout, stderr) => {
-      res.json(stdout);
+      req.json({ nodeinfo: stdout });
     }
   );
 
