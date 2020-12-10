@@ -22,3 +22,6 @@ yarn-error.log*
 /src_server/output
 package.json
 package-lock.json
+
+build
+
