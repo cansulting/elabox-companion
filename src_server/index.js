@@ -53,7 +53,7 @@ router.get("/synced", (req, res) => {
 
 router.get("/ela", async (req, res) => {
   const response = await execShell(
-    `curl -X POST http://User:Password@${NODE_URL}:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' `,
+    `curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' `,
     { maxBuffer: 1024 * maxBufferSize }
   );
 
