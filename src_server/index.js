@@ -15,6 +15,7 @@ const NODE_URL = "192.168.18.71";
 const port = process.env.PORT || 3001;
 const { exec, fork, spawn } = require("child_process");
 const { execShell } = require("./helper");
+const { json } = require("body-parser");
 
 app.use(logger("dev"));
 app.use(cors());
@@ -52,20 +53,44 @@ router.get("/synced", (req, res) => {
 });
 
 router.get("/ela", async (req, res) => {
-  console.log("testing ela ");
+  try {
+    const isRunningResponse = await execShell("pidof -zx ela", {
+      maxBuffer: 1024 * 500,
+    });
 
-  exec(
-    `curl -X POST http://User:Password@$localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' `,
-    { maxBuffer: 1024 * maxBufferSize },
-    (err, stdout, stderr) => {
-      res.json({ nodeinfo: stdout });
+    console.log("mainchain running on port : ", isRunningResponse);
+
+    const isRunning = isRunningResponse ? true : false;
+
+    const blockCountResponse = await execShell(
+      `curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' `,
+      { maxBuffer: 1024 * maxBufferSize }
+    );
+
+    const blockCount = JSON.parse(blockCountResponse).result;
+    const blockSizeList = [];
+    const nbOfTxList = [];
+
+    for (let i = 0; i < blockCount - 1 && i < 10; i++) {
+      const blockSize = await getBlockSize(blockCount - 1 - i);
+      console.log(blockCount - i, blockSize.size);
+      blockSizeList.push(blockSize.size);
     }
-  );
 
-  // const response = await execShell(
-  //   'curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' ',
-  //   { maxBuffer: 1024 * maxBufferSize }
-  // );
+    for (let i = 0; i < blockCount - 1 && i < 10; i++) {
+      const nbOfTx = await getNbOfTx(blockCount - 1 - i);
+      nbOfTxList.push(nbOfTx);
+    }
+
+    res.json({
+      blockCount: blockCount,
+      blockSizes: blockSizeList,
+      nbOfTxs: nbOfTxList,
+      isRunning: isRunning,
+    });
+  } catch (err) {
+    res.status(500).send({ error: err });
+  }
 });
 
 router.get("/latestblock", async (req, res) => {

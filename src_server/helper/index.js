@@ -1,18 +1,14 @@
-const { exec, fork, spawn } = require("child_process");
+var shell = require("shelljs");
 
-const execShell = (cmd, opts) =>
-  new Promise((resolve, reject) => {
-    exec(cmd, opts, (error, stdout, stderr) => {
+const execShell = (cmd, opts) => {
+  return new Promise((resolve, reject) => {
+    shell.exec(cmd, opts, (error, stdout) => {
       if (error) {
         reject(error);
-      }
-
-      if (stderr) {
-        reject(stderr);
       }
 
       resolve(stdout);
     });
   });
-
+};
 module.exports = { execShell };
