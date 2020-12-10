@@ -53,12 +53,19 @@ router.get("/synced", (req, res) => {
 
 router.get("/ela", async (req, res) => {
   console.log("testing ela ");
-  const response = await execShell(
-    `curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' `,
-    { maxBuffer: 1024 * maxBufferSize }
+
+  exec(
+    'curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' ',
+    { maxBuffer: 1024 * maxBufferSize },
+    (err, stdout, stderr) => {
+      res.json(stdout);
+    }
   );
 
-  res.json(response);
+  // const response = await execShell(
+  //   'curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' ',
+  //   { maxBuffer: 1024 * maxBufferSize }
+  // );
 });
 
 router.get("/latestblock", async (req, res) => {
