@@ -1,8 +1,8 @@
-const shell = require("shelljs");
+const { exec, fork, spawn } = require("child_process");
 
 const execShell = (cmd, opts) =>
   new Promise((resolve, reject) => {
-    shell.exec(cmd, opts, (error, stdout, stderr) => {
+    exec(cmd, opts, (error, stdout, stderr) => {
       if (error) {
         reject(error);
       }
