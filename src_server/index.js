@@ -53,6 +53,8 @@ router.get("/synced", (req, res) => {
 });
 
 router.get("/ela", async (req, res) => {
+  // TODO: endfunction if isRunning:false
+
   try {
     const isRunningResponse = await execShell("pidof -zx ela", {
       maxBuffer: 1024 * 500,
@@ -524,42 +526,42 @@ router.get("/downloadWallet", function (req, res) {
 
 const restartMainchain = (pwd) => {
   return new Promise((resolve, reject) => {
-    shell.exec(
-      "pidof -zx ela",
-      { maxBuffer: 1024 * maxBufferSize },
-      async (err, stdout, stderr) => {
-        console.log("restartMainchain", stdout);
+    try {
+      shell.exec(
+        "pidof -zx ela",
+        { maxBuffer: 1024 * maxBufferSize },
+        async (err, stdout, stderr) => {
+          console.log("restartMainchain", stdout);
 
-        shell.exec(
-          "kill " + stdout,
-          { maxBuffer: 1024 * maxBufferSize },
-          async (err, stdout, stderr) => {
-            console.log("restartMainchain", stdout);
+          shell.exec(
+            "kill " + stdout,
+            { maxBuffer: 1024 * maxBufferSize },
+            async (err, stdout, stderr) => {
+              console.log("restartMainchain", stdout);
 
-            shell.exec(
-              "cd " +
-                elaPath +
-                "; echo " +
-                pwd +
-                " | nohup ./ela > /dev/null 2>output &",
-              { maxBuffer: 1024 * maxBufferSize },
-              async (err, stdout, stderr) => {
-                if (err) {
-                  console.error("restartMainchainErr", err);
+              const elaProcess = spawn(
+                `cd ${elaPath} ; echo ${pwd} | nohup ./ela > /dev/null 2>output &`,
+                { maxBuffer: 1024 * maxBufferSize, detached: true, shell: true }
+              );
+
+              elaProcess.stdout.on("data", (data) => {
+                console.log(`data: ${data}`);
+              });
+
+              elaProcess.unref();
+
+              elaProcess.on("exit", (code, signal) => {
+                if (code === 0) {
+                  resolve({ sucess: true });
                 }
-                if (stderr) {
-                  console.error("restartMainchainStdErr", stderr);
-                }
-                console.log("restartMainchainOut", stdout);
-                resolve({ success: "ok" });
-              }
-            );
-          }
-        );
-      }
-    );
-  }).catch((error) => {
-    console.log(error);
+              });
+            }
+          );
+        }
+      );
+    } catch (err) {
+      reject({ error: err, success: false });
+    }
   });
 };
 
