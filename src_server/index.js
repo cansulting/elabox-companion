@@ -64,18 +64,22 @@ router.get("/ela", async (req, res) => {
 
     const isRunning = isRunningResponse ? true : false;
 
+    if (!isRunning) {
+      return res.json({ isRunning: false });
+    }
+
     const blockCountResponse = await execShell(
       `curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' `,
       { maxBuffer: 1024 * maxBufferSize }
     );
 
     const blockCount = JSON.parse(blockCountResponse).result;
+    const latestblock = await getBlockSize(blockCount - 1);
     const blockSizeList = [];
     const nbOfTxList = [];
 
     for (let i = 0; i < blockCount - 1 && i < 10; i++) {
       const blockSize = await getBlockSize(blockCount - 1 - i);
-      console.log(blockCount - i, blockSize.size);
       blockSizeList.push(blockSize.size);
     }
 
@@ -84,11 +88,65 @@ router.get("/ela", async (req, res) => {
       nbOfTxList.push(nbOfTx);
     }
 
-    res.json({
+    return res.json({
+      blockCount: blockCount - 1,
+      blockSizes: blockSizeList,
+      nbOfTxs: nbOfTxList,
+      isRunning: isRunning,
+      latestblock: {
+        blockTime: latestblock.time,
+        blockHash: latestblock.hash,
+        miner: latestblock.minerinfo,
+      },
+    });
+  } catch (err) {
+    res.status(500).send({ error: err });
+  }
+});
+
+router.get("/did", async (req, res) => {
+  try {
+    const isRunningResponse = await execShell("pidof -zx did", {
+      maxBuffer: 1024 * 500,
+    });
+
+    console.log("Did running on port : ", isRunningResponse);
+
+    const isRunning = isRunningResponse ? true : false;
+
+    if (!isRunning) {
+      return res.status(200).json({ isRunning });
+    }
+
+    const blockCountResponse = await execShell(
+      'curl http://User:Password@localhost:20606 -H "Content-Type: application/json" -d \'{"method": "getcurrentheight"}\' ',
+      { maxBuffer: 1024 * maxBufferSize }
+    );
+    const blockCount = JSON.parse(blockCountResponse).result;
+
+    const latestblock = await getBlockSizeDid(blockCount);
+    const blockSizeList = [];
+    const nbOfTxList = [];
+
+    for (let i = 0; i < blockCount && i < 10; i++) {
+      const blockSize = await getBlockSizeDid(blockCount - i);
+      blockSizeList.push(blockSize.size);
+    }
+    for (let i = 0; i < blockCount && i < 10; i++) {
+      const nbOfTx = await getNbOfTxDid(blockCount - i);
+      nbOfTxList.push(nbOfTx);
+    }
+
+    return res.status(200).json({
       blockCount: blockCount,
       blockSizes: blockSizeList,
       nbOfTxs: nbOfTxList,
       isRunning: isRunning,
+      latestblock: {
+        blockTime: latestblock.time,
+        blockHash: latestblock.hash,
+        miner: latestblock.minerinfo,
+      },
     });
   } catch (err) {
     res.status(500).send({ error: err });
