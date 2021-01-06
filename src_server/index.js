@@ -74,7 +74,7 @@ router.get("/ela", async (req, res) => {
     );
 
     const blockCount = JSON.parse(blockCountResponse).result;
-    const latestblock = await getBlockSize(blockCount - 1);
+    const latestBlock = await getBlockSize(blockCount - 1);
     const blockSizeList = [];
     const nbOfTxList = [];
 
@@ -93,10 +93,10 @@ router.get("/ela", async (req, res) => {
       blockSizes: blockSizeList,
       nbOfTxs: nbOfTxList,
       isRunning: isRunning,
-      latestblock: {
-        blockTime: latestblock.time,
-        blockHash: latestblock.hash,
-        miner: latestblock.minerinfo,
+      latestBlock: {
+        blockTime: latestBlock.time,
+        blockHash: latestBlock.hash,
+        miner: latestBlock.minerinfo,
       },
     });
   } catch (err) {
@@ -124,7 +124,7 @@ router.get("/did", async (req, res) => {
     );
     const blockCount = JSON.parse(blockCountResponse).result;
 
-    const latestblock = await getBlockSizeDid(blockCount);
+    const latestBlock = await getBlockSizeDid(blockCount);
     const blockSizeList = [];
     const nbOfTxList = [];
 
@@ -142,10 +142,10 @@ router.get("/did", async (req, res) => {
       blockSizes: blockSizeList,
       nbOfTxs: nbOfTxList,
       isRunning: isRunning,
-      latestblock: {
-        blockTime: latestblock.time,
-        blockHash: latestblock.hash,
-        miner: latestblock.minerinfo,
+      latestBlock: {
+        blockTime: latestBlock.time,
+        blockHash: latestBlock.hash,
+        miner: latestBlock.minerinfo,
       },
     });
   } catch (err) {
