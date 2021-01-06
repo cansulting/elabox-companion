@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Switch,
@@ -6,8 +6,9 @@ import {
   Redirect,
 } from "react-router-dom";
 
-import master from "./api/master"
-import backend from "./api/backend"
+import backend from "./api/backend";
+
+import RootStore from "../src/store";
 
 const loading = () => (
   <div className="animated fadeIn pt-3 text-center">Loading...</div>
@@ -20,13 +21,14 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     try {
-      backend.checkInstallation()
-        .then((responseJson) => {
-          localStorage.setItem("isconfiged", responseJson.configed.trim());
-          this.setState({ loading: false });
-        });
+      RootStore.blockchain.ela.fetchData();
+      RootStore.blockchain.did.fetchData();
+      backend.checkInstallation().then((responseJson) => {
+        localStorage.setItem("isconfiged", responseJson.configed.trim());
+        this.setState({ loading: false });
+      });
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
   }
 
@@ -98,13 +100,13 @@ function PrivateRoute({ children, ...rest }) {
         isConfiged == "true" ? (
           children
         ) : (
-            <Redirect
-              to={{
-                pathname: "/config",
-                state: { from: location },
-              }}
-            />
-          )
+          <Redirect
+            to={{
+              pathname: "/config",
+              state: { from: location },
+            }}
+          />
+        )
       }
     />
   );
