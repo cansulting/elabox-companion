@@ -1,6 +1,10 @@
 import axios from "axios";
 const PUBLIC_URI = "192.168.18.71:3001";
 class API {
+  constructor() {
+    this.axios = axios.create({ baseURL: `http://${PUBLIC_URI}` });
+  }
+
   login = (pwd) => {
     return fetch(`http://${PUBLIC_URI}/login`, {
       method: "POST",
@@ -12,6 +16,16 @@ class API {
         pwd,
       }),
     }).then((response) => response.json());
+  };
+
+  fetchEla = async () => {
+    const response = await this.axios.get("/ela");
+    return response.data;
+  };
+
+  fetchDid = async () => {
+    const response = await this.axios.get("/did");
+    return response.data;
   };
 
   checkInstallation = () => {
