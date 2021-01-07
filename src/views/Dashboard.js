@@ -12,12 +12,7 @@ import { formatTime } from "../utils/time";
 import { shortifyHash } from "../utils/string";
 
 const Dashboard = ({ isMobile }) => {
-  const radioSelected = useState(2);
-  const dropdownOpen = useState(false);
-  const carrierRunning = useState(false);
-  const carrierIp = useState("210.16.81.175");
-
-  const { ela, did } = RootStore.blockchain;
+  const { ela, did, carrier } = RootStore.blockchain;
 
   useEffect(() => {}, []);
 
@@ -449,7 +444,7 @@ const Dashboard = ({ isMobile }) => {
 
       <Row style={{ paddingTop: "50px" }}>
         <Col xs="12" sm="4" lg="4">
-          {carrierRunning ? (
+          {carrier.isRunning ? (
             <Widget02
               header="Carrier"
               mainText="Running"
@@ -470,7 +465,7 @@ const Dashboard = ({ isMobile }) => {
       </Row>
 
       <CardGroup className="mb-4">
-        <Widget04 icon="fa fa-gears" header={carrierIp}>
+        <Widget04 icon="fa fa-gears" header={carrier.carrierIP}>
           Carrier IP Address
         </Widget04>
       </CardGroup>

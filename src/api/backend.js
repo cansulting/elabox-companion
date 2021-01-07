@@ -28,6 +28,11 @@ class API {
     return response.data;
   };
 
+  fetchCarrier = async () => {
+    const response = await this.axios.get("/carrier");
+    return response.data;
+  };
+
   checkInstallation = () => {
     return fetch(`http://${PUBLIC_URI}/checkInstallation`).then((response) =>
       response.json()

@@ -51,14 +51,20 @@ export const Did = types
 
 export const Carrier = types
   .model({
-    running: types.maybeNull(types.boolean),
+    isRunning: types.maybeNull(types.boolean),
+    carrierIP: "",
   })
   .actions((self) => {
-    const changeRunning = (status) => {
-      self.running = status;
-    };
+    const fetchData = flow(function* () {
+      try {
+        const response = yield API.fetchCarrier();
+        applySnapshot(self, response);
+      } catch (err) {
+        console.error(fetchData);
+      }
+    });
 
-    return { changeRunning };
+    return { fetchData };
   });
 
 const BlockChainStore = types.model({
