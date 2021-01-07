@@ -14,7 +14,7 @@ const NODE_URL = "192.168.18.71";
 // define port number
 const port = process.env.PORT || 3001;
 const { exec, fork, spawn } = require("child_process");
-const { execShell } = require("./helper");
+const { execShell, checkProcessingRunning } = require("./helper");
 const { json } = require("body-parser");
 
 app.use(logger("dev"));
@@ -56,13 +56,7 @@ router.get("/ela", async (req, res) => {
   // TODO: endfunction if isRunning:false
 
   try {
-    const isRunningResponse = await execShell("pidof -zx ela", {
-      maxBuffer: 1024 * 500,
-    });
-
-    console.log("mainchain running on port : ", isRunningResponse);
-
-    const isRunning = isRunningResponse ? true : false;
+    const isRunning = await checkProcessingRunning("ela");
 
     if (!isRunning) {
       return res.json({ isRunning: false });
@@ -106,13 +100,7 @@ router.get("/ela", async (req, res) => {
 
 router.get("/did", async (req, res) => {
   try {
-    const isRunningResponse = await execShell("pidof -zx did", {
-      maxBuffer: 1024 * 500,
-    });
-
-    console.log("Did running on port : ", isRunningResponse);
-
-    const isRunning = isRunningResponse ? true : false;
+    const isRunning = await checkProcessingRunning("did");
 
     if (!isRunning) {
       return res.status(200).json({ isRunning });
@@ -149,6 +137,21 @@ router.get("/did", async (req, res) => {
       },
     });
   } catch (err) {
+    res.status(500).send({ error: err });
+  }
+});
+
+router.get("/carrier", async (req, res) => {
+  try {
+    const isRunning = await checkProcessingRunning("ela-bootstrapd");
+
+    const carrierIP = await execShell("curl -s ipinfo.io/ip", {
+      maxBuffer: 1024 * 500,
+    });
+
+    return res.status(200).json({ isRunning, carrierIP: carrierIP.trim() });
+  } catch (err) {
+    console.log(err);
     res.status(500).send({ error: err });
   }
 });
