@@ -13,6 +13,18 @@ const execShell = (cmd, opts) => {
   });
 };
 
+const killProcess = async (process) => {
+  try {
+    const processID = await execShell(`pidof -zx ${process}`);
+
+    console.log("killing process " + processID.split(" ")[0]);
+    await execShell(`kill -9 ${processID.split(" ")[0]}`);
+    console.log("process killed");
+  } catch (err) {
+    console.log(`process ${process} is not found`);
+  }
+};
+
 const checkProcessingRunning = async (process) => {
   try {
     const processID = await execShell(`pidof -zx ${process}`);
@@ -27,4 +39,4 @@ const checkProcessingRunning = async (process) => {
   }
 };
 
-module.exports = { execShell, checkProcessingRunning };
+module.exports = { execShell, checkProcessingRunning, killProcess };
