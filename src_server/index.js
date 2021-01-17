@@ -14,8 +14,13 @@ const NODE_URL = "192.168.18.71";
 // define port number
 const port = process.env.PORT || 3001;
 const { exec, fork, spawn } = require("child_process");
-const { execShell, checkProcessingRunning } = require("./helper");
+const { execShell, checkProcessingRunning, killProcess } = require("./helper");
+const isPortReachable = require("is-port-reachable");
 const { json } = require("body-parser");
+const delay = require("delay");
+
+// initializes log watchers
+require("./watchers");
 
 app.use(logger("dev"));
 app.use(cors());
@@ -55,13 +60,17 @@ router.get("/synced", (req, res) => {
 router.get("/ela", async (req, res) => {
   // TODO: endfunction if isRunning:false
 
+  const isRunning = await checkProcessingRunning("ela");
+
+  const servicesRunning = await isPortReachable(20336, { host: "localhost" });
+
+  console.log("ela serviceRunning", servicesRunning);
+
+  if (!isRunning || !servicesRunning) {
+    return res.json({ isRunning, servicesRunning });
+  }
+
   try {
-    const isRunning = await checkProcessingRunning("ela");
-
-    if (!isRunning) {
-      return res.json({ isRunning: false });
-    }
-
     const blockCountResponse = await execShell(
       `curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' `,
       { maxBuffer: 1024 * maxBufferSize }
@@ -87,6 +96,7 @@ router.get("/ela", async (req, res) => {
       blockSizes: blockSizeList,
       nbOfTxs: nbOfTxList,
       isRunning: isRunning,
+      servicesRunning,
       latestBlock: {
         blockTime: latestBlock.time,
         blockHash: latestBlock.hash,
@@ -94,7 +104,7 @@ router.get("/ela", async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).send({ error: err });
+    return res.status(500).json({ error: err });
   }
 });
 
@@ -102,8 +112,12 @@ router.get("/did", async (req, res) => {
   try {
     const isRunning = await checkProcessingRunning("did");
 
-    if (!isRunning) {
-      return res.status(200).json({ isRunning });
+    const servicesRunning = await isPortReachable(20606, { host: "localhost" });
+
+    console.log("serviceRunning", servicesRunning);
+
+    if (!isRunning || !servicesRunning) {
+      return res.json({ isRunning, servicesRunning });
     }
 
     const blockCountResponse = await execShell(
@@ -130,6 +144,7 @@ router.get("/did", async (req, res) => {
       blockSizes: blockSizeList,
       nbOfTxs: nbOfTxList,
       isRunning: isRunning,
+      servicesRunning,
       latestBlock: {
         blockTime: latestBlock.time,
         blockHash: latestBlock.hash,
@@ -154,38 +169,6 @@ router.get("/carrier", async (req, res) => {
     console.log(err);
     res.status(500).send({ error: err });
   }
-});
-
-router.get("/latestblock", async (req, res) => {
-  exec(
-    'curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' ',
-    { maxBuffer: 1024 * maxBufferSize },
-    (err, stdout, stderr) => {
-      if (err) {
-        //some err occurred
-        console.error(err);
-        res.status(500);
-      } else {
-        // the *entire* stdout and stderr (buffered)
-        // console.log(`stdout: ${stdout}`);
-        // console.log(`stderr: ${stderr}`);
-        let nodeinfo = stdout;
-        exec(
-          'curl http://User:Password@localhost:20606 -H "Content-Type: application/json" -d \'{"method": "getcurrentheight"}\' ',
-          { maxBuffer: 1024 * maxBufferSize },
-          (err, stdout, stderr) => {
-            if (err) {
-              //some err occurred
-              console.error(err);
-              res.status(500);
-            } else {
-              res.json({ nodeinfo, nodeinfodid: stdout });
-            }
-          }
-        );
-      }
-    }
-  );
 });
 
 function getBlockSize(height) {
@@ -225,69 +208,6 @@ function getBlockSizeDid(height) {
     console.log(error);
   });
 }
-
-router.get("/blocksizes", (req, res) => {
-  exec(
-    'curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' ',
-    { maxBuffer: 1024 * 500 },
-    async (err, stdout, stderr) => {
-      if (err) {
-        //some err occurred
-        console.error(err);
-      } else {
-        let latestblockInfo = JSON.parse(stdout);
-        let latestblockHeight = latestblockInfo.result;
-        var blockSizeList = [];
-        var counter = 0;
-        for (var i = latestblockHeight - 10; i < latestblockHeight; i++) {
-          counter++;
-          var blockSize = await getBlockSize(i);
-          blockSizeList.push(blockSize.size);
-        }
-        if (counter == 10) {
-          // res.json({blockSizeList: blockSizeList, blockTime : blockSize.time, blockHash: blockSize.hash, miner: blockSize.minerinfo })
-
-          exec(
-            'curl http://User:Password@localhost:20606 -H "Content-Type: application/json" -d \'{"method": "getcurrentheight"}\' ',
-            { maxBuffer: 1024 * maxBufferSize },
-            async (err, stdout, stderr) => {
-              if (err) {
-                //some err occurred
-                console.error(err);
-              } else {
-                let latestblockInfoDiD = JSON.parse(stdout);
-                let latestblockHeightDid = latestblockInfoDiD.result;
-                var blockSizeListDid = [];
-                var counter = 0;
-                for (
-                  var j = latestblockHeightDid - 10;
-                  j < latestblockHeightDid;
-                  j++
-                ) {
-                  counter++;
-                  var blockSizeDid = await getBlockSizeDid(j);
-                  blockSizeListDid.push(blockSizeDid.size);
-                }
-                if (counter == 10) {
-                  res.json({
-                    blockSizeList: blockSizeList,
-                    blockTime: blockSize.time,
-                    blockHash: blockSize.hash,
-                    miner: blockSize.minerinfo,
-                    blockSizeListDid: blockSizeListDid,
-                    blockTimeDid: blockSizeDid.time,
-                    blockHashDid: blockSizeDid.hash,
-                    minerDid: blockSizeDid.minerinfo,
-                  });
-                }
-              }
-            }
-          );
-        }
-      }
-    }
-  );
-});
 
 function getNbOfTx(height) {
   return new Promise(function (resolve, reject) {
@@ -330,61 +250,6 @@ function getNbOfTxDid(height) {
     console.log(error);
   });
 }
-
-router.get("/nbOfTx", (req, res) => {
-  exec(
-    'curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' ',
-    { maxBuffer: 1024 * maxBufferSize },
-    async (err, stdout, stderr) => {
-      if (err) {
-        //some err occurred
-        console.error(err);
-      } else {
-        // the *entire* stdout and stderr (buffered)
-        let latestblockInfo = JSON.parse(stdout);
-        let latestblockHeight = latestblockInfo.result;
-
-        var nbOfTxList = [];
-        var counter = 0;
-        for (var i = latestblockHeight - 10; i < latestblockHeight; i++) {
-          counter++;
-          var nbOfTx = await getNbOfTx(i);
-          nbOfTxList.push(nbOfTx);
-        }
-        if (counter == 10) {
-          exec(
-            'curl http://User:Password@localhost:20606 -H "Content-Type: application/json" -d \'{"method": "getcurrentheight"}\' ',
-            { maxBuffer: 1024 * maxBufferSize },
-            async (err, stdout, stderr) => {
-              if (err) {
-                //some err occurred
-                console.error(err);
-              } else {
-                let latestblockInfoDid = JSON.parse(stdout);
-                let latestblockHeightDid = latestblockInfoDid.result;
-
-                var nbOfTxListDid = [];
-                var counter = 0;
-                for (
-                  var i = latestblockHeightDid - 10;
-                  i < latestblockHeightDid;
-                  i++
-                ) {
-                  counter++;
-                  var nbOfTxDid = await getNbOfTxDid(i);
-                  nbOfTxListDid.push(nbOfTxDid);
-                }
-                if (counter == 10) {
-                  res.json({ nbOfTxList, nbOfTxListDid });
-                }
-              }
-            }
-          );
-        }
-      }
-    }
-  );
-});
 
 router.post("/sendTx", (req, res) => {
   let amount = req.body.amount;
@@ -514,54 +379,6 @@ router.get("/checkInstallation", async (req, res) => {
   res.send({ configed: JSON.stringify(await checkFile(keyStorePath)) });
 });
 
-router.get("/serviceStatus", (req, res) => {
-  exec(
-    "pidof -zx ela",
-    { maxBuffer: 1024 * 500 },
-    async (err, stdout, stderr) => {
-      {
-        stdout == "" ? (elaRunning = false) : (elaRunning = true);
-      }
-      exec(
-        "pidof -zx did",
-        { maxBuffer: 1024 * 500 },
-        async (err, stdout, stderr) => {
-          {
-            stdout == "" ? (didRunning = false) : (didRunning = true);
-          }
-          // exec('pidof token', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
-          //   { stdout == "" ? tokenRunning = false : tokenRunning = true }
-          exec(
-            "pidof -zx ela-bootstrapd",
-            { maxBuffer: 1024 * 500 },
-            async (err, stdout, stderr) => {
-              {
-                stdout == ""
-                  ? (carrierRunning = false)
-                  : (carrierRunning = true);
-              }
-              exec(
-                "curl -s ipinfo.io/ip",
-                { maxBuffer: 1024 * 500 },
-                async (err, stdout, stderr) => {
-                  //   res.json({ elaRunning, didRunning, tokenRunning, carrierRunning, carrierIp: stdout.trim() })
-                  res.json({
-                    elaRunning,
-                    didRunning,
-                    carrierRunning,
-                    carrierIp: stdout.trim(),
-                  });
-                }
-              );
-            }
-          );
-          // });
-        }
-      );
-    }
-  );
-});
-
 router.post("/update", (req, res) => {
   let version = req.body.version;
   // create a tmp file to know that it's updating
@@ -585,154 +402,112 @@ router.get("/downloadWallet", function (req, res) {
   res.download(file);
 });
 
-const restartMainchain = (pwd) => {
-  return new Promise((resolve, reject) => {
-    try {
-      shell.exec(
-        "pidof -zx ela",
-        { maxBuffer: 1024 * maxBufferSize },
-        async (err, stdout, stderr) => {
-          console.log("restartMainchain", stdout);
+const restartMainchain = async (callback) => {
+  try {
+    console.log("restartMainchain");
 
-          shell.exec(
-            "kill " + stdout,
-            { maxBuffer: 1024 * maxBufferSize },
-            async (err, stdout, stderr) => {
-              console.log("restartMainchain", stdout);
+    await killProcess("ela");
 
-              const elaProcess = spawn(
-                `cd ${elaPath} ; echo ${pwd} | nohup ./ela > /dev/null 2>output &`,
-                { maxBuffer: 1024 * maxBufferSize, detached: true, shell: true }
-              );
+    await delay(1000);
 
-              elaProcess.stdout.on("data", (data) => {
-                console.log(`data: ${data}`);
-              });
+    const elaProcess = spawn(`nohup ./ela > /dev/null 2>output &`, {
+      maxBuffer: 1024 * maxBufferSize,
+      detached: true,
+      shell: true,
+      cwd: elaPath,
+    });
 
-              elaProcess.unref();
+    elaProcess.unref();
 
-              elaProcess.on("exit", (code, signal) => {
-                if (code === 0) {
-                  resolve({ sucess: true });
-                }
-              });
-            }
-          );
-        }
-      );
-    } catch (err) {
-      reject({ error: err, success: false });
-    }
-  });
+    elaProcess.stdout.on("data", (data) => {
+      console.log(`data: ${data}`);
+    });
+
+    elaProcess.stderr.on("data", (data) => {
+      console.log(`error: ${data}`);
+    });
+
+    elaProcess.on("exit", (code, signal) => {
+      if (!code) {
+        callback({ success: true });
+      } else callback({ success: false, error: signal });
+    });
+  } catch (err) {
+    callback({ success: false, error: err });
+  }
 };
 
-const restartDid = () => {
-  console.log("Restarting DID");
-  return new Promise((resolve, reject) => {
-    exec(
-      "pidof -zx did",
-      { maxBuffer: 1024 * maxBufferSize },
-      async (err, stdout, stderr) => {
-        exec(
-          "kill " + stdout,
-          { maxBuffer: 1024 * maxBufferSize },
-          async (err, stdout, stderr) => {
-            console.log("DIDpath", didPath + "/did");
-            shell.exec(
-              "cd " + didPath + "; nohup ./did > /dev/null 2>output &",
-              { maxBuffer: 1024 * maxBufferSize, cwd: didPath },
-              async (err, stdout, stderr) => {
-                resolve({ success: "ok" });
-              }
-            );
-          }
-        );
-      }
-    );
-  }).catch((error) => {
-    console.log(error);
-  });
+const restartDid = async (callback) => {
+  try {
+    console.log("Restarting DID");
+
+    await killProcess("did");
+
+    await delay(1000);
+
+    const didProcess = spawn(`nohup ./did > /dev/null 2>output &`, {
+      maxBuffer: 1024 * maxBufferSize,
+      detached: true,
+      shell: true,
+      cwd: didPath,
+    });
+
+    didProcess.unref();
+
+    didProcess.stdout.on("data", (data) => {
+      console.log(`data: ${data}`);
+    });
+
+    didProcess.on("exit", (code, signal) => {
+      if (!code) {
+        callback({ success: true });
+      } else callback({ success: false, error: signal });
+    });
+  } catch (err) {
+    callback({ success: false, error: err });
+  }
 };
 
-const runCarrier = () => {
-  console.log("Running Carrier Script");
+const restartCarrier = async (callback) => {
+  try {
+    await killProcess("ela-bootstrapd");
 
-  var prom = new Promise((resolve, reject) => {
-    // shell.cd("/home/elabox/supernode/carrier/")
-    exec(
-      "echo elabox | sudo -S ./ela-bootstrapd --config=bootstrapd.conf --foreground",
+    await delay(1000);
+
+    const carrierSpawn = spawn(
+      "./ela-bootstrapd --config=bootstrapd.conf --foreground",
       {
-        maxBuffer: 1024 * maxBufferSize * 10000,
+        maxBuffer: 1024 * 500 * 10000,
         detached: true,
+        shell: true,
         cwd: "/home/elabox/supernode/carrier/",
-      },
-
-      (err, stdout, stderr) => {
-        if (err) {
-          console.log("Failed CP", err);
-          // throw (err)
-        } else {
-          console.log("Success CP");
-          resolve(stdout.trim());
-        }
       }
     );
-  }).catch((error) => {
-    console.log(error);
-  });
+    carrierSpawn.unref();
 
-  return prom;
+    carrierSpawn.stdout.on("data", (data) => {
+      console.log(`${data}`);
+    });
+
+    carrierSpawn.on("exit", (code, signal) => {
+      if (!code) callback({ sucess: true });
+      else callback({ success: false, error: signal });
+    });
+  } catch (err) {
+    callback({ success: false, error: err });
+  }
 };
-
-const restartCarrier = () => {
-  return new Promise((resolve, reject) => {
-    console.log("Running Carrier Script");
-
-    const install = fork("carrier.js", { detached: true });
-    install.unref();
-
-    install.on("message", (code) => {
-      console.log(`Carrier message ${code}`);
-    });
-
-    install.on("close", (code) => {
-      console.log(`Carrier child process exited with code ${code}`);
-    });
-
-    install.on("error", (code) => {
-      console.log(`Carrier child process error with code ${code}`);
-    });
-    console.log("Spawned");
-    resolve({ success: "ok" });
-  }).catch((error) => {
-    console.log(error);
-  });
-};
-
-// setInterval(restartCarrier, 1000 * 5)
 
 router.post("/restartMainchain", async (req, res) => {
-  let pwd = req.body.pwd;
-  res.json(await restartMainchain(pwd));
+  await restartMainchain((resp) => res.json(resp));
 });
 
 router.post("/restartDid", async (req, res) => {
-  res.json(await restartDid());
+  await restartDid((resp) => res.json(resp));
 });
 
 router.post("/restartCarrier", async (req, res) => {
-  res.json(await restartCarrier());
-});
-
-router.post("/restartAll", async (req, res) => {
-  let pwd = req.body.pwd;
-  const results = await Promise.all([
-    restartMainchain(pwd),
-    restartDid(),
-    restartCarrier(),
-  ]);
-  console.log("RR", results);
-  res.json(results);
+  await restartCarrier((resp) => res.json(resp));
 });
 
 router.get("/getOnion", async (req, res) => {
