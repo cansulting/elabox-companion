@@ -9,6 +9,7 @@ const LatestBlock = types.model({
 
 export const Ela = types
   .model({
+    servicesRunning: types.optional(types.boolean, false),
     isRunning: types.maybeNull(types.boolean),
     blockCount: types.optional(types.number, 0),
     blockSizes: types.optional(types.array(types.number), []),
@@ -25,11 +26,25 @@ export const Ela = types
       }
     });
 
-    return { fetchData };
+    const restart = flow(function* () {
+      try {
+        self.restarting = true;
+        const response = yield API.restartMainChain();
+        console.log(response);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        self.restarting = false;
+      }
+    });
+
+    return { fetchData, restart };
   });
 
 export const Did = types
   .model({
+    servicesRunning: types.optional(types.boolean, false),
+    restarting: types.optional(types.boolean, false),
     isRunning: types.maybeNull(types.boolean),
     blockCount: types.optional(types.number, 0),
     blockSizes: types.optional(types.array(types.number), []),
@@ -46,13 +61,26 @@ export const Did = types
       }
     });
 
-    return { fetchData };
+    const restart = flow(function* () {
+      try {
+        self.restarting = true;
+        const response = yield API.restartDid();
+        console.log(response);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        self.restarting = false;
+      }
+    });
+
+    return { fetchData, restart };
   });
 
 export const Carrier = types
   .model({
     isRunning: types.maybeNull(types.boolean),
     carrierIP: "",
+    restarting: false,
   })
   .actions((self) => {
     const fetchData = flow(function* () {
@@ -64,7 +92,19 @@ export const Carrier = types
       }
     });
 
-    return { fetchData };
+    const restart = flow(function* () {
+      try {
+        self.restarting = true;
+        const response = yield API.restartCarrier();
+        console.log(response);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        self.restarting = false;
+      }
+    });
+
+    return { fetchData, restart };
   });
 
 const BlockChainStore = types.model({

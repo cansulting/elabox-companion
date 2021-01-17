@@ -52,41 +52,10 @@ class API {
     }).then((response) => response.json());
   };
 
-  latestBlock = () => {
-    return fetch(`http://${PUBLIC_URI}/latestblock`).then((response) =>
-      response.json()
-    );
-  };
-
-  blockSizes = () => {
-    return fetch(`http://${PUBLIC_URI}/blocksizes`).then((response) =>
-      response.json()
-    );
-  };
-
   serviceStatus = () => {
     return fetch(`http://${PUBLIC_URI}/serviceStatus`).then((response) =>
       response.json()
     );
-  };
-
-  nbOfTx = () => {
-    return fetch(`http://${PUBLIC_URI}/nbOfTx`).then((response) =>
-      response.json()
-    );
-  };
-
-  restartAllServices = (pwd) => {
-    return fetch(`http://${PUBLIC_URI}/restartAll`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        pwd: pwd,
-      }),
-    }).then((response) => response.json());
   };
 
   restartMainChain = (pwd) => {
@@ -96,9 +65,6 @@ class API {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        pwd: pwd,
-      }),
     }).then((response) => response.json());
   };
 

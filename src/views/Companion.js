@@ -5,30 +5,33 @@ import {
   Route,
   Link,
   Redirect,
-  useHistory,
-  useLocation
 } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-// import Wallet from './Wallet'
-// import Dashboard from './Dashboard'
-// import Settings from './Settings'
-import { Nav, Button, NavbarBrand, Media, Modal, ModalBody, ModalFooter, Input, ModalHeader, } from "reactstrap";
+
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  Input,
+  ModalHeader,
+} from "reactstrap";
 import Navbar from "./components/Navbar";
 import SideBar from "./components/Sidebar";
 import { useMediaQuery } from "react-responsive";
 
-import elaboxLogo from './images/logo-wht.png'
-import dashboardLogo from './images/dashboard_white.png'
-import walletLogo from './images/wallet_white.png'
-import settingsLogo from './images/settings_white.png'
 import backend from "../api/backend";
+import { observer } from "mobx-react";
+import RootStore from "../index";
 
-const loading = () => <div className="animated fadeIn pt-3 text-center">Loading...</div>;
+const loading = () => (
+  <div className="animated fadeIn pt-3 text-center">Loading...</div>
+);
 
-const Wallet = React.lazy(() => import('./Wallet'));
-const Settings = React.lazy(() => import('./Settings'));
-const Dashboard = React.lazy(() => import('./Dashboard'));
-const HelpCentre = React.lazy(() => import('./HelpCentre'));
+const Wallet = React.lazy(() => import("./Wallet"));
+const Settings = React.lazy(() => import("./Settings"));
+const Dashboard = React.lazy(() => import("./Dashboard"));
+const HelpCentre = React.lazy(() => import("./HelpCentre"));
 
 function Companion() {
   // const [isLoggedIn, setLoggedIn] = useState(false);
@@ -37,83 +40,72 @@ function Companion() {
 
   const [isLoggedIn, setLoggedIn] = useState(true);
   const [isOpen, setOpen] = useState(false);
-  const [servicesRunning, setServicesRunning] = useState(true);
-  const [pwd, setPwd] = useState("");
+  // const [servicesRunning, setServicesRunning] = useState(true);
+  // const [pwd, setPwd] = useState("");
 
   function logOut() {
-
     // setAuthTokens(null)
     // localStorage.clear()
     // console.log(localStorage)
-    localStorage.setItem('logedin', false)
-    setLoggedIn(false)
-    console.log(localStorage)
+    localStorage.setItem("logedin", false);
+    setLoggedIn(false);
+    console.log(localStorage);
     // console.log("Logging out")
-
   }
 
-  const checkServices = () => {
-    backend.serviceStatus().then(responseJson => {
+  // const checkServices = () => {
+  //   backend.serviceStatus().then((responseJson) => {
+  //     const { elaRunning, didRunning, carrierRunning } = responseJson;
+  //     console.log("checkServices elaRunning: ", elaRunning);
+  //     console.log("checkServices didRunning: ", didRunning);
+  //     console.log("checkServices carrierRunning: ", carrierRunning);
+  //     // setServicesRunning(elaRunning && carrierRunning && didRunning)
+  //     if (!didRunning) {
+  //       console.log("Restarting DID");
+  //       backend.restartDid();
+  //     }
+  //     if (!carrierRunning) {
+  //       console.log("Restarting Carrier");
+  //       backend.restartCarrier();
+  //     }
 
-      const { elaRunning, didRunning, carrierRunning } = responseJson
-      console.log("checkServices elaRunning: ", elaRunning)
-      console.log("checkServices didRunning: ", didRunning)
-      console.log("checkServices carrierRunning: ", carrierRunning)
-      // setServicesRunning(elaRunning && carrierRunning && didRunning)
-      if (!didRunning){
-        console.log("Restarting DID")
-        backend.restartDid()
-      }
-      if (!carrierRunning){
-        console.log("Restarting Carrier")
-        backend.restartCarrier()
-      }
+  //     // ask for the pwd only if ela is not running
+  //     setServicesRunning(elaRunning);
+  //   });
+  // };
 
-      // ask for the pwd only if ela is not running
-      setServicesRunning(elaRunning)
-
-    })
-  }
-
-  const restartServices = () => {
-    console.log("Restarting ela")
-    // restart ela
-    backend.restartMainChain(pwd).then(responseJson => {
-      checkServices()
-    })
-
-  }
-
+  // const restartServices = () => {
+  //   console.log("Restarting ela");
+  //   // restart ela
+  //   backend.restartMainChain(pwd).then((responseJson) => {
+  //     checkServices();
+  //   });
+  // };
 
   if (!isLoggedIn) {
     return <Redirect to="/login" />;
   }
-  else {
-    checkServices()
-
-
-
-  }
-
-
-
-
 
   // render() {
 
   return (
     <>
       <Router>
-        <div style={{ height: '100vh', backgroundColor: '#1E1E26', paddingTop: '80px', }}>
+        <div
+          style={{
+            height: "100vh",
+            backgroundColor: "#1E1E26",
+            paddingTop: "80px",
+          }}
+        >
           <Navbar logOut={logOut} onMenuClick={setOpen} />
-
-
           <SideBar
             isOpen={isOpen}
             onClose={() => {
               setOpen(false);
             }}
-          />          <React.Suspense fallback={loading()}>
+          />{" "}
+          <React.Suspense fallback={loading()}>
             <Switch>
               <Route path="/help">
                 <HelpCentre isMobile={isMobile} />
@@ -127,24 +119,39 @@ function Companion() {
               <Route path="*">
                 <Dashboard isMobile={isMobile} />
               </Route>
-
             </Switch>
           </React.Suspense>
         </div>
       </Router>
-      {<Modal isOpen={!servicesRunning}>
-        <ModalHeader>Restart Services</ModalHeader>
-        <ModalBody>
-          <center>
-            Your Elabox services are turned off. Enter your password to restart them.<br />
-            This process will take a few minutes<br /><br />
-          </center>
-          <Input type="password" id="pwd" name="pwd" placeholder="Enter ELA wallet password" required autofocus onChange={(e) => setPwd(e.target.value)} />
-        </ModalBody>
-        <ModalFooter>
-          <Button color="success" onClick={restartServices} >Restart</Button>
-        </ModalFooter>
-      </Modal>}
+      {/* {
+        <Modal isOpen={!servicesRunning}>
+          <ModalHeader>Restart Services</ModalHeader>
+          <ModalBody>
+            <center>
+              Your Elabox services are turned off. Enter your password to
+              restart them.
+              <br />
+              This process will take a few minutes
+              <br />
+              <br />
+            </center>
+            <Input
+              type="password"
+              id="pwd"
+              name="pwd"
+              placeholder="Enter ELA wallet password"
+              required
+              autofocus
+              onChange={(e) => setPwd(e.target.value)}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button color="success" onClick={}>
+              Restart
+            </Button>
+          </ModalFooter>
+        </Modal>
+      } */}
     </>
   );
   // }
@@ -181,4 +188,4 @@ function Companion() {
 //   );
 // }
 
-export default Companion;
+export default observer(Companion);

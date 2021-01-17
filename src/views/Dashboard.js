@@ -293,6 +293,7 @@ const Dashboard = ({ isMobile }) => {
               icon={mainchainLogo}
               color="success"
               variant="1"
+              initializing={!ela.servicesRunning}
             />
           ) : (
             <Widget02
@@ -372,6 +373,7 @@ const Dashboard = ({ isMobile }) => {
               icon={didLogo}
               color="success"
               variant="1"
+              initializing={!did.servicesRunning}
             />
           ) : (
             <Widget02

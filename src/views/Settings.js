@@ -22,6 +22,7 @@ import Widget05 from "./widgets/Widget05";
 
 import master from "../api/master";
 import backend from "../api/backend";
+import RootStore from "../store";
 
 class Settings extends Component {
   constructor(props) {
@@ -63,13 +64,12 @@ class Settings extends Component {
     this.setState({ mainchainRestartModal: false });
 
     backend
-      .restartMainChain(this.state.pwd)
+      .restartMainChain()
       .then((responseJson) => {
-        console.log(responseJson);
-        if (responseJson.ok == "ok") {
-          this.setState({ sentmodal: true });
+        if (responseJson.success) {
+          // RootStore.blockchain.ela.fetchData();
         } else {
-          this.setState({ errormodal: true });
+          RootStore.blockchain.ela.fetchData();
         }
       })
       .catch((error) => {
@@ -79,16 +79,15 @@ class Settings extends Component {
 
   restartDid = () => {
     // e.preventDefault();
-    this.setState({ mainchainRestartModal: false });
+    this.setState({ didRestartModal: false });
 
     backend
       .restartDid()
       .then((responseJson) => {
-        console.log(responseJson);
-        if (responseJson.ok == "ok") {
-          this.setState({ sentmodal: true });
+        if (responseJson.success) {
+          RootStore.blockchain.did.fetchData();
         } else {
-          this.setState({ errormodal: true });
+          // TODO : notify error with some modal
         }
       })
       .catch((error) => {
@@ -117,7 +116,7 @@ class Settings extends Component {
 
   restartCarrier = () => {
     // e.preventDefault();
-    this.setState({ mainchainRestartModal: false });
+    this.setState({ carrierRestartModal: false });
 
     backend
       .restartCarrier()
@@ -283,20 +282,12 @@ class Settings extends Component {
           <ModalHeader>Restart Mainchain</ModalHeader>
           <ModalBody>
             <center>
-              Enter your wallet password to restart the mainchain
+              You are about to restart the Mainchain
               <br />
-              This process will take a few minutes
+              This process will take a few hours
               <br />
               <br />
             </center>
-            <Input
-              type="password"
-              id="pwd"
-              name="pwd"
-              placeholder="Enter ELA wallet password"
-              required
-              onChange={(e) => this.handleChange(e)}
-            />
           </ModalBody>
           <ModalFooter>
             <Button color="success" onClick={this.restartMainchain}>
@@ -346,10 +337,10 @@ class Settings extends Component {
             {update ? (
               <center>A firmware update is available for the Elabox!</center>
             ) : (
-                <center>
-                  You are currently using the latest Elabox firmware!
-                </center>
-              )}
+              <center>
+                You are currently using the latest Elabox firmware!
+              </center>
+            )}
           </ModalBody>
           <ModalFooter>
             <Button color="success" onClick={this.closeCheckUpdateModal}>
@@ -582,9 +573,15 @@ class Settings extends Component {
               <CardBody>
                 You are currently running: <br />
                 <ul style={{ listStyleType: "none" }}>
-                  <li>Elabox <b>v {masterVersion}</b></li>
-                  <li>Elabox App <b>v {companionVersion}</b></li>
-                  <li>Elastos Node <b>v {binariesVersion}</b></li>
+                  <li>
+                    Elabox <b>v {masterVersion}</b>
+                  </li>
+                  <li>
+                    Elabox App <b>v {companionVersion}</b>
+                  </li>
+                  <li>
+                    Elastos Node <b>v {binariesVersion}</b>
+                  </li>
                 </ul>
               </CardBody>
             </Card>
