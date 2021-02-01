@@ -18,6 +18,7 @@ const { execShell, checkProcessingRunning, killProcess } = require("./helper");
 const isPortReachable = require("is-port-reachable");
 const { json } = require("body-parser");
 const delay = require("delay");
+const { restart } = require("nodemon");
 
 // initializes log watchers
 require("./watchers");
@@ -58,8 +59,6 @@ router.get("/synced", (req, res) => {
 });
 
 router.get("/ela", async (req, res) => {
-  // TODO: endfunction if isRunning:false
-
   const isRunning = await checkProcessingRunning("ela");
 
   const servicesRunning = await isPortReachable(20336, { host: "localhost" });
@@ -577,6 +576,18 @@ app.use("/", router);
 
 app.listen(port, function () {
   console.log("Runnning on " + port);
+
+  checkProcessingRunning("ela").then((running) => {
+    if (!running) restartMainchain((response) => console.log(response));
+  });
+
+  checkProcessingRunning("did").then((running) => {
+    if (!running) restartDid((response) => console.log(response));
+  });
+
+  checkProcessingRunning("ela-bootstrapd").then((running) => {
+    if (!running) restartCarrier((response) => console.log(response));
+  });
 });
 
 module.exports = app;
