@@ -55,10 +55,11 @@ function Companion() {
   const checkServices = () => {
     backend.serviceStatus().then(responseJson => {
 
-      const { elaRunning, didRunning, carrierRunning } = responseJson
+      const { elaRunning, didRunning, hiveRunning, carrierRunning } = responseJson
       console.log("checkServices elaRunning: ", elaRunning)
       console.log("checkServices didRunning: ", didRunning)
       console.log("checkServices carrierRunning: ", carrierRunning)
+      console.log("checkServices hiveRunning: ", hiveRunning)
       // setServicesRunning(elaRunning && carrierRunning && didRunning)
       if (!didRunning){
         console.log("Restarting DID")
@@ -67,6 +68,11 @@ function Companion() {
       if (!carrierRunning){
         console.log("Restarting Carrier")
         backend.restartCarrier()
+      }
+
+      if (!hiveRunning){
+        console.log("Restarting Hive")
+        backend.restartHive()
       }
 
       // ask for the pwd only if ela is not running

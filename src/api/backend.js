@@ -119,6 +119,17 @@ class API {
             .then(response => response.json())
     };
 
+    restartHive = () => {
+        return fetch(`http://${PUBLIC_URI}/restartHive`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+    };
+
 
     getBalance = (address) => {
         return fetch(`http://${PUBLIC_URI}/getBalance`, {

@@ -24,6 +24,7 @@ const router = express.Router();
 
 let elaPath = "/home/elabox/supernode/ela"
 let didPath = "/home/elabox/supernode/did"
+let hivePath = "home/elabox/supernode/hive"
 let keyStorePath = elaPath + "/keystore.dat"
 router.get('/', (req, res) => {
   res.send("HELLO WORLD");
@@ -326,13 +327,16 @@ router.get('/serviceStatus', (req, res) => {
       { stdout == "" ? didRunning = false : didRunning = true }
       // exec('pidof token', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
       //   { stdout == "" ? tokenRunning = false : tokenRunning = true }
+      exec('pidof -zx bash', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
+        { stdout == "" ? hiveRunning = false : hiveRunning = true }
         exec('pidof -zx ela-bootstrapd', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
           { stdout == "" ? carrierRunning = false : carrierRunning = true }
           exec('curl -s ipinfo.io/ip', { maxBuffer: 1024 * 500 }, async (err, stdout, stderr) => {
           //   res.json({ elaRunning, didRunning, tokenRunning, carrierRunning, carrierIp: stdout.trim() })
-            res.json({ elaRunning, didRunning, carrierRunning, carrierIp: stdout.trim() })
+            res.json({ elaRunning, didRunning, hiveRunning, carrierRunning, carrierIp: stdout.trim() })
           });
         });
+      });
       // });
     });
   });
@@ -449,6 +453,20 @@ const restartCarrier = () => {
 
 }
 
+const restartHive = () => {
+  console.log("Restarting Hive")
+  return new Promise((resolve, reject) => {
+    exec('pidof -zx bash', { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
+      exec('kill ' + stdout, { maxBuffer: 1024 * maxBufferSize }, async (err, stdout, stderr) => {
+        console.log("Hivepath", hivePath)
+        shell.exec('cd ' + hivePath + '; nohup ./run.sh &', { maxBuffer: 1024 * maxBufferSize, cwd: hivePath }, async (err, stdout, stderr) => {
+          resolve({ success: 'ok' })
+        });
+      });
+    });
+  }).catch(error => { console.log(error) })
+}
+
 
 
 
@@ -474,10 +492,15 @@ router.post('/restartCarrier', async (req, res) => {
 
 });
 
+router.post('/restartHive', async (req, res) => {
+  res.json(await restartHive())
+
+});
+
 
 router.post('/restartAll', async (req, res) => {
   let pwd = req.body.pwd
-  const results = await Promise.all([restartMainchain(pwd), restartDid(), restartCarrier()])
+  const results = await Promise.all([restartMainchain(pwd), restartDid(), restartCarrier(), restartHive()])
   console.log("RR", results)
   res.json(results)
 
