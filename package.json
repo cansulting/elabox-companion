@@ -1,0 +1,12 @@
+{
+  "name": "root",
+  "private": true,
+  "devDependencies": {
+    "lerna": "^3.22.1"
+  },
+  "scripts": {
+    "install": "lerna bootsrap --hoist",
+    "start:server": "lerna run start --scope={companion-server}",
+    "build:app": "lerna run build --scope={companion}"
+  }
+}
