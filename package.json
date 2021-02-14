@@ -6,7 +6,7 @@
   },
   "scripts": {
     "install": "lerna bootstrap --hoist",
-    "start:server": "lerna run start --scope={companion-server}",
-    "build:app": "lerna run build --scope={companion}"
+    "start:server": "lerna run start --scope companion-server",
+    "build:app": "lerna run build --scope companion"
   }
 }
