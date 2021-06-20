@@ -1,5 +1,5 @@
 import axios from "axios";
-const PUBLIC_URI = "192.168.18.71:3001";
+const PUBLIC_URI = window.location.hostname + ":3001";
 class API {
   constructor() {
     this.axios = axios.create({ baseURL: `http://${PUBLIC_URI}` });
