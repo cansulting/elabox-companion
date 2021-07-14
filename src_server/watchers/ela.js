@@ -1,7 +1,8 @@
 var chokidar = require("chokidar");
 var Tail = require("tail").Tail;
+const config = require("../config")
 
-const ELA_LOG_DIR = "/home/elabox/supernode/ela/elastos/logs/node";
+const ELA_LOG_DIR = config.ELA_DIR + "/elastos/logs/node";
 
 const REFCOVERING_START_PATTERN = /BLOCKCHAIN INITIALIZE STARTED/;
 const REFCOVERING_FINISH_PATTERN = /Start services/;

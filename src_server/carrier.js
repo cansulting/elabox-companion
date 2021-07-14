@@ -1,4 +1,5 @@
 var shell = require("shelljs");
+const config = require("./config");
 
 process
   .on("unhandledRejection", (reason, p) => {
@@ -14,7 +15,7 @@ shell.exec(
   {
     maxBuffer: 1024 * 500 * 10000,
     detached: true,
-    cwd: "/home/elabox/supernode/carrier/",
+    cwd: config.CARRIER_DIR + "/",
   },
 
   (err, stdout, stderr) => {

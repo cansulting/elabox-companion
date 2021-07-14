@@ -5,6 +5,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const fs = require("fs");
+const config = require("./config")
 var shell = require("shelljs");
 var errorHandler = require("errorhandler");
 
@@ -19,6 +20,7 @@ const isPortReachable = require("is-port-reachable");
 const { json } = require("body-parser");
 const delay = require("delay");
 const { restart } = require("nodemon");
+const config = require("./config")
 
 // initializes log watchers
 require("./watchers");
@@ -33,8 +35,8 @@ const maxBufferSize = 10000;
 // create a routes folder and add routes there
 const router = express.Router();
 
-let elaPath = "/home/elabox/supernode/ela";
-let didPath = "/home/elabox/supernode/did";
+let elaPath = config.ELA_DIR;
+let didPath = config.DID_DIR;
 let keyStorePath = elaPath + "/keystore.dat";
 router.get("/", (req, res) => {
   res.send("HELLO WORLD");
@@ -42,7 +44,7 @@ router.get("/", (req, res) => {
 
 router.get("/synced", (req, res) => {
   exec(
-    "ls /home/elabox/supernode/ela | grep keystore.dat",
+    "ls " + config.ELA_DIR + " | grep keystore.dat",
     { maxBuffer: 1024 * maxBufferSize },
     (err, stdout, stderr) => {
       if (err) {
@@ -479,7 +481,7 @@ const restartCarrier = async (callback) => {
         maxBuffer: 1024 * 500 * 10000,
         detached: true,
         shell: true,
-        cwd: "/home/elabox/supernode/carrier/",
+        cwd: config.CARRIER_DIR + "/",
       }
     );
     carrierSpawn.unref();
