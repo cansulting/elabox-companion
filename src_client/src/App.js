@@ -8,7 +8,7 @@ import {
 
 import backend from "./api/backend";
 
-import RootStore from "../src/store";
+import RootStore from "./store";
 
 const loading = () => (
   <div className="animated fadeIn pt-3 text-center">Loading...</div>
