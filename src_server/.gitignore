@@ -20,7 +20,6 @@ yarn-debug.log*
 yarn-error.log*
 elastos
 output
-package.json
 package-lock.json
 
 
