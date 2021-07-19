@@ -412,7 +412,7 @@ router.get("/downloadWallet", function (req, res) {
 
 const restartMainchain = async (callback) => {
   try {
-    console.log("restartMainchain")
+    console.log("Restarting mainchain")
 
     await killProcess("ela")
 
@@ -478,6 +478,7 @@ const restartDid = async (callback) => {
 
 const restartCarrier = async (callback) => {
   try {
+    console.log("Restarting Carrier")
     await killProcess("ela-bootstrapd")
 
     await delay(1000)
@@ -615,7 +616,7 @@ app.listen(port, function () {
   })
 
   checkProcessingRunning("ela-bootstrapd").then((running) => {
-    if (!running) restartCarrier((response) => console.log(response))
+    if (!running) restartCarrier((response) => console.log( response))
   })
 })
 

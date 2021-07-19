@@ -12,7 +12,7 @@ function init() {
     console.log(new Date(Date.now()))
     // run check_fan 
     try {
-      await fan()
+      await fan() 
       await reward()
     }
     catch (err) {
