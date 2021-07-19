@@ -6,6 +6,7 @@ const bodyParser = require("body-parser")
 const logger = require("morgan")
 const fs = require("fs")
 const config = require("./config")
+const utils = require("./utilities")
 var shell = require("shelljs")
 var errorHandler = require("errorhandler")
 
@@ -20,7 +21,6 @@ const isPortReachable = require("is-port-reachable")
 const { json } = require("body-parser")
 const delay = require("delay")
 const { restart } = require("nodemon")
-const config = require("./config")
 
 // initializes log watchers
 require("./watchers")
@@ -35,12 +35,19 @@ const maxBufferSize = 10000
 // create a routes folder and add routes there
 const router = express.Router()
 
+// for mailing
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(config.SENDGRID_API);
+
 let elaPath = config.ELA_DIR
 let didPath = config.DID_DIR
-let keyStorePath = elaPath + "/keystore.dat"
+let keyStorePath = config.KEYSTORE_PATH
 router.get("/", (req, res) => {
   res.send("HELLO WORLD")
 })
+
+// initialize utility functions
+utils()
 
 router.get("/synced", (req, res) => {
   exec(
@@ -519,6 +526,26 @@ router.get("/regenerateOnion", async (req, res) => {
   await regenerateTor()
   res.send({ onion: await getOnionAddress() })
 })
+
+// support mail
+router.post("/sendSupportEmail", async (req, res) => {
+  const msg = {
+    to: config.SUPPORT_EMAIL,
+    from: req.body.email.trim(),
+    subject: 'Elabox Support Needed ' + req.body.name,
+    text: 'Elabox Support is needed to\n Name: ' + req.body.name + "\nEmail: " + req.body.email + "\nProblem: " + req.body.problem,
+  };
+  sgMail.send(msg, (err, result) => {
+    if (err) {
+      res.status(500)
+    }
+    else {
+      res.send({ ok: true })
+    }
+
+  });
+})
+
 
 const checkFile = (file) => {
   var prom = new Promise((resolve, reject) => {

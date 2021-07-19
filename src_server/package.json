@@ -13,7 +13,11 @@
     "is-port-reachable": "^3.0.0",
     "morgan": "^1.10.0",
     "shelljs": "^0.8.4",
-    "tail": "^2.2.3"
+    "tail": "^2.2.3",
+    "@sendgrid/mail": "^7.2.3",
+    "axios": "^0.21.1",
+    "nodemon": "^2.0.2",
+    "onoff": "^6.0.0"
   },
   "scripts": {
     "start": "nodemon index.js"
