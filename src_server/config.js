@@ -10,5 +10,6 @@ module.exports = {
     CARRIER_DIR: binpath + "/ela.carrier",
     KEYSTORE_PATH : keyStorePath,
     SUPPORT_EMAIL: 'purujit.bansal9@gmail.com',
-    SENDGRID_API: "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"
+    SENDGRID_API: "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",
+    PORT: process.env.PORT || 3001
 }

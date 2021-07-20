@@ -1,9 +1,20 @@
 const { exec } = require('child_process');
+const fs = require('fs');
+const tempFile = "/sys/class/thermal/thermal_zone0/temp"
 let fanOut = null
+
+const isAvailable = () => {
+    return fs.existsSync(tempFile)
+}
 
 const fanControl = () => {
      return new Promise((resolve, reject) => {
          try {
+            if (!isAvailable()) {
+                reject("Temperature access not available")
+                return
+            }
+
             // init fan ios
             // set BCM 4 pin as 'output'
             if (!fanOut) {
@@ -11,7 +22,7 @@ const fanControl = () => {
                 fanOut = new Gpio('4', 'out');
             }
 
-            exec('cat /sys/class/thermal/thermal_zone0/temp', { maxBuffer: 1024 * 500 }, (err, stdout, stderr) => {
+            exec('cat ' + tempFile, { maxBuffer: 1024 * 500 }, (err, stdout, stderr) => {
                 console.log(stdout)
                 if (stdout > 70000) {
                     console.log("Starting fan")

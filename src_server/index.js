@@ -14,7 +14,6 @@ var errorHandler = require("errorhandler")
 const NODE_URL = "192.168.18.71"
 
 // define port number
-const port = process.env.PORT || 3001
 const { exec, fork, spawn } = require("child_process")
 const { execShell, checkProcessingRunning, killProcess } = require("./helper")
 const isPortReachable = require("is-port-reachable")
@@ -411,98 +410,65 @@ router.get("/downloadWallet", function (req, res) {
 })
 
 const restartMainchain = async (callback) => {
-  try {
     console.log("Restarting mainchain")
-
     await killProcess("ela")
-
-    await delay(1000)
-
-    const elaProcess = spawn(`nohup ./ela > /dev/null 2>output &`, {
+    await requestSpawn(`nohup ./ela > /dev/null 2>output &`, 
+      callback,
+    {
       maxBuffer: 1024 * maxBufferSize,
       detached: true,
       shell: true,
       cwd: elaPath,
     })
-
-    elaProcess.unref()
-
-    elaProcess.stdout.on("data", (data) => {
-      console.log(`data: ${data}`)
-    })
-
-    elaProcess.stderr.on("data", (data) => {
-      console.log(`error: ${data}`)
-    })
-
-    elaProcess.on("exit", (code, signal) => {
-      if (!code) {
-        callback({ success: true })
-      } else callback({ success: false, error: signal })
-    })
-  } catch (err) {
-    callback({ success: false, error: err })
-  }
 }
 
 const restartDid = async (callback) => {
-  try {
     console.log("Restarting DID")
-
     await killProcess("did")
-
-    await delay(1000)
-
-    const didProcess = spawn(`nohup ./did > /dev/null 2>output &`, {
+    await requestSpawn(`nohup ./did > /dev/null 2>output &`, 
+      callback,
+    {
       maxBuffer: 1024 * maxBufferSize,
       detached: true,
       shell: true,
       cwd: didPath,
     })
-
-    didProcess.unref()
-
-    didProcess.stdout.on("data", (data) => {
-      console.log(`data: ${data}`)
-    })
-
-    didProcess.on("exit", (code, signal) => {
-      if (!code) {
-        callback({ success: true })
-      } else callback({ success: false, error: signal })
-    })
-  } catch (err) {
-    callback({ success: false, error: err })
-  }
 }
 
 const restartCarrier = async (callback) => {
-  try {
-    console.log("Restarting Carrier")
-    await killProcess("ela-bootstrapd")
+  console.log("Restarting Carrier")
+  await killProcess("ela-bootstrapd")
+  await requestSpawn( 
+    "./ela-bootstrapd --config=bootstrapd.conf --foreground",
+    callback,
+    {
+      maxBuffer: 1024 * 500 * 10000,
+      detached: true,
+      shell: true,
+      cwd: config.CARRIER_DIR + "/",
+    }
+  )
+}
 
+const requestSpawn = async (command, callback, options) => {
+  try {
     await delay(1000)
 
-    const carrierSpawn = spawn(
-      "./ela-bootstrapd --config=bootstrapd.conf --foreground",
-      {
-        maxBuffer: 1024 * 500 * 10000,
-        detached: true,
-        shell: true,
-        cwd: config.CARRIER_DIR + "/",
-      }
-    )
+    const carrierSpawn = spawn(command, options)
     carrierSpawn.unref()
 
     carrierSpawn.stdout.on("data", (data) => {
       console.log(`${data}`)
     })
-
+    carrierSpawn.stderr.on("data", (data) => {
+      console.log(`ERROR ${data}`)
+    })
     carrierSpawn.on("exit", (code, signal) => {
       if (!code) callback({ sucess: true })
       else callback({ success: false, error: signal })
     })
   } catch (err) {
+    console.log(err)
     callback({ success: false, error: err })
   }
 }
@@ -604,8 +570,8 @@ const regenerateTor = () => {
 // define the router to use
 app.use("/", router)
 
-app.listen(port, function () {
-  console.log("Runnning on " + port)
+app.listen(config.PORT, function () {
+  console.log("Runnning on " + config.PORT)
 
   checkProcessingRunning("ela").then((running) => {
     if (!running) restartMainchain((response) => console.log(response))

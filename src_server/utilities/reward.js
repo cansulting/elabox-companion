@@ -32,6 +32,7 @@ const checkFile = (file) => {
 
 // ran every 10 minutes
 async function checkRewards() {
+  console.log("Checking rewards...")
   // check if wallet exist
   const keyExists = await checkFile(config.KEYSTORE_PATH)
   console.log(keyExists ? "Yes" : "No")
