@@ -1,5 +1,14 @@
 const express = require("express")
 const app = express()
+const server = require("http").createServer(app)
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET"],
+    allowedHeaders: ["my-custom-header"],
+    credentials: true,
+  },
+})
 // to allow cross-origin request
 const cors = require("cors")
 const bodyParser = require("body-parser")
@@ -9,7 +18,20 @@ const config = require("./config")
 const utils = require("./utilities")
 var shell = require("shelljs")
 var errorHandler = require("errorhandler")
-
+//ota 
+const path = require("path")
+const fsExtra = require("fs-extra")
+const StreamZip = require("node-stream-zip")
+const { Storage } = require("@google-cloud/storage")
+const storage = new Storage({ keyFilename: "./key.json" })
+const bucketName = "elabox"
+const cwd = path.join(__dirname, ".")
+const storagePath = path.join(cwd, "/storage")
+const packagesPath = path.join(storagePath, "package")
+const tempPath = path.join(storagePath, "tmp")
+const elaTmpPath = "/tmp/ela"
+const elaInstaller = path.join(elaTmpPath, "/main")
+//end ota
 // const NODE_URL = "localhost";
 const NODE_URL = "192.168.18.71"
 
@@ -512,7 +534,11 @@ router.post("/sendSupportEmail", async (req, res) => {
 
   });
 })
-
+//ota routes
+router.get("/update_version", processUpdateVersion)
+router.post("/version_info", processVersionCheck)
+router.get("/check_new_updates", processCheckNewUpdates)
+//end ota routes
 
 const checkFile = (file) => {
   var prom = new Promise((resolve, reject) => {
@@ -566,7 +592,147 @@ const regenerateTor = () => {
     console.log(error)
   })
 }
-
+///ota functions
+async function getCurrentVersion() {
+  return new Promise((resolve, reject) => {
+    fs.readdir(packagesPath, (err, files) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      resolve(files[0].replace(".ela", ""))
+    })
+  })
+}
+async function getVersionInfo(version, path) {
+  const elaPackageFile = `${path}/${version}.ela`
+  const infoFile = "info.json"
+  const zip = new StreamZip.async({
+    file: elaPackageFile,
+  })
+  const data = await zip.entryData(infoFile)
+  await zip.close()
+  const info = JSON.parse(data.toString())
+  return info
+}
+async function getLatestVersion() {
+  const [files] = await storage.bucket(bucketName).getFiles()
+  const latestVersionFileName = files[files.length - 1].name
+  return latestVersionFileName.replace("packages/", "").replace(".ela", "")
+}
+async function runInstaller(socketId, version) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await fsExtra.copy("/usr/ela/system/ela.installer/main", "/tmp/ela/main")
+      spawn("chmod", ["+x", elaInstaller])
+      const installerLogs = spawn(`${elaInstaller}`, [
+        `${tempPath}/${version}.ela`,
+      ])
+      installerLogs.stderr.setEncoding("utf8")
+      installerLogs.stderr.on("data", (chunk) => {
+        // data from standard output is here as buffers
+        io.to(socketId).emit("installer_logs", chunk)
+      })
+      installerLogs.on("close", () => {
+        resolve("done")
+      })
+    } catch (error) {
+      reject("error")
+    }
+  })
+}
+async function checkVersion() {
+  const currentVersion = await getCurrentVersion()
+  const latestVersion = await getLatestVersion()
+  const response = {
+    current: currentVersion,
+    latest: latestVersion,
+  }
+  if (currentVersion === latestVersion) {
+    return {
+      ...response,
+      new_update: false,
+    }
+  }
+  return {
+    ...response,
+    new_update: true,
+  }
+}
+async function downloadElaFile(destinationPath, version) {
+  const destinationFileName = path.join(destinationPath, `/${version}.ela`)
+  const options = {
+    destination: destinationFileName,
+  }
+  await storage
+    .bucket(bucketName)
+    .file(`packages/${version}.ela`)
+    .download(options)
+}
+async function processUpdateVersion(req, res) {
+  try {
+    const checkVersionResponse = await checkVersion()
+    const socketId = req.get("socketId")
+    if (checkVersionResponse.new_update) {
+      io.to(socketId).emit("update_percent", {
+        status: "running installer",
+        percent: 20,
+      })
+      await runInstaller(socketId, checkVersionResponse.latest)
+      io.to(socketId).emit("update_percent", {
+        status: "cleaning files",
+        percent: 40,
+      })
+      await fsExtra.emptyDir(elaTmpPath)
+      io.to(socketId).emit("update_percent", {
+        status: "cleaning files",
+        percent: 70,
+      })
+      await fsExtra.emptyDir(packagesPath)
+      io.to(socketId).emit("update_percent", {
+        status: "cleaning files",
+        percent: 80,
+      })
+      await downloadElaFile(packagesPath, checkVersionResponse.latest)
+      io.to(socketId).emit("update_percent", {
+        status: "update installed",
+        percent: 100,
+      })
+      res.send(true)
+      return
+    }
+    res.send(false)
+  } catch (error) {
+    res.status(500).send("Update error.")
+  }
+}
+async function processVersionCheck(req, res) {
+  try {
+    const { versionType } = req.body
+    let path = packagesPath
+    let version = await getCurrentVersion()
+    if (versionType === "latest") {
+      path = tempPath
+      await fsExtra.emptyDir(path)
+      version = await getLatestVersion()
+      await downloadElaFile(path, version)
+    }
+    res.send(JSON.stringify(await getVersionInfo(version, path)))
+  } catch (error) {
+    console.log(error)
+    res.status(500).send("Cannot get version info.")
+  }
+}
+async function processCheckNewUpdates(req, res) {
+  try {
+    const checkVersionResponse = await checkVersion()
+    res.send(JSON.stringify(checkVersionResponse))
+  } catch (error) {
+    console.log(error)
+    res.status(500).send("Update error.")
+  }
+}
+//ota functions end
 // define the router to use
 app.use("/", router)
 
