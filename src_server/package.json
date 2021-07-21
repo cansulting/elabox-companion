@@ -15,6 +15,7 @@
     "fs-extra": "^10.0.0",
     "is-port-reachable": "^3.0.0",
     "morgan": "^1.10.0",
+    "node-stream-zip": "^1.13.6",
     "nodemon": "^2.0.2",
     "onoff": "^6.0.0",
     "shelljs": "^0.8.4",
