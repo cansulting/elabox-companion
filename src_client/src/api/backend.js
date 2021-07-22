@@ -147,6 +147,32 @@ class API {
   regenerateOnion = () => {
     return axios.get(`http://${PUBLIC_URI}/regenerateOnion`);
   };
+  checkUpdates= async ()=>{
+    const { data } = await axios.get(`http://${PUBLIC_URI}/check_new_updates`);
+    return data;
+  };
+  processUpdate = async () => {
+    const { data } = await axios.get(`http://${PUBLIC_URI}/update_version`, {
+      headers: {
+        socketId: window.socket.id,
+      },
+    });
+    return data;
+  };
+  processDownloadPackage=async ()=>{
+    const { data } = await axios.get(`http://${PUBLIC_URI}/download_package`,{
+      headers: {
+        socketId: window.socket.id,
+      },
+    });
+    return data;    
+  }
+  getVersionDetails = async (versionType) => {
+    const { data } = await axios.post(`http://${PUBLIC_URI}/version_info`, {
+      versionType,
+    });
+    return data;
+  };
 }
 
 export default new API();

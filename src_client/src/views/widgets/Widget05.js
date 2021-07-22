@@ -13,6 +13,7 @@ const propTypes = {
 
 const defaultProps = {
   dataBox: () => ({ variant: 'facebook', friends: '-', feeds: '-' }),
+  disabledButton:false
 };
 
 class Widget05 extends Component {
@@ -66,7 +67,7 @@ class Widget05 extends Component {
                 :
                 <Row>   
                         <Col xs="12" style={{justifyContent:'center', display:'flex' }}>
-                            <Button onClick={this.props.onGreenPress} color="success">{vals[2]}</Button>
+                            <Button disabled={this.props.disabledButton} onClick={this.props.onGreenPress} color="success">{vals[2]}</Button>
                         </Col>
                     </Row>                  
                 }
