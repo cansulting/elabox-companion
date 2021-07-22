@@ -23,8 +23,6 @@ import Widget05 from "./widgets/Widget05";
 import master from "../api/master";
 import backend from "../api/backend";
 import RootStore from "../store";
-import Ota from "./components/Ota/"
-
 class Settings extends Component {
   constructor(props) {
     super(props);
@@ -592,21 +590,17 @@ class Settings extends Component {
 
         <Row style={{ marginTop: "20px" }}>
           <Col xs="12" sm="6" lg="4">
-            <Ota>
-              {parent=>{
-                return <Widget05
+          <Widget05
                 dataBox={() => ({
                   title: "Check for updates",
                   variant: "facebook",
                   Restart: "Check",
                   Resync: update ? "Update Now" : "",
                 })}
-                onGreenPress={parent.handleCheckUpdates}
-                disabledButton={parent.disabledButton}
+                onGreenPress={()=>{this.props.ota.handleCheckUpdates()}}
+                disabledButton={this.props.ota.disabledButton}
                 // onRedPress={this.openUpdateNowModal}
-              ></Widget05>              
-              }}
-            </Ota>
+              ></Widget05>                       
             {/* <Widget05
               dataBox={() => ({
                 title: "Check for updates",
@@ -660,5 +654,4 @@ class Settings extends Component {
     );
   }
 }
-
 export default Settings;

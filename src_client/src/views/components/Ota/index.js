@@ -18,7 +18,7 @@ export default function Ota({children}) {
       getDetails()
     }
   }, [status])
-  const handleCheckUpdates = async () => {
+  const handleCheckUpdates = async (dontShowNoModal=false) => {
     try {
       setStatus("checking")
       const checkUpdatesResponse = await API.checkUpdates()
@@ -26,6 +26,10 @@ export default function Ota({children}) {
       if (thereIsNewUpdates) {
         setStatus("new-download")
       } else {
+        if(dontShowNoModal){
+          resetStatus()          
+          return;
+        }
         setStatus("no-updates")
       }
     } catch (error) {
@@ -92,37 +96,11 @@ export default function Ota({children}) {
         latestVersionDetails={latestVersionDetails}
       />
       <div>
-        {/* <Button
-          color={`${
-            checkingUpdates || hasNewUpdates || noUpdates ? "dark" : "primary"
-          }`}
-          disabled={checkingUpdates || hasNewUpdates || noUpdates}
-          onClick={handleCheckUpdates}
-        >
-          {checkingUpdates || hasNewUpdates || noUpdates ? (
-            <Spinner size="sm" color="light" children={""} />
-          ) : (
-            "Check for updates"
-          )}
-        </Button> */}
         {children({
           handleCheckUpdates,
           disabledButton:checkingUpdates || hasNewUpdates || noUpdates,
           currentVersionDetails        
         })}
-        {/* {currentVersionDetails && (
-          <div style={{ marginTop: "1em" }}>
-            <p style={{ textAlign: "center" }}>
-              <span>Version: {currentVersionDetails?.version}</span>
-              <br />
-              <span>Build: {currentVersionDetails?.build}</span>
-              <br />
-            </p>
-            <p style={{ textAlign: "center" }}>
-              {currentVersionDetails?.description}
-            </p>
-          </div>
-        )} */}
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   BrowserRouter as Router,
   Switch,
@@ -23,7 +23,7 @@ import { useMediaQuery } from "react-responsive";
 import backend from "../api/backend";
 import { observer } from "mobx-react";
 import RootStore from "../index";
-
+import Ota from "./components/Ota"
 const loading = () => (
   <div className="animated fadeIn pt-3 text-center">Loading...</div>
 );
@@ -33,7 +33,7 @@ const Settings = React.lazy(() => import("./Settings"));
 const Dashboard = React.lazy(() => import("./Dashboard"));
 const HelpCentre = React.lazy(() => import("./HelpCentre"));
 
-function Companion() {
+function Companion({ota}) {
   // const [isLoggedIn, setLoggedIn] = useState(false);
   // const { setAuthTokens } = useAuth();
   const isMobile = useMediaQuery({ maxWidth: 767 });
@@ -42,7 +42,9 @@ function Companion() {
   const [isOpen, setOpen] = useState(false);
   // const [servicesRunning, setServicesRunning] = useState(true);
   // const [pwd, setPwd] = useState("");
-
+  useEffect(()=>{
+    ota.handleCheckUpdates(true)
+  },[])
   function logOut() {
     // setAuthTokens(null)
     // localStorage.clear()
@@ -81,7 +83,6 @@ function Companion() {
   //     checkServices();
   //   });
   // };
-
   if (!isLoggedIn) {
     return <Redirect to="/login" />;
   }
@@ -114,7 +115,7 @@ function Companion() {
                 <Wallet isMobile={isMobile} />
               </Route>
               <Route path="/settings">
-                <Settings isMobile={isMobile} />
+                <Settings isMobile={isMobile} ota={ota} />
               </Route>
               <Route path="*">
                 <Dashboard isMobile={isMobile} />
@@ -187,5 +188,7 @@ function Companion() {
 //     </div>
 //   );
 // }
-
-export default observer(Companion);
+const companionWithOta=(props)=>{
+  return <Ota>{ota=><Companion ota={ota} {...props}/>}</Ota>; 
+};
+export default observer(companionWithOta);
