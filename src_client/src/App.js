@@ -15,7 +15,6 @@ const loading = () => (
 const Auth = React.lazy(() => import("./views/Auth"));
 const Config = React.lazy(() => import("./views/Config"));
 const Download = React.lazy(() => import("./views/Download"));
-const Ota=React.lazy(() => import("./views/components/Ota/"));
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -62,9 +61,6 @@ class App extends React.Component {
             <div>
               <React.Suspense fallback={loading()}>
                 <Switch>
-                  <Route path="/ota">
-                    <Ota/>                  
-                  </Route>
                   <Route path="/config">
                     <Config />
                   </Route>
