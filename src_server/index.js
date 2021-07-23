@@ -683,13 +683,13 @@ async function processUpdateVersion(req, res) {
         status: "cleaning files",
         percent: 70,
       })
-      delay(1000)
+      await delay(1000)
       await fsExtra.emptyDir(packagePath)
       io.to(socketId).emit("process_percent", {
         status: "cleaning files",
         percent: 80,
       })
-      delay(1000)      
+      await delay(1000)      
       await downloadElaFile(packagePath, checkVersionResponse.latest)
       io.to(socketId).emit("process_percent", {
         status: "update installed",
@@ -738,28 +738,28 @@ async function processDownloadPackage(req,res){
       status: "downloading file",
       percent: 20,
     })    
-    delay(1000)
+    await delay(1000)
     io.to(socketId).emit("process_percent", {
       status: "downloading file",
       percent: 40,
     })            
-    delay(1000)
+    await delay(1000)
     io.to(socketId).emit("process_percent", {
       status: "downloading file",
       percent: 60,
     })                
-    delay(1000)
+    await delay(1000)
     io.to(socketId).emit("process_percent", {
       status: "downloading file",
       percent: 80,
-    })                    
+    })            
     await downloadElaFile(path, version,"box")
-    delay(1000)
+    await delay(1000)
     io.to(socketId).emit("process_percent", {
       status: "download complete",
       percent: 100,
     })           
-    delay(1000)  
+    await delay(1000)  
     //revert back
     io.to(socketId).emit("process_percent", {
       status: "download complete",
