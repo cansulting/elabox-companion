@@ -14,7 +14,7 @@
     "formik": "^2.1.5",
     "mobx": "^6.0.4",
     "mobx-react": "^7.0.5",
-    "mobx-state-tree": "^4.0.2",
+    "mobx-state-tree": "^5.0.2",
     "qrcode.react": "^1.0.0",
     "react": "^16.12.0",
     "react-chartjs-2": "^2.9.0",
