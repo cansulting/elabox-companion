@@ -597,7 +597,7 @@ async function getCurrentVersion() {
         reject(err)
         return
       }
-      resolve(files[0].replace(".ela", ""))
+      resolve(files[0].replace(".box", ""))
     })
   })  
 }
@@ -609,7 +609,7 @@ async function getVersionInfo(version, path) {
 async function getLatestVersion() {
   const [files] = await storage.bucket(bucketName).getFiles()
   const latestVersionFileName = files[files.length - 1].name
-  return latestVersionFileName.replace("packages/", "").replace(".ela", "").replace(".json", "")
+  return latestVersionFileName.replace("packages/", "").replace(".box", "").replace(".json", "")
 }
 async function runInstaller(socketId, version) {
   return new Promise(async (resolve, reject) => {
@@ -618,7 +618,7 @@ async function runInstaller(socketId, version) {
       spawn("chmod", ["+x", elaInstaller])
       //for testing
       const installerLogs = spawn(`/var/tmp/packageinstaller`, [
-        `${tempPath}/${version}.ela`,
+        `${tempPath}/${version}.box`,
       ])      
       // const installerLogs = spawn(`${elaInstaller}`, [
       //   `${tempPath}/${version}.ela`,
@@ -654,7 +654,7 @@ async function checkVersion() {
     new_update: true,
   }
 }
-async function downloadElaFile(destinationPath, version,extension="ela") {
+async function downloadElaFile(destinationPath, version,extension="box") {
   const destinationFileName = path.join(destinationPath, `/${version}.${extension}`)
   const options = {
     destination: destinationFileName,
@@ -753,7 +753,7 @@ async function processDownloadPackage(req,res){
       status: "downloading file",
       percent: 80,
     })                    
-    await downloadElaFile(path, version,"ela")
+    await downloadElaFile(path, version,"box")
     delay(1000)
     io.to(socketId).emit("process_percent", {
       status: "download complete",
