@@ -117,7 +117,7 @@ export default function SideBar({ updatesCount,isOpen, onClose }) {
           </li>
           <li>
             <div className="sidebarMenu">
-              <Link to="/updates" style={{ textDecoration: 'none', color: 'white', fontSize: '18px' }}><span style={{ paddingRight: "10px" }}><Icon.Info height={30} width={30} /></span>Updates<Badge color="danger" style={{marginLeft:5}}>{updatesCount}</Badge></Link>
+              <Link to="/updates" style={{ textDecoration: 'none', color: 'white', fontSize: '18px' }}><span style={{ paddingRight: "10px" }}><Icon.Info height={30} width={30} /></span>Updates<Badge color="danger" style={{marginLeft:8}}>{updatesCount}</Badge></Link>
             </div>
           </li>          
           <li>

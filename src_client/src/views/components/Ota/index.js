@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react"
 import API from "../../../api/backend"
 // import NoUpdatesModal from "./modals/updates/no"
 // import NewUpdatesModal from "./modals/updates/yes"
-export default function Ota({children}) {
+export default function Ota({ children }) {
   const [status, setStatus] = useState("idle")
   const [currentVersionDetails, setCurrentVersionDetails] = useState("")
   const [latestVersionDetails, setLatestVersionDetails] = useState("")
-  const [updatesCount,setUpdatesCount]=useState(0)
+  const [updatesCount, setUpdatesCount] = useState(0)
+  const [progress, setProgress] = useState(0)
+  const [installerLogs, setInstallerLogs] = useState("")
+  const socket = window.socket
   useEffect(() => {
     const getDetails = async () => {
       const currentVersionDetails = await API.getVersionDetails("current")
@@ -18,7 +21,16 @@ export default function Ota({children}) {
       getDetails()
     }
   }, [status])
-  const handleCheckUpdates = async (dontShowNoModal=false) => {
+  useEffect(() => {
+    if (!socket) return
+    socket.on("installer_logs", (data) => {
+      setInstallerLogs((prevInstallerLog) => `${prevInstallerLog} \n ${data}`)
+    })
+    socket.on("process_percent", (data) => {
+      setProgress(data)
+    })
+  }, [socket])
+  const handleCheckUpdates = async (dontShowNoModal = false) => {
     try {
       setStatus("checking")
       const checkUpdatesResponse = await API.checkUpdates()
@@ -27,9 +39,9 @@ export default function Ota({children}) {
         setUpdatesCount(checkUpdatesResponse.count)
         setStatus("new-download")
       } else {
-        if(dontShowNoModal){
-          resetStatus()          
-          return;
+        if (dontShowNoModal) {
+          resetStatus()
+          return
         }
         setStatus("no-updates")
       }
@@ -53,15 +65,14 @@ export default function Ota({children}) {
       setStatus("not-updated")
     }
   }
-  const handleDownloadPackage=async ()=>{
-    try{
+  const handleDownloadPackage = async () => {
+    try {
       setStatus("downloading")
-      const isDownloaded = await API.processDownloadPackage()     
-      if(isDownloaded){
-        setStatus("new-updates")        
-      } 
-    }
-    catch(error){
+      const isDownloaded = await API.processDownloadPackage()
+      if (isDownloaded) {
+        setStatus("new-updates")
+      }
+    } catch (error) {
       resetStatus()
     }
   }
@@ -72,8 +83,10 @@ export default function Ota({children}) {
   const hasNewUpdates = status === "new-updates"
   const notUpdated = status === "not-updated"
   const checkingUpdates = status === "checking"
-  const hasNewDownload=status==="new-download"
-  const isDownloading=status==="downloading"
+  const hasNewDownload = status === "new-download"
+  const isDownloading = status === "downloading"
+  const isProcessingData = isDownloading || isUpdating
+  const disabledButton = isDownloading || isUpdating
   // const showNewUpdatesModal =
   //   hasNewUpdates || isUpdating || isUpdated || notUpdated || hasNewDownload || isDownloading
   // const showNoUpdatesModal = noUpdates
@@ -98,12 +111,24 @@ export default function Ota({children}) {
       /> */}
       <div>
         {children({
-          handleCheckUpdates,
-          disabledButton:checkingUpdates || hasNewUpdates || noUpdates,
+          disabledButton,
+          isProcessingData,
           hasNewUpdates,
+          isUpdating,
+          isUpdated,
+          notUpdated,
+          hasNewDownload,
+          checkingUpdates,
+          isDownloading,
           updatesCount,
           currentVersionDetails,
-          latestVersionDetails                
+          latestVersionDetails,
+          progress,
+          installerLogs,
+          noUpdates,
+          handleCheckUpdates,
+          handleUpdates,
+          handleDownloadPackage,
         })}
       </div>
     </div>
