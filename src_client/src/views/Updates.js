@@ -11,7 +11,6 @@ import {
 } from "reactstrap"
 export default function Updates({ isMobile, ota }) {
   const {
-    currentVersionDetails,
     latestVersionDetails,
     hasNewUpdates,
     hasNewDownload,
@@ -25,6 +24,13 @@ export default function Updates({ isMobile, ota }) {
   let body = ""
   let btnLabel = ""
   let headerLabel = ""
+  const showNewDownload =
+    hasNewDownload ||
+    hasNewUpdates ||
+    isDownloading ||
+    isUpdating ||
+    isUpdated ||
+    notUpdated
   if (hasNewDownload) {
     body = (
       <div>
@@ -33,7 +39,7 @@ export default function Updates({ isMobile, ota }) {
         <p>{latestVersionDetails.description}</p>
       </div>
     )
-    headerLabel = "New download"
+    headerLabel = "New Update available"
     btnLabel = "Download"
   } else if (isProcessingData) {
     body = (
@@ -56,7 +62,7 @@ export default function Updates({ isMobile, ota }) {
         <p>{latestVersionDetails.description}</p>
       </div>
     )
-    headerLabel = "New update"
+    headerLabel = "Restart now"
     btnLabel = "Update"
   } else if (isUpdated) {
     body = (
@@ -97,7 +103,7 @@ export default function Updates({ isMobile, ota }) {
       }}
       className="animated fadeIn w3-container"
     >
-      <Row>
+      {/* <Row>
         <Col>
           <Card
             style={{
@@ -115,34 +121,28 @@ export default function Updates({ isMobile, ota }) {
             </CardBody>
           </Card>
         </Col>
-      </Row>
-      {(hasNewDownload ||
-        hasNewUpdates ||
-        isDownloading ||
-        isUpdating ||
-        isUpdated ||
-        notUpdated) && (
-        <Row>
-          <Col>
-            <Card
-              style={{
-                backgroundColor: "#272A3D",
-                color: "white",
-                fontSize: "16px",
-                marginBottom: "20px",
-              }}
-            >
-              <CardHeader>{headerLabel}</CardHeader>
-              <CardBody>
+      </Row> */}
+      <Row>
+        <Col>
+          <Card
+            style={{
+              backgroundColor: "#272A3D",
+              color: "white",
+              fontSize: "16px",
+              marginBottom: "20px",
+            }}
+          >
+            <CardHeader>{headerLabel}</CardHeader>
+            <CardBody>
+              {showNewDownload ? (
                 <Row>
                   <Col>{body}</Col>
                   {!isProcessingData && (
                     <Col
                       className="d-flex justify-content-center flex-column"
-                      xs="1"
+                      xs="2"
                     >
                       <Button
-                        style={{ fontSize: 10 }}
                         color="success"
                         onClick={() => {
                           if (hasNewDownload) {
@@ -160,11 +160,13 @@ export default function Updates({ isMobile, ota }) {
                     </Col>
                   )}
                 </Row>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      )}
+              ) : (
+                <h2 className="text-center">No updates</h2>
+              )}
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
     </div>
   )
 }

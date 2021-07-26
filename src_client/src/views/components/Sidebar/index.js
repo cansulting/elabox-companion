@@ -1,17 +1,16 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import * as Icon from 'react-feather';
-import { useMediaQuery } from "react-responsive";
-import {Badge} from "reactstrap"
+import React from "react"
+import { Link } from "react-router-dom"
+import * as Icon from "react-feather"
+import { useMediaQuery } from "react-responsive"
+import { Badge } from "reactstrap"
 
 // import elaboxLogo from "./images/logo-wht.png";
-import dashboardLogo from "../../images/dashboard_white.png";
-import walletLogo from "../../images/wallet_white.png";
-import settingsLogo from "../../images/settings_white.png";
+import dashboardLogo from "../../images/dashboard_white.png"
+import walletLogo from "../../images/wallet_white.png"
+import settingsLogo from "../../images/settings_white.png"
 
-
-export default function SideBar({ updatesCount,isOpen, onClose }) {
-  const isMobile = useMediaQuery({ maxWidth: 767 });
+export default function SideBar({ updatesCount, isOpen, onClose }) {
+  const isMobile = useMediaQuery({ maxWidth: 767 })
 
   return (
     <div
@@ -26,11 +25,11 @@ export default function SideBar({ updatesCount,isOpen, onClose }) {
         ...(isMobile && { display: "none" }),
         ...(isMobile &&
           isOpen && {
-          display: "block",
-          zIndex: 1,
-          width: "100%",
-          backgroundColor: "rgb(0, 0, 0, 0.3)",
-        }),
+            display: "block",
+            zIndex: 1,
+            width: "100%",
+            backgroundColor: "rgb(0, 0, 0, 0.3)",
+          }),
       }}
       onClick={isMobile && onClose}
     >
@@ -117,15 +116,45 @@ export default function SideBar({ updatesCount,isOpen, onClose }) {
           </li>
           <li>
             <div className="sidebarMenu">
-              <Link to="/updates" style={{ textDecoration: 'none', color: 'white', fontSize: '18px' }}><span style={{ paddingRight: "10px" }}><Icon.Info height={30} width={30} /></span>Updates<Badge color="danger" style={{marginLeft:8}}>{updatesCount}</Badge></Link>
+              <Link
+                to="/updates"
+                style={{
+                  textDecoration: "none",
+                  color: "white",
+                  fontSize: "18px",
+                }}
+              >
+                <span style={{ paddingRight: "10px" }}>
+                  <Icon.Info height={30} width={30} />
+                </span>
+                Updates
+                {updatesCount > 0 && (
+                  <Badge color="danger" style={{ marginLeft: 8 }}>
+                    {updatesCount}
+                  </Badge>
+                )}
+              </Link>
             </div>
-          </li>          
+          </li>
           <li>
             <div className="sidebarMenu">
-              <Link to="/help" style={{ textDecoration: 'none', color: 'white', fontSize: '18px' }}><span style={{ paddingRight: "10px" }}><Icon.HelpCircle height={30} width={30} /></span>Help Center</Link>
+              <Link
+                to="/help"
+                style={{
+                  textDecoration: "none",
+                  color: "white",
+                  fontSize: "18px",
+                }}
+              >
+                <span style={{ paddingRight: "10px" }}>
+                  <Icon.HelpCircle height={30} width={30} />
+                </span>
+                Help Center
+              </Link>
             </div>
-          </li>        </ul>
+          </li>{" "}
+        </ul>
       </div>
     </div>
-  );
+  )
 }

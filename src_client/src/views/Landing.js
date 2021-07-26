@@ -1,8 +1,9 @@
 import React, { useRef, useEffect } from "react"
+import { Progress } from "reactstrap"
 import ElaboxLogo from "./images/logo-circle-transparent.png"
 export default function Landing({ ota }) {
   const installerEndRef = useRef(null)
-  const { installerLogs, isProcessingData } = ota
+  const { installerLogs, isProcessingData, progress } = ota
   useEffect(() => {
     if (installerEndRef.current) {
       installerEndRef.current.scrollIntoView()
@@ -25,7 +26,15 @@ export default function Landing({ ota }) {
       }}
     >
       <img src={ElaboxLogo} />
-      <div
+      <Progress
+        style={{ height: "50px" }}
+        animated
+        color="info"
+        value={progress.percent}
+      >
+        {progress.status}
+      </Progress>
+      {/* <div
         style={{
           marginTop: 10,
           padding: 10,
@@ -37,7 +46,7 @@ export default function Landing({ ota }) {
       >
         {installerLogs}
         <AlwaysScrollToBottom />
-      </div>
+      </div> */}
     </div>
   )
 }
