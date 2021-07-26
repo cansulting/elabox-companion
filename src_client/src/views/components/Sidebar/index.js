@@ -1,15 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import * as Icon from 'react-feather';
+import { useMediaQuery } from "react-responsive";
+import {Badge} from "reactstrap"
 
 // import elaboxLogo from "./images/logo-wht.png";
 import dashboardLogo from "../../images/dashboard_white.png";
 import walletLogo from "../../images/wallet_white.png";
 import settingsLogo from "../../images/settings_white.png";
 
-import { useMediaQuery } from "react-responsive";
 
-export default function SideBar({ isOpen, onClose }) {
+export default function SideBar({ updatesCount,isOpen, onClose }) {
   const isMobile = useMediaQuery({ maxWidth: 767 });
 
   return (
@@ -114,6 +115,11 @@ export default function SideBar({ isOpen, onClose }) {
               </Link>
             </div>
           </li>
+          <li>
+            <div className="sidebarMenu">
+              <Link to="/updates" style={{ textDecoration: 'none', color: 'white', fontSize: '18px' }}><span style={{ paddingRight: "10px" }}><Icon.Info height={30} width={30} /></span>Updates<Badge color="danger" style={{marginLeft:5}}>{updatesCount}</Badge></Link>
+            </div>
+          </li>          
           <li>
             <div className="sidebarMenu">
               <Link to="/help" style={{ textDecoration: 'none', color: 'white', fontSize: '18px' }}><span style={{ paddingRight: "10px" }}><Icon.HelpCircle height={30} width={30} /></span>Help Center</Link>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react"
-import { Button, Spinner } from "reactstrap"
 import API from "../../../api/backend"
-import NoUpdatesModal from "./modals/updates/no"
-import NewUpdatesModal from "./modals/updates/yes"
+// import NoUpdatesModal from "./modals/updates/no"
+// import NewUpdatesModal from "./modals/updates/yes"
 export default function Ota({children}) {
   const [status, setStatus] = useState("idle")
   const [currentVersionDetails, setCurrentVersionDetails] = useState("")
   const [latestVersionDetails, setLatestVersionDetails] = useState("")
+  const [updatesCount,setUpdatesCount]=useState(0)
   useEffect(() => {
     const getDetails = async () => {
       const currentVersionDetails = await API.getVersionDetails("current")
@@ -24,6 +24,7 @@ export default function Ota({children}) {
       const checkUpdatesResponse = await API.checkUpdates()
       const thereIsNewUpdates = checkUpdatesResponse.new_update
       if (thereIsNewUpdates) {
+        setUpdatesCount(checkUpdatesResponse.count)
         setStatus("new-download")
       } else {
         if(dontShowNoModal){
@@ -73,16 +74,16 @@ export default function Ota({children}) {
   const checkingUpdates = status === "checking"
   const hasNewDownload=status==="new-download"
   const isDownloading=status==="downloading"
-  const showNewUpdatesModal =
-    hasNewUpdates || isUpdating || isUpdated || notUpdated || hasNewDownload || isDownloading
-  const showNoUpdatesModal = noUpdates
+  // const showNewUpdatesModal =
+  //   hasNewUpdates || isUpdating || isUpdated || notUpdated || hasNewDownload || isDownloading
+  // const showNoUpdatesModal = noUpdates
   if (isLoading) {
     return <p>Loading...</p>
   }
   return (
     <div>
-      <NoUpdatesModal show={showNoUpdatesModal} resetStatus={resetStatus} />
-      <NewUpdatesModal
+      {/* <NoUpdatesModal show={showNoUpdatesModal} resetStatus={resetStatus} /> */}
+      {/* <NewUpdatesModal
         show={showNewUpdatesModal}
         isUpdating={isUpdating}
         isUpdated={isUpdated}
@@ -94,12 +95,15 @@ export default function Ota({children}) {
         processDownloadPackage={handleDownloadPackage}
         resetStatus={resetStatus}
         latestVersionDetails={latestVersionDetails}
-      />
+      /> */}
       <div>
         {children({
           handleCheckUpdates,
           disabledButton:checkingUpdates || hasNewUpdates || noUpdates,
-          currentVersionDetails        
+          hasNewUpdates,
+          updatesCount,
+          currentVersionDetails,
+          latestVersionDetails                
         })}
       </div>
     </div>

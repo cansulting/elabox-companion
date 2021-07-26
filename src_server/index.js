@@ -647,11 +647,13 @@ async function checkVersion() {
     return {
       ...response,
       new_update: false,
+      count:0
     }
   }
   return {
     ...response,
     new_update: true,
+    count:1    
   }
 }
 async function downloadElaFile(destinationPath, version,extension="box") {
