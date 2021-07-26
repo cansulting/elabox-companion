@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"
+import React from "react"
 import {
   Row,
   Col,
@@ -10,7 +10,6 @@ import {
   Spinner,
 } from "reactstrap"
 export default function Updates({ isMobile, ota }) {
-  const installerEndRef = useRef(null)
   const {
     currentVersionDetails,
     latestVersionDetails,
@@ -22,16 +21,7 @@ export default function Updates({ isMobile, ota }) {
     isUpdating,
     isDownloading,
     progress,
-    installerLogs,
   } = ota
-  const showInstallerLogs =
-    (isUpdating || isDownloading || isUpdated || notUpdated) &&
-    installerLogs.length > 0
-  useEffect(() => {
-    if (installerEndRef.current) {
-      installerEndRef.current.scrollIntoView()
-    }
-  }, [installerLogs])
   let body = ""
   let btnLabel = ""
   let headerLabel = ""
@@ -47,31 +37,14 @@ export default function Updates({ isMobile, ota }) {
     btnLabel = "Download"
   } else if (isProcessingData) {
     body = (
-      <>
-        <Progress
-          animated
-          color="info"
-          value={progress.percent}
-          style={{ height: 20 }}
-        >
-          {progress.status}
-        </Progress>
-        {showInstallerLogs && (
-          <div
-            style={{
-              marginTop: 10,
-              padding: 10,
-              maxHeight: 150,
-              backgroundColor: "grey",
-              overflow: "auto",
-            }}
-            ref={installerEndRef}
-          >
-            {installerLogs}
-            <AlwaysScrollToBottom />
-          </div>
-        )}
-      </>
+      <Progress
+        style={{ height: "50px" }}
+        animated
+        color="info"
+        value={progress.percent}
+      >
+        {progress.status}
+      </Progress>
     )
     headerLabel = "Processing...."
     btnLabel = <Spinner size="sm" color="light" children={""} />
@@ -87,7 +60,12 @@ export default function Updates({ isMobile, ota }) {
     btnLabel = "Update"
   } else if (isUpdated) {
     body = (
-      <Progress animated color="success" value={progress.percent}>
+      <Progress
+        style={{ height: "50px" }}
+        animated
+        color="success"
+        value={progress.percent}
+      >
         {progress.status}
       </Progress>
     )
@@ -95,7 +73,12 @@ export default function Updates({ isMobile, ota }) {
     btnLabel = "Ok"
   } else if (notUpdated) {
     body = (
-      <Progress animated color="danger" value={progress.percent}>
+      <Progress
+        style={{ height: "50px" }}
+        animated
+        color="danger"
+        value={progress.percent}
+      >
         {progress.status}
       </Progress>
     )
@@ -152,27 +135,30 @@ export default function Updates({ isMobile, ota }) {
               <CardHeader>{headerLabel}</CardHeader>
               <CardBody>
                 <Row>
-                  <Col lg="12">{body}</Col>
-                </Row>
-                <Row style={{ marginTop: "20px" }}>
-                  <Col lg="12">
-                    <Button
-                      className="float-right"
-                      color="success"
-                      onClick={() => {
-                        if (hasNewDownload) {
-                          ota.handleDownloadPackage()
-                        } else if (hasNewUpdates) {
-                          ota.handleUpdates()
-                        } else if (isUpdated) {
-                          window.location.reload()
-                        }
-                      }}
-                      disabled={ota.disabledButton}
+                  <Col>{body}</Col>
+                  {!isProcessingData && (
+                    <Col
+                      className="d-flex justify-content-center flex-column"
+                      xs="1"
                     >
-                      {btnLabel}
-                    </Button>
-                  </Col>
+                      <Button
+                        style={{ fontSize: 10 }}
+                        color="success"
+                        onClick={() => {
+                          if (hasNewDownload) {
+                            ota.handleDownloadPackage()
+                          } else if (hasNewUpdates) {
+                            ota.handleUpdates()
+                          } else if (isUpdated) {
+                            window.location.reload()
+                          }
+                        }}
+                        disabled={ota.disabledButton}
+                      >
+                        {btnLabel}
+                      </Button>
+                    </Col>
+                  )}
                 </Row>
               </CardBody>
             </Card>
@@ -181,10 +167,4 @@ export default function Updates({ isMobile, ota }) {
       )}
     </div>
   )
-}
-
-const AlwaysScrollToBottom = () => {
-  const elementRef = useRef()
-  useEffect(() => elementRef.current.scrollIntoView())
-  return <div ref={elementRef} />
 }
