@@ -30,7 +30,7 @@ function Companion({ ota }) {
   // const [servicesRunning, setServicesRunning] = useState(true);
   // const [pwd, setPwd] = useState("");
   useEffect(() => {
-    ota.handleCheckUpdates(true)
+    ota.handleCheckUpdates()
   }, [])
   function logOut() {
     // setAuthTokens(null)

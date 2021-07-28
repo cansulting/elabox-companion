@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React from "react"
 import {
   BrowserRouter as Router,
   Switch,
@@ -14,23 +14,6 @@ const Landing = React.lazy(() => import("./Landing"))
 const Login = React.lazy(() => import("./Login"))
 
 function Auth({ ota }) {
-  // useEffect(() => {
-  //   // Your code here
-  //   fetch("http://elabox.local:3001/checkInstallation")
-  //       .then(response => response.json())
-  //       .then(responseJson => {
-  //         localStorage.setItem('isconfiged', responseJson.stdout.trim())
-  //         console.log("hhhhh")
-  //         return (
-  //           <Redirect
-  //             to={{
-  //               pathname: "/config1"
-  //             }}
-  //           />
-  //         )
-  //       })
-  // }, []);
-
   return (
     <Router>
       <div>
@@ -40,7 +23,11 @@ function Auth({ ota }) {
               <Login />
             </Route>
             <PrivateRoute path="/">
-              {ota.isUpdating ? <Landing ota={ota} /> : <Companion ota={ota} />}
+              {ota.isUpdating || ota.isUpdated ? (
+                <Landing ota={ota} />
+              ) : (
+                <Companion ota={ota} />
+              )}
             </PrivateRoute>
           </Switch>
         </React.Suspense>

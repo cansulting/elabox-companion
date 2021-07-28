@@ -62,8 +62,8 @@ export default function Updates({ isMobile, ota }) {
         <p>{latestVersionDetails.description}</p>
       </div>
     )
-    headerLabel = "Restart now"
-    btnLabel = "Update"
+    headerLabel = "New Update"
+    btnLabel = "Restart now"
   } else if (isUpdated) {
     body = (
       <Progress

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react"
 import API from "../../../api/backend"
-// import NoUpdatesModal from "./modals/updates/no"
-// import NewUpdatesModal from "./modals/updates/yes"
 export default function Ota({ children }) {
   const [status, setStatus] = useState("idle")
   const [currentVersionDetails, setCurrentVersionDetails] = useState("")
@@ -30,7 +28,7 @@ export default function Ota({ children }) {
       setProgress(data)
     })
   }, [socket])
-  const handleCheckUpdates = async (dontShowNoModal = false) => {
+  const handleCheckUpdates = async () => {
     try {
       setStatus("checking")
       const checkUpdatesResponse = await API.checkUpdates()
@@ -39,10 +37,6 @@ export default function Ota({ children }) {
         setUpdatesCount(checkUpdatesResponse.count)
         setStatus("new-download")
       } else {
-        if (dontShowNoModal) {
-          resetStatus()
-          return
-        }
         setStatus("no-updates")
       }
     } catch (error) {
@@ -95,20 +89,6 @@ export default function Ota({ children }) {
   }
   return (
     <div>
-      {/* <NoUpdatesModal show={showNoUpdatesModal} resetStatus={resetStatus} /> */}
-      {/* <NewUpdatesModal
-        show={showNewUpdatesModal}
-        isUpdating={isUpdating}
-        isUpdated={isUpdated}
-        notUpdated={notUpdated}
-        hasNewUpdates={hasNewUpdates}
-        hasNewDownload={hasNewDownload}    
-        isDownloading={isDownloading}    
-        processUpdate={handleUpdates}
-        processDownloadPackage={handleDownloadPackage}
-        resetStatus={resetStatus}
-        latestVersionDetails={latestVersionDetails}
-      /> */}
       <div>
         {children({
           disabledButton,
