@@ -6,7 +6,6 @@ export default function Ota({ children }) {
   const [latestVersionDetails, setLatestVersionDetails] = useState("")
   const [updatesCount, setUpdatesCount] = useState(0)
   const [progress, setProgress] = useState(0)
-  const [installerLogs, setInstallerLogs] = useState("")
   const socket = window.socket
   useEffect(() => {
     const getDetails = async () => {
@@ -101,7 +100,6 @@ export default function Ota({ children }) {
           currentVersionDetails,
           latestVersionDetails,
           progress,
-          installerLogs,
           noUpdates,
           handleCheckUpdates,
           handleUpdates,
