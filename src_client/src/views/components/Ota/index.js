@@ -21,9 +21,6 @@ export default function Ota({ children }) {
   }, [status])
   useEffect(() => {
     if (!socket) return
-    socket.on("installer_logs", (data) => {
-      setInstallerLogs((prevInstallerLog) => `${prevInstallerLog} \n ${data}`)
-    })
     socket.on("process_percent", (data) => {
       setProgress(data)
     })
