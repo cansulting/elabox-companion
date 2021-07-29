@@ -717,6 +717,7 @@ async function processVersionCheck(req, res) {
     }
     res.send(await getVersionInfo("info", path))
   } catch (error) {
+    console.log(error)
     res.status(500).send("Cannot get version info.")
   }
 }
