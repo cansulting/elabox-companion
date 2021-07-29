@@ -9,7 +9,8 @@ const packagePath = path.join(storagePath, "package")
 const tmpPath = path.join(storagePath, "tmp")
 const elaSystemPath = "/usr/ela/system/ela.system/"
 const elaSystemInfoPath = path.join(elaSystemPath, "info.json")
-const elaSystemInstallerPath = path.join(elaSystemPath, "main")
+const elaInstallerPath = "/usr/ela/system/ela.installer/"
+const elaSystemInstallerPath = path.join(elaInstallerPath, "main")
 const elaTmpPath = "/tmp/ela"
 const elaInstaller = path.join(elaTmpPath, "/main")
 console.log("Binaries are on", binpath)
