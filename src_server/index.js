@@ -695,7 +695,6 @@ async function processUpdateVersion(req, res) {
         percent: 80,
       })
       await delay(1000)
-      await downloadElaFile(config.PACKAGE_PATH, checkVersionResponse.latest)
       io.to(socketId).emit("process_percent", {
         status: "update installed",
         percent: 100,

@@ -5,7 +5,6 @@ let keyStorePath = elaPath + "/keystore.dat"
 const bucketName = "elabox"
 const cwd = path.join(__dirname, ".")
 const storagePath = path.join(cwd, "/storage")
-const packagePath = path.join(storagePath, "package")
 const tmpPath = path.join(storagePath, "tmp")
 const elaSystemPath = "/usr/ela/system/ela.system/"
 const elaSystemInfoPath = path.join(elaSystemPath, "info.json")
@@ -24,7 +23,6 @@ module.exports = {
   SUPPORT_EMAIL: "purujit.bansal9@gmail.com",
   BUCKET_NAME: bucketName,
   STORAGE_PATH: storagePath,
-  PACKAGE_PATH: packagePath,
   TMP_PATH: tmpPath,
   ELA_SYSTEM_PATH: elaSystemPath,
   ELA_SYSTEM_INFO_PATH: elaSystemInfoPath,
