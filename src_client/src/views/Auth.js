@@ -10,7 +10,6 @@ const loading = () => (
   <div className="animated fadeIn pt-3 text-center">Loading...</div>
 )
 const Companion = React.lazy(() => import("./Companion"))
-const Landing = React.lazy(() => import("./Landing"))
 const Login = React.lazy(() => import("./Login"))
 
 function Auth({ ota }) {
@@ -23,11 +22,7 @@ function Auth({ ota }) {
               <Login />
             </Route>
             <PrivateRoute path="/">
-              {ota.isUpdating || ota.isUpdated ? (
-                <Landing ota={ota} />
-              ) : (
-                <Companion ota={ota} />
-              )}
+              <Companion ota={ota} />
             </PrivateRoute>
           </Switch>
         </React.Suspense>
