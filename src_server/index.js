@@ -9,23 +9,12 @@ const config = require("./config")
 const utils = require("./utilities")
 var shell = require("shelljs")
 var errorHandler = require("errorhandler")
-//ota 
+//ota
 const path = require("path")
 const fsExtra = require("fs-extra")
 const StreamZip = require("node-stream-zip")
 const { Storage } = require("@google-cloud/storage")
 const storage = new Storage({ keyFilename: "./key.json" })
-const bucketName = "elabox"
-const cwd = path.join(__dirname, ".")
-const storagePath = path.join(cwd, "/storage")
-const packagePath=path.join(storagePath, "package")
-const tempPath = path.join(storagePath, "tmp")
-const elaSystemPath="/usr/ela/system/ela.system/"
-const elaSystemInfoPath=path.join(elaSystemPath,"info.json")
-const elaSystemInstallerPath=path.join(elaSystemPath,"main")
-const elaTmpPath = "/tmp/ela"
-const elaInstaller = path.join(elaTmpPath, "/main")
-//end ota
 // const NODE_URL = "localhost";
 const NODE_URL = "192.168.18.71"
 
@@ -51,8 +40,8 @@ const maxBufferSize = 10000
 const router = express.Router()
 
 // for mailing
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(config.SENDGRID_API);
+const sgMail = require("@sendgrid/mail")
+sgMail.setApiKey(config.SENDGRID_API)
 
 let elaPath = config.ELA_DIR
 let didPath = config.DID_DIR
@@ -426,35 +415,31 @@ router.get("/downloadWallet", function (req, res) {
 })
 
 const restartMainchain = async (callback) => {
-    console.log("Restarting mainchain")
-    await killProcess("ela")
-    await requestSpawn(`nohup ./ela > /dev/null 2>output &`, 
-      callback,
-    {
-      maxBuffer: 1024 * maxBufferSize,
-      detached: true,
-      shell: true,
-      cwd: elaPath,
-    })
+  console.log("Restarting mainchain")
+  await killProcess("ela")
+  await requestSpawn(`nohup ./ela > /dev/null 2>output &`, callback, {
+    maxBuffer: 1024 * maxBufferSize,
+    detached: true,
+    shell: true,
+    cwd: elaPath,
+  })
 }
 
 const restartDid = async (callback) => {
-    console.log("Restarting DID")
-    await killProcess("did")
-    await requestSpawn(`nohup ./did > /dev/null 2>output &`, 
-      callback,
-    {
-      maxBuffer: 1024 * maxBufferSize,
-      detached: true,
-      shell: true,
-      cwd: didPath,
-    })
+  console.log("Restarting DID")
+  await killProcess("did")
+  await requestSpawn(`nohup ./did > /dev/null 2>output &`, callback, {
+    maxBuffer: 1024 * maxBufferSize,
+    detached: true,
+    shell: true,
+    cwd: didPath,
+  })
 }
 
 const restartCarrier = async (callback) => {
   console.log("Restarting Carrier")
   await killProcess("ela-bootstrapd")
-  await requestSpawn( 
+  await requestSpawn(
     "./ela-bootstrapd --config=bootstrapd.conf --foreground",
     callback,
     {
@@ -515,24 +500,28 @@ router.post("/sendSupportEmail", async (req, res) => {
   const msg = {
     to: config.SUPPORT_EMAIL,
     from: req.body.email.trim(),
-    subject: 'Elabox Support Needed ' + req.body.name,
-    text: 'Elabox Support is needed to\n Name: ' + req.body.name + "\nEmail: " + req.body.email + "\nProblem: " + req.body.problem,
-  };
+    subject: "Elabox Support Needed " + req.body.name,
+    text:
+      "Elabox Support is needed to\n Name: " +
+      req.body.name +
+      "\nEmail: " +
+      req.body.email +
+      "\nProblem: " +
+      req.body.problem,
+  }
   sgMail.send(msg, (err, result) => {
     if (err) {
       res.status(500)
-    }
-    else {
+    } else {
       res.send({ ok: true })
     }
-
-  });
+  })
 })
 //ota routes
 router.get("/update_version", processUpdateVersion)
 router.post("/version_info", processVersionCheck)
 router.get("/check_new_updates", processCheckNewUpdates)
-router.get("/download_package",processDownloadPackage)
+router.get("/download_package", processDownloadPackage)
 //end ota routes
 
 const checkFile = (file) => {
@@ -589,49 +578,54 @@ const regenerateTor = () => {
 }
 ///ota functions
 async function getCurrentVersion() {
-  // const {build}= await fsExtra.readJSON(elaSystemInfoPath)
-  // return build
-  return new Promise((resolve, reject) => {
-    fs.readdir(packagePath, (err, files) => {
-      if (err) {
-        reject(err)
-        return
-      }
-      resolve(files[0].replace(".box", ""))
-    })
-  })  
+  const { build } = await fsExtra.readJSON(config.ELA_SYSTEM_INFO_PATH)
+  return build
 }
 async function getVersionInfo(version, path) {
   const elaJsonFile = `${path}/${version}.json`
-  const info=await fsExtra.readJson(elaJsonFile)    
-  return info 
+  const info = await fsExtra.readJson(elaJsonFile)
+  return info
 }
 async function getLatestVersion() {
-  const [files] = await storage.bucket(bucketName).getFiles()
+  const [files] = await storage.bucket(config.BUCKET_NAME).getFiles()
   const latestVersionFileName = files[files.length - 1].name
-  return latestVersionFileName.replace("packages/", "").replace(".box", "").replace(".json", "")
+  return latestVersionFileName
+    .replace("packages/", "")
+    .replace(".box", "")
+    .replace(".json", "")
 }
 async function runInstaller(socketId, version) {
   return new Promise(async (resolve, reject) => {
     try {
-      await fsExtra.copy(elaSystemInstallerPath, elaInstaller)
-      spawn("chmod", ["+x", elaInstaller])
+      await fsExtra.copy(
+        config.ELA_SYSTEM_INSTALLER_PATH,
+        config.ELA_SYSTEM_TMP_INSTALLER
+      )
+      spawn("chmod", ["+x", config.ELA_SYSTEM_TMP_INSTALLER])
       //for testing
-      const installerLogs = spawn(`/var/tmp/packageinstaller`, [
-        `${tempPath}/${version}.box`,
-      ])      
-      // const installerLogs = spawn(`${elaInstaller}`, [
-      //   `${tempPath}/${version}.ela`,
-      // ])
-      installerLogs.stderr.setEncoding("utf8")
-      installerLogs.stderr.on("data", (chunk) => {
-        // data from standard output is here as buffers
-        io.to(socketId).emit("installer_logs", chunk)
-      })
-      installerLogs.on("close", () => {
-        resolve("done")
-      })
+      const out = fs.openSync("./out.log", "a")
+      const err = fs.openSync("./out.log", "a")
+      // const installerLogs = spawn(
+      //   `/var/tmp/packageinstaller`,
+      //   [`${config.TMP_PATH}/${version}.box`],
+      //   { detached: true, stdio: "ignore" }
+      // )
+      const installerLogs = spawn(
+        `${config.ELA_SYSTEM_TMP_INSTALLER}`,
+        [`${config.TMP_PATH}/${version}.box`],
+        { detached: true, stdio: ["ignore", out, err] }
+      )
+      installerLogs.unref()
+      // installerLogs.stderr.setEncoding("utf8")
+      // installerLogs.stderr.on("data", (chunk) => {
+      //   // data from standard output is here as buffers
+      //   io.to(socketId).emit("installer_logs", chunk)
+      // })
+      // installerLogs.on("close", () => {
+      //   resolve("done")
+      // })
     } catch (error) {
+      console.log(error)
       reject("error")
     }
   })
@@ -647,22 +641,25 @@ async function checkVersion() {
     return {
       ...response,
       new_update: false,
-      count:0
+      count: 0,
     }
   }
   return {
     ...response,
     new_update: true,
-    count:1    
+    count: 1,
   }
 }
-async function downloadElaFile(destinationPath, version,extension="box") {
-  const destinationFileName = path.join(destinationPath, `/${version}.${extension}`)
+async function downloadElaFile(destinationPath, version, extension = "box") {
+  const destinationFileName = path.join(
+    destinationPath,
+    `/${version}.${extension}`
+  )
   const options = {
     destination: destinationFileName,
   }
   await storage
-    .bucket(bucketName)
+    .bucket(config.BUCKET_NAME)
     .file(`packages/${version}.${extension}`)
     .download(options)
 }
@@ -680,19 +677,19 @@ async function processUpdateVersion(req, res) {
         status: "cleaning files",
         percent: 40,
       })
-      await fsExtra.emptyDir(elaTmpPath)
+      await fsExtra.emptyDir(config.ELA_SYSTEM_TMP_PATH)
       io.to(socketId).emit("process_percent", {
         status: "cleaning files",
         percent: 70,
       })
       await delay(1000)
-      await fsExtra.emptyDir(packagePath)
+      await fsExtra.emptyDir(config.PACKAGE_PATH)
       io.to(socketId).emit("process_percent", {
         status: "cleaning files",
         percent: 80,
       })
-      await delay(1000)      
-      await downloadElaFile(packagePath, checkVersionResponse.latest)
+      await delay(1000)
+      await downloadElaFile(config.PACKAGE_PATH, checkVersionResponse.latest)
       io.to(socketId).emit("process_percent", {
         status: "update installed",
         percent: 100,
@@ -708,15 +705,15 @@ async function processUpdateVersion(req, res) {
 async function processVersionCheck(req, res) {
   try {
     const { versionType } = req.body
-    let path = elaSystemPath
+    let path = config.ELA_SYSTEM_PATH
     let version = await getCurrentVersion()
     if (versionType === "latest") {
-      path = tempPath
+      path = config.TMP_PATH
       await fsExtra.emptyDir(path)
       version = await getLatestVersion()
-      await downloadElaFile(path, version,"json")
-      res.send(JSON.stringify(await getVersionInfo(version, path)))    
-      return;  
+      await downloadElaFile(path, version, "json")
+      res.send(JSON.stringify(await getVersionInfo(version, path)))
+      return
     }
     res.send(await getVersionInfo("info", path))
   } catch (error) {
@@ -731,53 +728,52 @@ async function processCheckNewUpdates(req, res) {
     res.status(500).send("Update error.")
   }
 }
-async function processDownloadPackage(req,res){
+async function processDownloadPackage(req, res) {
   try {
-    const socketId = req.get("socketId")    
-    const path=tempPath
+    const socketId = req.get("socketId")
+    const path = config.TMP_PATH
     const version = await getLatestVersion()
     io.to(socketId).emit("process_percent", {
       status: "downloading file",
       percent: 20,
-    })    
+    })
     await delay(1000)
     io.to(socketId).emit("process_percent", {
       status: "downloading file",
       percent: 40,
-    })            
+    })
     await delay(1000)
     io.to(socketId).emit("process_percent", {
       status: "downloading file",
       percent: 60,
-    })                
+    })
     await delay(1000)
     io.to(socketId).emit("process_percent", {
       status: "downloading file",
       percent: 80,
-    })            
-    await downloadElaFile(path, version,"box")
+    })
+    await downloadElaFile(path, version, "box")
     await delay(1000)
     io.to(socketId).emit("process_percent", {
       status: "download complete",
       percent: 100,
-    })           
-    await delay(1000)  
+    })
+    await delay(1000)
     //revert back
     io.to(socketId).emit("process_percent", {
       status: "download complete",
       percent: 0,
-    })                  
+    })
     res.send(true)
   } catch (error) {
-    res.status(500).send("Download error.")    
+    res.status(500).send("Download error.")
   }
-
 }
 //ota functions end
 // define the router to use
 app.use("/", router)
 
-const server=app.listen(config.PORT, function () {
+const server = app.listen(config.PORT, function () {
   console.log("Runnning on " + config.PORT)
 
   checkProcessingRunning("ela").then((running) => {
@@ -789,19 +785,18 @@ const server=app.listen(config.PORT, function () {
   })
 
   checkProcessingRunning("ela-bootstrapd").then((running) => {
-    if (!running) restartCarrier((response) => console.log( response))
+    if (!running) restartCarrier((response) => console.log(response))
   })
 })
 
 const io = require("socket.io")(server, {
   cors: {
     origin: "*",
-    methods: ["GET","POST"],
-    transports: ['polling'],
-    credentials: true
+    methods: ["GET", "POST"],
+    transports: ["polling"],
+    credentials: true,
   },
-  allowEIO3: true
+  allowEIO3: true,
 })
-
 
 module.exports = app
