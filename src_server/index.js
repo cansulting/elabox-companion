@@ -690,7 +690,6 @@ async function processUpdateVersion(req, res) {
         percent: 70,
       })
       await delay(1000)
-      await fsExtra.emptyDir(config.PACKAGE_PATH)
       io.to(socketId).emit("process_percent", {
         status: "cleaning files",
         percent: 80,
