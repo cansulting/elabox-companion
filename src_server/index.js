@@ -588,11 +588,18 @@ async function getVersionInfo(version, path) {
 }
 async function getLatestVersion() {
   const [files] = await storage.bucket(config.BUCKET_NAME).getFiles()
-  const latestVersionFileName = files[files.length - 1].name
-  return latestVersionFileName
-    .replace("packages/", "")
-    .replace(".box", "")
-    .replace(".json", "")
+  let currentVersion = 0
+  files
+    .filter((file) => file.name.includes(".json"))
+    .forEach((file) => {
+      let tmpLatestVersion = parseInt(
+        file.name.replace("packages/", "").replace(".json", "")
+      )
+      if (tmpLatestVersion > currentVersion) {
+        currentVersion = tmpLatestVersion
+      }
+    })
+  return currentVersion
 }
 async function runInstaller(socketId, version) {
   return new Promise(async (resolve, reject) => {
