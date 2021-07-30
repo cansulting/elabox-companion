@@ -609,30 +609,14 @@ async function runInstaller(version) {
         config.ELA_SYSTEM_TMP_INSTALLER
       )
       spawn("chmod", ["+x", config.ELA_SYSTEM_TMP_INSTALLER])
-      //for testing
-      const out = fs.openSync("./out.log", "a")
-      const err = fs.openSync("./out.log", "a")
-      // const installerLogs = spawn(
-      //   `/var/tmp/packageinstaller`,
-      //   [`${config.TMP_PATH}/${version}.box`],
-      //   { detached: true, stdio: "ignore" }
-      // )
-      const installerLogs = spawn(
+      const installPackageProcess = spawn(
         `${config.ELA_SYSTEM_TMP_INSTALLER}`,
         [`${config.TMP_PATH}/${version}.box`],
-        { detached: true, stdio: ["ignore", out, err] }
+        { detached: true }
       )
-      installerLogs.unref()
-      // installerLogs.stderr.setEncoding("utf8")
-      // installerLogs.stderr.on("data", (chunk) => {
-      //   // data from standard output is here as buffers
-      //   io.to(socketId).emit("installer_logs", chunk)
-      // })
-      // installerLogs.on("close", () => {
-      //   resolve("done")
-      // })
+      installPackageProcess.unref()
+      resolve("completed")
     } catch (error) {
-      console.log(error)
       reject("error")
     }
   })
@@ -759,17 +743,17 @@ app.use("/", router)
 const server = app.listen(config.PORT, function () {
   console.log("Runnning on " + config.PORT)
 
-  // checkProcessingRunning("ela").then((running) => {
-  //   if (!running) restartMainchain((response) => console.log(response))
-  // })
+  checkProcessingRunning("ela").then((running) => {
+    if (!running) restartMainchain((response) => console.log(response))
+  })
 
-  // checkProcessingRunning("did").then((running) => {
-  //   if (!running) restartDid((response) => console.log(response))
-  // })
+  checkProcessingRunning("did").then((running) => {
+    if (!running) restartDid((response) => console.log(response))
+  })
 
-  // checkProcessingRunning("ela-bootstrapd").then((running) => {
-  //   if (!running) restartCarrier((response) => console.log(response))
-  // })
+  checkProcessingRunning("ela-bootstrapd").then((running) => {
+    if (!running) restartCarrier((response) => console.log(response))
+  })
 })
 
 const io = require("socket.io")(server, {
