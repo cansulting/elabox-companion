@@ -601,7 +601,7 @@ async function getLatestVersion() {
     })
   return currentVersion
 }
-async function runInstaller(socketId, version) {
+async function runInstaller(version) {
   return new Promise(async (resolve, reject) => {
     try {
       await fsExtra.copy(
@@ -673,32 +673,9 @@ async function downloadElaFile(destinationPath, version, extension = "box") {
 async function processUpdateVersion(req, res) {
   try {
     const checkVersionResponse = await checkVersion()
-    const socketId = req.get("socketId")
     if (checkVersionResponse.new_update) {
-      io.to(socketId).emit("process_percent", {
-        status: "running installer",
-        percent: 20,
-      })
-      await runInstaller(socketId, checkVersionResponse.latest)
-      io.to(socketId).emit("process_percent", {
-        status: "cleaning files",
-        percent: 40,
-      })
+      await runInstaller(checkVersionResponse.latest)
       await fsExtra.emptyDir(config.ELA_SYSTEM_TMP_PATH)
-      io.to(socketId).emit("process_percent", {
-        status: "cleaning files",
-        percent: 70,
-      })
-      await delay(1000)
-      io.to(socketId).emit("process_percent", {
-        status: "cleaning files",
-        percent: 80,
-      })
-      await delay(1000)
-      io.to(socketId).emit("process_percent", {
-        status: "update installed",
-        percent: 100,
-      })
       res.send(true)
       return
     }
@@ -782,17 +759,17 @@ app.use("/", router)
 const server = app.listen(config.PORT, function () {
   console.log("Runnning on " + config.PORT)
 
-  checkProcessingRunning("ela").then((running) => {
-    if (!running) restartMainchain((response) => console.log(response))
-  })
+  // checkProcessingRunning("ela").then((running) => {
+  //   if (!running) restartMainchain((response) => console.log(response))
+  // })
 
-  checkProcessingRunning("did").then((running) => {
-    if (!running) restartDid((response) => console.log(response))
-  })
+  // checkProcessingRunning("did").then((running) => {
+  //   if (!running) restartDid((response) => console.log(response))
+  // })
 
-  checkProcessingRunning("ela-bootstrapd").then((running) => {
-    if (!running) restartCarrier((response) => console.log(response))
-  })
+  // checkProcessingRunning("ela-bootstrapd").then((running) => {
+  //   if (!running) restartCarrier((response) => console.log(response))
+  // })
 })
 
 const io = require("socket.io")(server, {

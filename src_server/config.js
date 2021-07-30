@@ -31,5 +31,5 @@ module.exports = {
   ELA_SYSTEM_TMP_INSTALLER: elaInstaller,
   SENDGRID_API:
     "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",
-  PORT: process.env.PORT || 3002,
+  PORT: process.env.PORT || 3001,
 }
