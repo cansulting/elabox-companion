@@ -609,8 +609,6 @@ async function runInstaller(version) {
       )
       spawn("chmod", ["+x", config.ELA_SYSTEM_TMP_INSTALLER])
       spawn("elasystem", ["terminate"])
-      console.log(config.ELA_SYSTEM_TMP_INSTALLER)
-      console.log(`${config.TMP_PATH}/${version}.box`)
       const installPackageProcess = spawn(
         `${config.ELA_SYSTEM_TMP_INSTALLER}`,
         [`${config.TMP_PATH}/${version}.box`, "-s", "-l"],
