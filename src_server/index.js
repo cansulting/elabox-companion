@@ -12,14 +12,13 @@ var errorHandler = require("errorhandler")
 //ota
 const path = require("path")
 const fsExtra = require("fs-extra")
-const StreamZip = require("node-stream-zip")
 const { Storage } = require("@google-cloud/storage")
 const storage = new Storage({ keyFilename: "./key.json" })
 // const NODE_URL = "localhost";
 const NODE_URL = "192.168.18.71"
 
 // define port number
-const { exec, fork, spawn } = require("child_process")
+const { exec, spawn } = require("child_process")
 const { execShell, checkProcessingRunning, killProcess } = require("./helper")
 const isPortReachable = require("is-port-reachable")
 const { json } = require("body-parser")
@@ -609,9 +608,12 @@ async function runInstaller(version) {
         config.ELA_SYSTEM_TMP_INSTALLER
       )
       spawn("chmod", ["+x", config.ELA_SYSTEM_TMP_INSTALLER])
+      spawn("elasystem", ["terminate"])
+      console.log(config.ELA_SYSTEM_TMP_INSTALLER)
+      console.log(`${config.TMP_PATH}/${version}.box`)
       const installPackageProcess = spawn(
         `${config.ELA_SYSTEM_TMP_INSTALLER}`,
-        [`${config.TMP_PATH}/${version}.box`],
+        [`${config.TMP_PATH}/${version}.box`, "-s", "-l"],
         { detached: true }
       )
       installPackageProcess.unref()
@@ -659,7 +661,7 @@ async function processUpdateVersion(req, res) {
     const checkVersionResponse = await checkVersion()
     if (checkVersionResponse.new_update) {
       await runInstaller(checkVersionResponse.latest)
-      await fsExtra.emptyDir(config.ELA_SYSTEM_TMP_PATH)
+      // await fsExtra.emptyDir(config.ELA_SYSTEM_TMP_PATH)
       res.send(true)
       return
     }

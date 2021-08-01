@@ -45,12 +45,8 @@ export default function Ota({ children }) {
   const handleUpdates = async () => {
     try {
       setStatus("updating")
-      const isUpdateCompleted = await API.processUpdate()
-      if (isUpdateCompleted) {
-        setStatus("updated")
-      } else {
-        setStatus("not-updated")
-      }
+      API.processUpdate()
+      window.location.replace("http://192.168.18.70:3003")
     } catch (error) {
       setStatus("not-updated")
     }
@@ -67,7 +63,7 @@ export default function Ota({ children }) {
     }
   }
   const isLoading = !currentVersionDetails && !latestVersionDetails
-  const isUpdated = status === "updated"
+  // const isUpdated = status === "updated"
   const isUpdating = status === "updating"
   const noUpdates = status === "no-updates"
   const hasNewUpdates = status === "new-updates"
@@ -75,7 +71,7 @@ export default function Ota({ children }) {
   const checkingUpdates = status === "checking"
   const hasNewDownload = status === "new-download"
   const isDownloading = status === "downloading"
-  const isProcessingData = isDownloading || isUpdating
+  const isProcessingData = isDownloading
   const disabledButton = isDownloading || isUpdating
   // const showNewUpdatesModal =
   //   hasNewUpdates || isUpdating || isUpdated || notUpdated || hasNewDownload || isDownloading
@@ -91,7 +87,6 @@ export default function Ota({ children }) {
           isProcessingData,
           hasNewUpdates,
           isUpdating,
-          isUpdated,
           notUpdated,
           hasNewDownload,
           checkingUpdates,

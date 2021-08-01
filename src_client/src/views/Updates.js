@@ -91,6 +91,9 @@ export default function Updates({ isMobile, ota }) {
     headerLabel = "Not updated"
     btnLabel = "Ok"
   }
+  if (isUpdating) {
+    return null
+  }
   return (
     <div
       style={{
