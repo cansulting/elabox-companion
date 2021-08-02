@@ -156,11 +156,7 @@ class API {
     return data
   }
   processDownloadPackage = async () => {
-    const { data } = await axios.get(`http://${PUBLIC_URI}/download_package`, {
-      headers: {
-        socketId: window.companion_socket.id,
-      },
-    })
+    const { data } = await axios.get(`http://${PUBLIC_URI}/download_package`)
     return data
   }
   getVersionDetails = async (versionType) => {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { broadcast_server } from "../../../Socket"
 import API from "../../../api/backend"
 export default function Ota({ children }) {
   const [status, setStatus] = useState("idle")
@@ -6,7 +7,6 @@ export default function Ota({ children }) {
   const [latestVersionDetails, setLatestVersionDetails] = useState("")
   const [updatesCount, setUpdatesCount] = useState(0)
   const [progress, setProgress] = useState(0)
-  const companion_socket = window.companion_socket
   useEffect(() => {
     const getDetails = async () => {
       const currentVersionDetails = await API.getVersionDetails("current")
@@ -19,11 +19,10 @@ export default function Ota({ children }) {
     }
   }, [status])
   useEffect(() => {
-    if (!companion_socket) return
-    companion_socket.on("process_percent", (data) => {
+    broadcast_server.on("ela.installer", ({ data }) => {
       setProgress(data)
     })
-  }, [companion_socket])
+  }, [])
   const handleCheckUpdates = async () => {
     try {
       setStatus("checking")

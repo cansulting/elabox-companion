@@ -1,5 +1,6 @@
 const express = require("express")
 const app = express()
+const io = require("socket.io-client")
 // to allow cross-origin request
 const cors = require("cors")
 const bodyParser = require("body-parser")
@@ -16,6 +17,10 @@ const { Storage } = require("@google-cloud/storage")
 const storage = new Storage({ keyFilename: "./key.json" })
 // const NODE_URL = "localhost";
 const NODE_URL = "192.168.18.71"
+//socket server
+const broadcast_server = io(config.INSTALLER_SOCKET_URL, {
+  transports: ["websocket"],
+})
 
 // define port number
 const { exec, spawn } = require("child_process")
@@ -694,39 +699,52 @@ async function processCheckNewUpdates(req, res) {
     res.status(500).send("Update error.")
   }
 }
+async function broadcast(id, broadcast_data) {
+  broadcast_server.emit(
+    config.ELA_SYSTEM,
+    {
+      id: config.ELA_SYSTEM_BROADCAST,
+      data: JSON.stringify({
+        id,
+        data: broadcast_data,
+      }),
+    },
+    (response) => {
+      console.log(response)
+    }
+  )
+}
 async function processDownloadPackage(req, res) {
   try {
-    const socketId = req.get("socketId")
     const path = config.TMP_PATH
     const version = await getLatestVersion()
-    io.to(socketId).emit("process_percent", {
+    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "downloading file",
       percent: 20,
     })
     await delay(1000)
-    io.to(socketId).emit("process_percent", {
+    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "downloading file",
       percent: 40,
     })
     await delay(1000)
-    io.to(socketId).emit("process_percent", {
+    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "downloading file",
       percent: 60,
     })
     await delay(1000)
-    io.to(socketId).emit("process_percent", {
+    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "downloading file",
       percent: 80,
     })
     await downloadElaFile(path, version, "box")
-    await delay(1000)
-    io.to(socketId).emit("process_percent", {
-      status: "download complete",
+    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+      status: "downloading file",
       percent: 100,
     })
     await delay(1000)
     //revert back
-    io.to(socketId).emit("process_percent", {
+    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "download complete",
       percent: 0,
     })
@@ -755,14 +773,7 @@ const server = app.listen(config.PORT, function () {
   })
 })
 
-const io = require("socket.io")(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-    transports: ["polling"],
-    credentials: true,
-  },
-  allowEIO3: true,
+broadcast_server.on("connect_error", (response) => {
+  console.log("ERRR " + response)
 })
-
 module.exports = app

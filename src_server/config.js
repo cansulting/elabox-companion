@@ -29,7 +29,11 @@ module.exports = {
   ELA_SYSTEM_INSTALLER_PATH: elaSystemInstallerPath,
   ELA_SYSTEM_TMP_PATH: elaTmpPath,
   ELA_SYSTEM_TMP_INSTALLER: elaInstaller,
+  ELA_SYSTEM: "ela.system",
+  ELA_SYSTEM_BROADCAST: "ela.system.BROADCAST",
+  ELA_SYSTEM_BROADCAST_ID_INSTALLER: "ela.installer",
   SENDGRID_API:
     "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",
+  INSTALLER_SOCKET_URL: "http://localhost:9000",
   PORT: process.env.PORT || 3001,
 }
