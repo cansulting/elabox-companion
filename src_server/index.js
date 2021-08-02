@@ -612,7 +612,7 @@ async function runInstaller(version) {
       const installPackageProcess = spawn(
         `${config.ELA_SYSTEM_TMP_INSTALLER}`,
         [`${config.TMP_PATH}/${version}.box`, "-s", "-l"],
-        { detached: true }
+        { detached: true, stdio: "ignore" }
       )
       installPackageProcess.unref()
       resolve("completed")
