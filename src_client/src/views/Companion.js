@@ -20,7 +20,7 @@ const Dashboard = React.lazy(() => import("./Dashboard"))
 const HelpCentre = React.lazy(() => import("./HelpCentre"))
 const Updates = React.lazy(() => import("./Updates"))
 
-function Companion({ ota }) {
+function Companion({ ota, elaStatus }) {
   // const [isLoggedIn, setLoggedIn] = useState(false);
   // const { setAuthTokens } = useAuth();
   const isMobile = useMediaQuery({ maxWidth: 767 })
@@ -106,7 +106,7 @@ function Companion({ ota }) {
                 <Settings isMobile={isMobile} ota={ota} />
               </Route>
               <Route path="/updates">
-                <Updates isMobile={isMobile} ota={ota} />
+                <Updates isMobile={isMobile} ota={ota} elaStatus={elaStatus} />
               </Route>
               <Route path="*">
                 <Dashboard isMobile={isMobile} />

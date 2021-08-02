@@ -31,7 +31,7 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
             backgroundColor: "rgb(0, 0, 0, 0.3)",
           }),
       }}
-      onClick={isMobile && onClose}
+      onClick={isMobile ? onClose : undefined}
     >
       <div
         style={{

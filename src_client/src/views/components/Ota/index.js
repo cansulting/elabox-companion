@@ -6,7 +6,7 @@ export default function Ota({ children }) {
   const [latestVersionDetails, setLatestVersionDetails] = useState("")
   const [updatesCount, setUpdatesCount] = useState(0)
   const [progress, setProgress] = useState(0)
-  const socket = window.socket
+  const companion_socket = window.companion_socket
   useEffect(() => {
     const getDetails = async () => {
       const currentVersionDetails = await API.getVersionDetails("current")
@@ -19,11 +19,11 @@ export default function Ota({ children }) {
     }
   }, [status])
   useEffect(() => {
-    if (!socket) return
-    socket.on("process_percent", (data) => {
+    if (!companion_socket) return
+    companion_socket.on("process_percent", (data) => {
       setProgress(data)
     })
-  }, [socket])
+  }, [companion_socket])
   const handleCheckUpdates = async () => {
     try {
       setStatus("checking")
@@ -46,7 +46,6 @@ export default function Ota({ children }) {
     try {
       setStatus("updating")
       API.processUpdate()
-      window.location.replace("http://192.168.18.70:3003")
     } catch (error) {
       setStatus("not-updated")
     }
@@ -63,7 +62,6 @@ export default function Ota({ children }) {
     }
   }
   const isLoading = !currentVersionDetails && !latestVersionDetails
-  // const isUpdated = status === "updated"
   const isUpdating = status === "updating"
   const noUpdates = status === "no-updates"
   const hasNewUpdates = status === "new-updates"
@@ -72,10 +70,7 @@ export default function Ota({ children }) {
   const hasNewDownload = status === "new-download"
   const isDownloading = status === "downloading"
   const isProcessingData = isDownloading
-  const disabledButton = isDownloading || isUpdating
-  // const showNewUpdatesModal =
-  //   hasNewUpdates || isUpdating || isUpdated || notUpdated || hasNewDownload || isDownloading
-  // const showNoUpdatesModal = noUpdates
+  const disabledButton = isUpdating
   if (isLoading) {
     return <p>Loading...</p>
   }

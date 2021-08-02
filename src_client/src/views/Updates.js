@@ -20,6 +20,7 @@ export default function Updates({ isMobile, ota }) {
     isUpdating,
     isDownloading,
     progress,
+    disabledButton,
   } = ota
   let body = ""
   let btnLabel = ""
@@ -63,36 +64,18 @@ export default function Updates({ isMobile, ota }) {
       </div>
     )
     headerLabel = "New Update"
-    btnLabel = "Restart now"
-  } else if (isUpdated) {
-    body = (
-      <Progress
-        style={{ height: "50px" }}
-        animated
-        color="success"
-        value={progress.percent}
-      >
-        {progress.status}
-      </Progress>
-    )
-    headerLabel = "Update installed"
-    btnLabel = "Ok"
-  } else if (notUpdated) {
-    body = (
-      <Progress
-        style={{ height: "50px" }}
-        animated
-        color="danger"
-        value={progress.percent}
-      >
-        {progress.status}
-      </Progress>
-    )
-    headerLabel = "Not updated"
-    btnLabel = "Ok"
+    btnLabel = "Install Now"
   }
   if (isUpdating) {
-    return null
+    body = (
+      <div>
+        <p>Name: {latestVersionDetails.name}</p>
+        <p>Version: {latestVersionDetails.version}</p>
+        <p>{latestVersionDetails.description}</p>
+      </div>
+    )
+    headerLabel = "New Update"
+    btnLabel = "Please Wait"
   }
   return (
     <div
@@ -106,25 +89,6 @@ export default function Updates({ isMobile, ota }) {
       }}
       className="animated fadeIn w3-container"
     >
-      {/* <Row>
-        <Col>
-          <Card
-            style={{
-              backgroundColor: "#272A3D",
-              color: "white",
-              fontSize: "16px",
-              marginBottom: "20px",
-            }}
-          >
-            <CardHeader>Installed Version</CardHeader>
-            <CardBody>
-              <p>Name: {currentVersionDetails.name}</p>
-              <p>Version: {currentVersionDetails.version}</p>
-              <p>{currentVersionDetails.description}</p>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row> */}
       <Row>
         <Col>
           <Card
@@ -147,13 +111,12 @@ export default function Updates({ isMobile, ota }) {
                     >
                       <Button
                         color="success"
+                        disabled={disabledButton}
                         onClick={() => {
                           if (hasNewDownload) {
                             ota.handleDownloadPackage()
                           } else if (hasNewUpdates) {
                             ota.handleUpdates()
-                          } else if (isUpdated) {
-                            window.location.reload()
                           }
                         }}
                         disabled={ota.disabledButton}

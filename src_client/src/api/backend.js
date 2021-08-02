@@ -158,7 +158,7 @@ class API {
   processDownloadPackage = async () => {
     const { data } = await axios.get(`http://${PUBLIC_URI}/download_package`, {
       headers: {
-        socketId: window.socket.id,
+        socketId: window.companion_socket.id,
       },
     })
     return data
