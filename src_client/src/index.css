@@ -54,3 +54,8 @@ body {
   flex-direction:column;
   padding-left: 30px
 }
+.modal .modal-content{
+  background-color: rgb(39, 42, 61) !important;
+  color:white;
+  border:none;
+}

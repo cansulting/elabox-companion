@@ -7,16 +7,14 @@ import {
 } from "react-router-dom";
 
 import backend from "./api/backend";
-
 import RootStore from "./store";
-
+import Socket from "./Socket"
 const loading = () => (
   <div className="animated fadeIn pt-3 text-center">Loading...</div>
 );
 const Auth = React.lazy(() => import("./views/Auth"));
 const Config = React.lazy(() => import("./views/Config"));
 const Download = React.lazy(() => import("./views/Download"));
-
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -36,7 +34,6 @@ class App extends React.Component {
   state = {
     loading: true,
   };
-
   render() {
     if (this.state.loading) {
       return (
@@ -60,28 +57,30 @@ class App extends React.Component {
     } else {
       return (
         <Router>
-          <div>
-            <React.Suspense fallback={loading()}>
-              <Switch>
-                <Route path="/config">
-                  <Config />
-                </Route>
-                <Route path="/download">
-                  <Download />
-                </Route>
-                <Route path="/check">
-                  <pre
-                    style={{ wordWrap: "break-word", whiteSpace: "pre-wrap" }}
-                  >
-                    {JSON.stringify({ ok: true })}
-                  </pre>
-                </Route>
-                <PrivateRoute path="/">
-                  <Auth />
-                </PrivateRoute>
-              </Switch>
-            </React.Suspense>
-          </div>
+          <Socket>
+            <div>
+              <React.Suspense fallback={loading()}>
+                <Switch>
+                  <Route path="/config">
+                    <Config />
+                  </Route>
+                  <Route path="/download">
+                    <Download />
+                  </Route>
+                  <Route path="/check">
+                    <pre
+                      style={{ wordWrap: "break-word", whiteSpace: "pre-wrap" }}
+                    >
+                      {JSON.stringify({ ok: true })}
+                    </pre>
+                  </Route>
+                  <PrivateRoute path="/">
+                    <Auth />
+                  </PrivateRoute>
+                </Switch>
+              </React.Suspense>
+            </div>
+          </Socket>
         </Router>
       );
     }

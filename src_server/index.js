@@ -1,5 +1,6 @@
 const express = require("express")
 const app = express()
+const io = require("socket.io-client")
 // to allow cross-origin request
 const cors = require("cors")
 const bodyParser = require("body-parser")
@@ -9,12 +10,20 @@ const config = require("./config")
 const utils = require("./utilities")
 var shell = require("shelljs")
 var errorHandler = require("errorhandler")
-
+//ota
+const path = require("path")
+const fsExtra = require("fs-extra")
+const { Storage } = require("@google-cloud/storage")
+const storage = new Storage({ keyFilename: "./key.json" })
 // const NODE_URL = "localhost";
 const NODE_URL = "192.168.18.71"
+//socket server
+const broadcast_server = io(config.INSTALLER_SOCKET_URL, {
+  transports: ["websocket"],
+})
 
 // define port number
-const { exec, fork, spawn } = require("child_process")
+const { exec, spawn } = require("child_process")
 const { execShell, checkProcessingRunning, killProcess } = require("./helper")
 const isPortReachable = require("is-port-reachable")
 const { json } = require("body-parser")
@@ -35,8 +44,8 @@ const maxBufferSize = 10000
 const router = express.Router()
 
 // for mailing
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(config.SENDGRID_API);
+const sgMail = require("@sendgrid/mail")
+sgMail.setApiKey(config.SENDGRID_API)
 
 let elaPath = config.ELA_DIR
 let didPath = config.DID_DIR
@@ -410,35 +419,31 @@ router.get("/downloadWallet", function (req, res) {
 })
 
 const restartMainchain = async (callback) => {
-    console.log("Restarting mainchain")
-    await killProcess("ela")
-    await requestSpawn(`nohup ./ela > /dev/null 2>output &`, 
-      callback,
-    {
-      maxBuffer: 1024 * maxBufferSize,
-      detached: true,
-      shell: true,
-      cwd: elaPath,
-    })
+  console.log("Restarting mainchain")
+  await killProcess("ela")
+  await requestSpawn(`nohup ./ela > /dev/null 2>output &`, callback, {
+    maxBuffer: 1024 * maxBufferSize,
+    detached: true,
+    shell: true,
+    cwd: elaPath,
+  })
 }
 
 const restartDid = async (callback) => {
-    console.log("Restarting DID")
-    await killProcess("did")
-    await requestSpawn(`nohup ./did > /dev/null 2>output &`, 
-      callback,
-    {
-      maxBuffer: 1024 * maxBufferSize,
-      detached: true,
-      shell: true,
-      cwd: didPath,
-    })
+  console.log("Restarting DID")
+  await killProcess("did")
+  await requestSpawn(`nohup ./did > /dev/null 2>output &`, callback, {
+    maxBuffer: 1024 * maxBufferSize,
+    detached: true,
+    shell: true,
+    cwd: didPath,
+  })
 }
 
 const restartCarrier = async (callback) => {
   console.log("Restarting Carrier")
   await killProcess("ela-bootstrapd")
-  await requestSpawn( 
+  await requestSpawn(
     "./ela-bootstrapd --config=bootstrapd.conf --foreground",
     callback,
     {
@@ -499,20 +504,29 @@ router.post("/sendSupportEmail", async (req, res) => {
   const msg = {
     to: config.SUPPORT_EMAIL,
     from: req.body.email.trim(),
-    subject: 'Elabox Support Needed ' + req.body.name,
-    text: 'Elabox Support is needed to\n Name: ' + req.body.name + "\nEmail: " + req.body.email + "\nProblem: " + req.body.problem,
-  };
+    subject: "Elabox Support Needed " + req.body.name,
+    text:
+      "Elabox Support is needed to\n Name: " +
+      req.body.name +
+      "\nEmail: " +
+      req.body.email +
+      "\nProblem: " +
+      req.body.problem,
+  }
   sgMail.send(msg, (err, result) => {
     if (err) {
       res.status(500)
-    }
-    else {
+    } else {
       res.send({ ok: true })
     }
-
-  });
+  })
 })
-
+//ota routes
+router.get("/update_version", processUpdateVersion)
+router.post("/version_info", processVersionCheck)
+router.get("/check_new_updates", processCheckNewUpdates)
+router.get("/download_package", processDownloadPackage)
+//end ota routes
 
 const checkFile = (file) => {
   var prom = new Promise((resolve, reject) => {
@@ -566,11 +580,184 @@ const regenerateTor = () => {
     console.log(error)
   })
 }
-
+///ota functions
+async function getCurrentVersion() {
+  const { build } = await fsExtra.readJSON(config.ELA_SYSTEM_INFO_PATH)
+  return build
+}
+async function getVersionInfo(version, path) {
+  const elaJsonFile = `${path}/${version}.json`
+  const info = await fsExtra.readJson(elaJsonFile)
+  return info
+}
+async function getLatestVersion() {
+  const [files] = await storage.bucket(config.BUCKET_NAME).getFiles()
+  let currentVersion = 0
+  files
+    .filter((file) => file.name.includes(".json"))
+    .forEach((file) => {
+      let tmpLatestVersion = parseInt(
+        file.name.replace("packages/", "").replace(".json", "")
+      )
+      if (tmpLatestVersion > currentVersion) {
+        currentVersion = tmpLatestVersion
+      }
+    })
+  return currentVersion
+}
+async function runInstaller(version) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await fsExtra.copy(
+        config.ELA_SYSTEM_INSTALLER_PATH,
+        config.ELA_SYSTEM_TMP_INSTALLER
+      )
+      spawn("chmod", ["+x", config.ELA_SYSTEM_TMP_INSTALLER])
+      spawn("elasystem", ["terminate"])
+      const installPackageProcess = spawn(
+        `${config.ELA_SYSTEM_TMP_INSTALLER}`,
+        [`${config.TMP_PATH}/${version}.box`, "-s", "-l"],
+        { detached: true, stdio: "ignore" }
+      )
+      installPackageProcess.unref()
+      resolve("completed")
+    } catch (error) {
+      reject("error")
+    }
+  })
+}
+async function checkVersion() {
+  const currentVersion = await getCurrentVersion()
+  const latestVersion = await getLatestVersion()
+  const response = {
+    current: currentVersion,
+    latest: latestVersion,
+  }
+  if (currentVersion === latestVersion) {
+    return {
+      ...response,
+      new_update: false,
+      count: 0,
+    }
+  }
+  return {
+    ...response,
+    new_update: true,
+    count: 1,
+  }
+}
+async function downloadElaFile(destinationPath, version, extension = "box") {
+  const destinationFileName = path.join(
+    destinationPath,
+    `/${version}.${extension}`
+  )
+  const options = {
+    destination: destinationFileName,
+  }
+  await storage
+    .bucket(config.BUCKET_NAME)
+    .file(`packages/${version}.${extension}`)
+    .download(options)
+}
+async function processUpdateVersion(req, res) {
+  try {
+    const checkVersionResponse = await checkVersion()
+    if (checkVersionResponse.new_update) {
+      await runInstaller(checkVersionResponse.latest)
+      // await fsExtra.emptyDir(config.ELA_SYSTEM_TMP_PATH)
+      res.send(true)
+      return
+    }
+    res.send(false)
+  } catch (error) {
+    res.status(500).send("Update error.")
+  }
+}
+async function processVersionCheck(req, res) {
+  try {
+    const { versionType } = req.body
+    let path = config.ELA_SYSTEM_PATH
+    let version = await getCurrentVersion()
+    if (versionType === "latest") {
+      path = config.TMP_PATH
+      await fsExtra.emptyDir(path)
+      version = await getLatestVersion()
+      await downloadElaFile(path, version, "json")
+      res.send(JSON.stringify(await getVersionInfo(version, path)))
+      return
+    }
+    res.send(await getVersionInfo("info", path))
+  } catch (error) {
+    res.status(500).send("Cannot get version info.")
+  }
+}
+async function processCheckNewUpdates(req, res) {
+  try {
+    const checkVersionResponse = await checkVersion()
+    res.send(JSON.stringify(checkVersionResponse))
+  } catch (error) {
+    res.status(500).send("Update error.")
+  }
+}
+async function broadcast(id, broadcast_data) {
+  broadcast_server.emit(
+    config.ELA_SYSTEM,
+    {
+      id: config.ELA_SYSTEM_BROADCAST,
+      data: JSON.stringify({
+        id,
+        data: broadcast_data,
+      }),
+    },
+    (response) => {
+      console.log(response)
+    }
+  )
+}
+async function processDownloadPackage(req, res) {
+  try {
+    const path = config.TMP_PATH
+    const version = await getLatestVersion()
+    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+      status: "downloading file",
+      percent: 20,
+    })
+    await delay(1000)
+    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+      status: "downloading file",
+      percent: 40,
+    })
+    await delay(1000)
+    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+      status: "downloading file",
+      percent: 60,
+    })
+    await delay(1000)
+    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+      status: "downloading file",
+      percent: 80,
+    })
+    await downloadElaFile(path, version, "box")
+    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+      status: "downloading file",
+      percent: 100,
+    })
+    await delay(1000)
+    //revert back
+    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+      status: "download complete",
+      percent: 0,
+    })
+    res.send(true)
+  } catch (error) {
+    res.status(500).send("Download error.")
+  }
+}
+//ota functions end
 // define the router to use
 app.use("/", router)
 
-app.listen(config.PORT, function () {
+const server = app.listen(config.PORT, function () {
   console.log("Runnning on " + config.PORT)
 
   checkProcessingRunning("ela").then((running) => {
@@ -582,8 +769,11 @@ app.listen(config.PORT, function () {
   })
 
   checkProcessingRunning("ela-bootstrapd").then((running) => {
-    if (!running) restartCarrier((response) => console.log( response))
+    if (!running) restartCarrier((response) => console.log(response))
   })
 })
 
+broadcast_server.on("connect_error", (response) => {
+  console.log("ERRR " + response)
+})
 module.exports = app

@@ -1,55 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Link,
   Redirect,
-} from "react-router-dom";
-import { NavLink } from "react-router-dom";
-
-import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  Input,
-  ModalHeader,
-} from "reactstrap";
-import Navbar from "./components/Navbar";
-import SideBar from "./components/Sidebar";
-import { useMediaQuery } from "react-responsive";
-
-import backend from "../api/backend";
-import { observer } from "mobx-react";
-import RootStore from "../index";
-
+} from "react-router-dom"
+import { useMediaQuery } from "react-responsive"
+import { observer } from "mobx-react"
+import Navbar from "./components/Navbar"
+import SideBar from "./components/Sidebar"
 const loading = () => (
   <div className="animated fadeIn pt-3 text-center">Loading...</div>
-);
+)
 
-const Wallet = React.lazy(() => import("./Wallet"));
-const Settings = React.lazy(() => import("./Settings"));
-const Dashboard = React.lazy(() => import("./Dashboard"));
-const HelpCentre = React.lazy(() => import("./HelpCentre"));
+const Wallet = React.lazy(() => import("./Wallet"))
+const Settings = React.lazy(() => import("./Settings"))
+const Dashboard = React.lazy(() => import("./Dashboard"))
+const HelpCentre = React.lazy(() => import("./HelpCentre"))
+const Updates = React.lazy(() => import("./Updates"))
 
-function Companion() {
+function Companion({ ota, elaStatus }) {
   // const [isLoggedIn, setLoggedIn] = useState(false);
   // const { setAuthTokens } = useAuth();
-  const isMobile = useMediaQuery({ maxWidth: 767 });
+  const isMobile = useMediaQuery({ maxWidth: 767 })
 
-  const [isLoggedIn, setLoggedIn] = useState(true);
-  const [isOpen, setOpen] = useState(false);
+  const [isLoggedIn, setLoggedIn] = useState(true)
+  const [isOpen, setOpen] = useState(false)
   // const [servicesRunning, setServicesRunning] = useState(true);
   // const [pwd, setPwd] = useState("");
-
+  useEffect(() => {
+    ota.handleCheckUpdates()
+  }, [])
   function logOut() {
     // setAuthTokens(null)
     // localStorage.clear()
     // console.log(localStorage)
-    localStorage.setItem("logedin", false);
-    setLoggedIn(false);
-    console.log(localStorage);
+    localStorage.setItem("logedin", false)
+    setLoggedIn(false)
+    console.log(localStorage)
     // console.log("Logging out")
   }
 
@@ -81,9 +70,8 @@ function Companion() {
   //     checkServices();
   //   });
   // };
-
   if (!isLoggedIn) {
-    return <Redirect to="/login" />;
+    return <Redirect to="/login" />
   }
 
   // render() {
@@ -101,10 +89,11 @@ function Companion() {
           <Navbar logOut={logOut} onMenuClick={setOpen} />
           <SideBar
             isOpen={isOpen}
+            updatesCount={ota.updatesCount}
             onClose={() => {
-              setOpen(false);
+              setOpen(false)
             }}
-          />{" "}
+          />
           <React.Suspense fallback={loading()}>
             <Switch>
               <Route path="/help">
@@ -114,7 +103,10 @@ function Companion() {
                 <Wallet isMobile={isMobile} />
               </Route>
               <Route path="/settings">
-                <Settings isMobile={isMobile} />
+                <Settings isMobile={isMobile} ota={ota} />
+              </Route>
+              <Route path="/updates">
+                <Updates isMobile={isMobile} ota={ota} elaStatus={elaStatus} />
               </Route>
               <Route path="*">
                 <Dashboard isMobile={isMobile} />
@@ -153,7 +145,7 @@ function Companion() {
         </Modal>
       } */}
     </>
-  );
+  )
   // }
 }
 
@@ -187,5 +179,4 @@ function Companion() {
 //     </div>
 //   );
 // }
-
-export default observer(Companion);
+export default observer(Companion)

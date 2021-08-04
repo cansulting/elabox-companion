@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from "react"
 import {
   Button,
   Modal,
@@ -17,16 +17,15 @@ import {
   PaginationLink,
   Row,
   Table,
-} from "reactstrap";
-import Widget05 from "./widgets/Widget05";
+} from "reactstrap"
+import Widget05 from "./widgets/Widget05"
 
-import master from "../api/master";
-import backend from "../api/backend";
-import RootStore from "../store";
-
+import master from "../api/master"
+import backend from "../api/backend"
+import RootStore from "../store"
 class Settings extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       pwd: "",
       mainchainRestartModal: false,
@@ -42,26 +41,26 @@ class Settings extends Component {
       version: "",
       onion: "",
       showOnion: false,
-    };
+    }
   }
 
   componentWillMount() {
-    this.getVersion();
-    this.getOnion();
+    // this.getVersion();
+    this.getOnion()
   }
 
   handleChange = async (event) => {
-    const { target } = event;
-    const value = target.type === "checkbox" ? target.checked : target.value;
-    const { name } = target;
+    const { target } = event
+    const value = target.type === "checkbox" ? target.checked : target.value
+    const { name } = target
     await this.setState({
       [name]: value,
-    });
-  };
+    })
+  }
 
   restartMainchain = () => {
     // e.preventDefault();
-    this.setState({ mainchainRestartModal: false });
+    this.setState({ mainchainRestartModal: false })
 
     backend
       .restartMainChain()
@@ -69,100 +68,100 @@ class Settings extends Component {
         if (responseJson.success) {
           // RootStore.blockchain.ela.fetchData();
         } else {
-          RootStore.blockchain.ela.fetchData();
+          RootStore.blockchain.ela.fetchData()
         }
       })
       .catch((error) => {
-        console.error(error);
-      });
-  };
+        console.error(error)
+      })
+  }
 
   restartDid = () => {
     // e.preventDefault();
-    this.setState({ didRestartModal: false });
+    this.setState({ didRestartModal: false })
 
     backend
       .restartDid()
       .then((responseJson) => {
         if (responseJson.success) {
-          RootStore.blockchain.did.fetchData();
+          RootStore.blockchain.did.fetchData()
         } else {
           // TODO : notify error with some modal
         }
       })
       .catch((error) => {
-        console.error(error);
-      });
-  };
+        console.error(error)
+      })
+  }
 
   resyncDid = () => {
     // e.preventDefault();
-    this.setState({ didResyncModal: false });
+    this.setState({ didResyncModal: false })
 
     backend
       .resyncDid()
       .then((responseJson) => {
-        console.log(responseJson);
+        console.log(responseJson)
         if (responseJson.ok == "ok") {
-          this.setState({ sentmodal: true });
+          this.setState({ sentmodal: true })
         } else {
-          this.setState({ errormodal: true });
+          this.setState({ errormodal: true })
         }
       })
       .catch((error) => {
-        console.error(error);
-      });
-  };
+        console.error(error)
+      })
+  }
 
   restartCarrier = () => {
     // e.preventDefault();
-    this.setState({ carrierRestartModal: false });
+    this.setState({ carrierRestartModal: false })
 
     backend
       .restartCarrier()
       .then((responseJson) => {
-        console.log(responseJson);
+        console.log(responseJson)
         if (responseJson.ok == "ok") {
-          this.setState({ sentmodal: true });
+          this.setState({ sentmodal: true })
         } else {
-          this.setState({ errormodal: true });
+          this.setState({ errormodal: true })
         }
       })
       .catch((error) => {
-        console.error(error);
-      });
-  };
+        console.error(error)
+      })
+  }
 
   showRestartMain = () => {
-    this.setState({ mainchainRestartModal: true });
-  };
+    this.setState({ mainchainRestartModal: true })
+  }
   closeRestartMain = () => {
-    this.setState({ mainchainRestartModal: false });
-  };
+    this.setState({ mainchainRestartModal: false })
+  }
   showResyncMain = () => {
-    this.setState({ mainchainResyncModal: true });
-  };
+    this.setState({ mainchainResyncModal: true })
+  }
   closeResyncMain = () => {
-    this.setState({ mainchainResyncModal: false });
-  };
+    this.setState({ mainchainResyncModal: false })
+  }
   showRestartDid = () => {
-    this.setState({ didRestartModal: true });
-  };
+    this.setState({ didRestartModal: true })
+  }
   closeRestartDid = () => {
-    this.setState({ didRestartModal: false });
-  };
+    this.setState({ didRestartModal: false })
+  }
   showResyncDid = () => {
-    this.setState({ didResyncModal: true });
-  };
+    this.setState({ didResyncModal: true })
+  }
   closeResyncDid = () => {
-    this.setState({ didResyncModal: false });
-  };
+    this.setState({ didResyncModal: false })
+  }
   showRestartCarrier = () => {
-    this.setState({ carrierRestartModal: true });
-  };
+    this.setState({ carrierRestartModal: true })
+  }
   closeRestartCarrier = () => {
-    this.setState({ carrierRestartModal: false });
-  };
+    this.setState({ carrierRestartModal: false })
+  }
 
   // checkUpdate = async () => {
   //   const data = await master.checkUpdate();
@@ -170,88 +169,88 @@ class Settings extends Component {
 
   checkUpdate = async () => {
     try {
-      const data = await master.checkUpdate();
-      this.setState({ checkUpdateModal: true, update: data.available });
+      const data = await master.checkUpdate()
+      this.setState({ checkUpdateModal: true, update: data.available })
     } catch (error) {
-      console.error(error);
-      this.setState({ networkErrorModal: true });
+      console.error(error)
+      this.setState({ networkErrorModal: true })
     }
-  };
+  }
   closeCheckUpdateModal = () => {
     this.setState({
       checkUpdateModal: false,
-    });
-  };
+    })
+  }
 
   closeNetworkErrorModal = () => {
     this.setState({
       networkErrorModal: false,
-    });
-  };
+    })
+  }
 
   openUpdateNowModal = () => {
     this.setState({
       updateNowModal: true,
-    });
-  };
+    })
+  }
 
   closeUpdateNowModal = () => {
     this.setState({
       updateNowModal: false,
-    });
-  };
+    })
+  }
 
   openErrorUpdateModal = () => {
     this.setState({
       errorUpdateModal: true,
-    });
-  };
+    })
+  }
 
   closeErrorUpdateModal = () => {
     this.setState({
       errorUpdateModal: false,
-    });
-  };
+    })
+  }
 
   updateNow = async () => {
     this.closeUpdateNowModal()
     try {
-      const data = await master.updateNow();
+      const data = await master.updateNow()
       setTimeout(() => {
-        window.open(`http://${window.location.hostname}`);
-      }, 5000);
+        window.open(`http://${window.location.hostname}`)
+      }, 5000)
     } catch (error) {
-      this.openErrorUpdateModal();
+      this.openErrorUpdateModal()
     }
-  };
+  }
 
   getVersion = () => {
     master.getVersion().then((response) => {
       this.setState({ ...response.data }, () => {
-        console.log("state", this.state);
-      });
-    });
-  };
+        console.log("state", this.state)
+      })
+    })
+  }
 
   getOnion = () => {
     backend.getOnion().then((response) => {
-      this.setState({ onion: response.data.onion });
-    });
-  };
+      this.setState({ onion: response.data.onion })
+    })
+  }
 
   regenerateOnion = () => {
     backend.regenerateOnion().then((response) => {
-      this.setState({ onion: response.data.onion });
-    });
-  };
+      this.setState({ onion: response.data.onion })
+    })
+  }
 
   toggleOnion = () => {
-    this.setState({ showOnion: !this.state.showOnion });
-    console.log("toggleOnion");
-  };
+    this.setState({ showOnion: !this.state.showOnion })
+    console.log("toggleOnion")
+  }
 
   render() {
-    const { isMobile } = this.props;
+    const { isMobile } = this.props
 
     const {
       update,
@@ -264,8 +263,8 @@ class Settings extends Component {
       companionVersion,
       binariesVersion,
       masterVersion,
-    } = this.state;
-    console.log("render", showOnion);
+    } = this.state
+    console.log("render", showOnion)
     return (
       <div
         id="main"
@@ -588,22 +587,6 @@ class Settings extends Component {
             </Card>
           </Col>
         </Row>
-
-        <Row style={{ marginTop: "20px" }}>
-          <Col xs="12" sm="6" lg="4">
-            <Widget05
-              dataBox={() => ({
-                title: "Check for updates",
-                variant: "facebook",
-                Restart: "Check",
-                Resync: update ? "Update Now" : "",
-              })}
-              onGreenPress={this.checkUpdate}
-              onRedPress={this.openUpdateNowModal}
-            ></Widget05>
-          </Col>
-        </Row>
-
         <Row>
           <Col>
             <Card
@@ -641,8 +624,7 @@ class Settings extends Component {
           </Col>
         </Row>
       </div>
-    );
+    )
   }
 }
-
-export default Settings;
+export default Settings

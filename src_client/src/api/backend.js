@@ -1,8 +1,8 @@
-import axios from "axios";
-const PUBLIC_URI = window.location.hostname + ":3001";
+import axios from "axios"
+const PUBLIC_URI = window.location.hostname + ":3001"
 class API {
   constructor() {
-    this.axios = axios.create({ baseURL: `http://${PUBLIC_URI}` });
+    this.axios = axios.create({ baseURL: `http://${PUBLIC_URI}` })
   }
 
   login = (pwd) => {
@@ -15,29 +15,29 @@ class API {
       body: JSON.stringify({
         pwd,
       }),
-    }).then((response) => response.json());
-  };
+    }).then((response) => response.json())
+  }
 
   fetchEla = async () => {
-    const response = await this.axios.get("/ela");
-    return response.data;
-  };
+    const response = await this.axios.get("/ela")
+    return response.data
+  }
 
   fetchDid = async () => {
-    const response = await this.axios.get("/did");
-    return response.data;
-  };
+    const response = await this.axios.get("/did")
+    return response.data
+  }
 
   fetchCarrier = async () => {
-    const response = await this.axios.get("/carrier");
-    return response.data;
-  };
+    const response = await this.axios.get("/carrier")
+    return response.data
+  }
 
   checkInstallation = () => {
     return fetch(`http://${PUBLIC_URI}/checkInstallation`).then((response) =>
       response.json()
-    );
-  };
+    )
+  }
 
   createWallet = (pwd) => {
     return fetch(`http://${PUBLIC_URI}/createWallet`, {
@@ -49,14 +49,14 @@ class API {
       body: JSON.stringify({
         pwd,
       }),
-    }).then((response) => response.json());
-  };
+    }).then((response) => response.json())
+  }
 
   serviceStatus = () => {
     return fetch(`http://${PUBLIC_URI}/serviceStatus`).then((response) =>
       response.json()
-    );
-  };
+    )
+  }
 
   restartMainChain = (pwd) => {
     return fetch(`http://${PUBLIC_URI}/restartMainchain`, {
@@ -65,8 +65,8 @@ class API {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    }).then((response) => response.json());
-  };
+    }).then((response) => response.json())
+  }
 
   restartDid = () => {
     return fetch(`http://${PUBLIC_URI}/restartDid`, {
@@ -75,8 +75,8 @@ class API {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    }).then((response) => response.json());
-  };
+    }).then((response) => response.json())
+  }
 
   resyncDid = () => {
     return fetch(`http://${PUBLIC_URI}/resyncDid`, {
@@ -85,8 +85,8 @@ class API {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    }).then((response) => response.json());
-  };
+    }).then((response) => response.json())
+  }
 
   restartCarrier = () => {
     return fetch(`http://${PUBLIC_URI}/restartCarrier`, {
@@ -95,8 +95,8 @@ class API {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    }).then((response) => response.json());
-  };
+    }).then((response) => response.json())
+  }
 
   getBalance = (address) => {
     return fetch(`http://${PUBLIC_URI}/getBalance`, {
@@ -108,8 +108,8 @@ class API {
       body: JSON.stringify({
         address,
       }),
-    }).then((response) => response.json());
-  };
+    }).then((response) => response.json())
+  }
 
   sendTx = (recipient, amount, pwd) => {
     return fetch(`http://${PUBLIC_URI}/sendTx`, {
@@ -123,30 +123,48 @@ class API {
         amount: amount,
         pwd: pwd,
       }),
-    }).then((response) => response.json());
-  };
+    }).then((response) => response.json())
+  }
 
   txHistory = (address) => {
     console.log(
       "https://node1.elaphant.app/api/3/history/" +
         address +
         "?pageNum=1&pageSize=10&order=desc"
-    );
+    )
 
     return fetch(
       "https://node1.elaphant.app/api/3/history/" +
         address +
         "?pageNum=1&pageSize=10&order=desc"
-    ).then((response) => response.json());
-  };
+    ).then((response) => response.json())
+  }
 
   getOnion = () => {
-    return axios.get(`http://${PUBLIC_URI}/getOnion`);
-  };
+    return axios.get(`http://${PUBLIC_URI}/getOnion`)
+  }
 
   regenerateOnion = () => {
-    return axios.get(`http://${PUBLIC_URI}/regenerateOnion`);
-  };
+    return axios.get(`http://${PUBLIC_URI}/regenerateOnion`)
+  }
+  checkUpdates = async () => {
+    const { data } = await axios.get(`http://${PUBLIC_URI}/check_new_updates`)
+    return data
+  }
+  processUpdate = async () => {
+    const { data } = await axios.get(`http://${PUBLIC_URI}/update_version`, {})
+    return data
+  }
+  processDownloadPackage = async () => {
+    const { data } = await axios.get(`http://${PUBLIC_URI}/download_package`)
+    return data
+  }
+  getVersionDetails = async (versionType) => {
+    const { data } = await axios.post(`http://${PUBLIC_URI}/version_info`, {
+      versionType,
+    })
+    return data
+  }
 }
 
-export default new API();
+export default new API()
