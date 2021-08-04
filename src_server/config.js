@@ -1,6 +1,6 @@
 const path = require("path")
-const binpath = "/home/elabox/supernode"
-let elaPath = binpath + "/ela"
+const binpath = "/home/elabox/apps"
+let elaPath = binpath + "/ela.mainchain"
 let keyStorePath = elaPath + "/keystore.dat"
 const bucketName = "elabox"
 const cwd = path.join(__dirname, ".")
@@ -16,9 +16,9 @@ console.log("Binaries are on", binpath)
 
 module.exports = {
   SUPERNODE: binpath,
-  DID_DIR: binpath + "/did",
+  DID_DIR: binpath + "/ela.did",
   ELA_DIR: elaPath,
-  CARRIER_DIR: binpath + "/carrier",
+  CARRIER_DIR: binpath + "/ela.carrier",
   KEYSTORE_PATH: keyStorePath,
   SUPPORT_EMAIL: "purujit.bansal9@gmail.com",
   BUCKET_NAME: bucketName,
