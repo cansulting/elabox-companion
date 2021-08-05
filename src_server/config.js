@@ -2,7 +2,6 @@ const path = require("path")
 const binpath = "/home/elabox/apps"
 let elaPath = binpath + "/ela.mainchain"
 let keyStorePath = elaPath + "/keystore.dat"
-const bucketName = "elabox"
 const cwd = path.join(__dirname, ".")
 const storagePath = path.join(cwd, "/storage")
 const tmpPath = path.join(storagePath, "tmp")
@@ -21,7 +20,6 @@ module.exports = {
   CARRIER_DIR: binpath + "/ela.carrier",
   KEYSTORE_PATH: keyStorePath,
   SUPPORT_EMAIL: "purujit.bansal9@gmail.com",
-  BUCKET_NAME: bucketName,
   STORAGE_PATH: storagePath,
   TMP_PATH: tmpPath,
   ELA_SYSTEM_PATH: elaSystemPath,
@@ -32,7 +30,7 @@ module.exports = {
   ELA_SYSTEM: "ela.system",
   ELA_SYSTEM_BROADCAST: "ela.system.BROADCAST",
   ELA_SYSTEM_BROADCAST_ID_INSTALLER: "ela.installer",
-  ELA_BOX_PATH:"https://storage.googleapis.com/elabox/packages/",
+  ELA_BOX_PATH:"https://storage.googleapis.com/elabox/packages",
   SENDGRID_API:
     "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",
   INSTALLER_SOCKET_URL: "http://localhost:9000",

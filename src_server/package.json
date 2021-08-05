@@ -20,7 +20,8 @@
     "onoff": "^6.0.0",
     "shelljs": "^0.8.4",
     "socket.io-client": "^2.4.0",
-    "tail": "^2.2.3"
+    "tail": "^2.2.3",
+    "url-exist": "2.0.2"
   },
   "scripts": {
     "start": "nodemon --ignore ./storage/ index.js"

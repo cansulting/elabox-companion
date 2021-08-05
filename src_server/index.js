@@ -1,7 +1,7 @@
 const express = require("express")
-const app = express()
 const io = require("socket.io-client")
 const Downloader = require('nodejs-file-downloader');
+const urlExist=require("url-exist")
 // to allow cross-origin request
 const cors = require("cors")
 const bodyParser = require("body-parser")
@@ -14,6 +14,7 @@ var errorHandler = require("errorhandler")
 //ota
 const path = require("path")
 const fsExtra = require("fs-extra")
+const app = express()
 // const NODE_URL = "localhost";
 const NODE_URL = "192.168.18.71"
 //socket server
@@ -590,19 +591,16 @@ async function getVersionInfo(version, path) {
   return info
 }
 async function getLatestVersion() {
-  const [files] = await storage.bucket(config.BUCKET_NAME).getFiles()
-  let currentVersion = 0
-  files
-    .filter((file) => file.name.includes(".json"))
-    .forEach((file) => {
-      let tmpLatestVersion = parseInt(
-        file.name.replace("packages/", "").replace(".json", "")
-      )
-      if (tmpLatestVersion > currentVersion) {
-        currentVersion = tmpLatestVersion
-      }
-    })
-  return currentVersion
+  let version=1;
+  while(version){
+    version+=1;        
+    const isExist=await urlExist(`${config.ELA_BOX_PATH}/${version}.json`)
+    if(!isExist){
+      version-=1      
+      break;
+    }
+  }
+  return version
 }
 async function runInstaller(version) {
   return new Promise(async (resolve, reject) => {
@@ -650,9 +648,7 @@ async function downloadElaFile(destinationPath, version, extension = "box") {
     destinationPath,
     `/${version}.${extension}`
   )
-  const options = {
-    destination: destinationFileName,
-  }
+console.log(`${config.ELA_BOX_PATH}/${version}.${extension}`)
   const downloader=new Downloader({
     url:`${config.ELA_BOX_PATH}/${version}.${extension}`,
     directory:destinationPath
@@ -688,6 +684,7 @@ async function processVersionCheck(req, res) {
     }
     res.send(await getVersionInfo("info", path))
   } catch (error) {
+    console.log(error)
     res.status(500).send("Cannot get version info.")
   }
 }
