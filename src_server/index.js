@@ -176,7 +176,7 @@ router.get("/carrier", async (req, res) => {
   try {
     const isRunning = await checkProcessingRunning("ela-bootstrapd")
 
-    const carrierIP = await execShell("curl -s ipinfo.io/ip", {
+    const carrierIP = await execShell("curl -s ifconfig.me", {
       maxBuffer: 1024 * 500,
     })
 
