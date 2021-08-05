@@ -1,6 +1,7 @@
 const express = require("express")
 const app = express()
 const io = require("socket.io-client")
+const Downloader = require('nodejs-file-downloader');
 // to allow cross-origin request
 const cors = require("cors")
 const bodyParser = require("body-parser")
@@ -13,8 +14,6 @@ var errorHandler = require("errorhandler")
 //ota
 const path = require("path")
 const fsExtra = require("fs-extra")
-const { Storage } = require("@google-cloud/storage")
-const storage = new Storage({ keyFilename: "./key.json" })
 // const NODE_URL = "localhost";
 const NODE_URL = "192.168.18.71"
 //socket server
@@ -44,7 +43,7 @@ const maxBufferSize = 10000
 const router = express.Router()
 
 // for mailing
-const sgMail = require("@sendgrid/mail")
+const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(config.SENDGRID_API)
 
 let elaPath = config.ELA_DIR
@@ -654,10 +653,11 @@ async function downloadElaFile(destinationPath, version, extension = "box") {
   const options = {
     destination: destinationFileName,
   }
-  await storage
-    .bucket(config.BUCKET_NAME)
-    .file(`packages/${version}.${extension}`)
-    .download(options)
+  const downloader=new Downloader({
+    url:`${config.ELA_BOX_PATH}/${version}.${extension}`,
+    directory:destinationPath
+  })
+  await downloader.download()
 }
 async function processUpdateVersion(req, res) {
   try {
