@@ -59,7 +59,7 @@ utils()
 
 router.get("/synced", (req, res) => {
   exec(
-    "ls " + config.ELA_DIR + " | grep keystore.dat",
+    "ls " + config.KEYSTORE_DIR + " | grep keystore.dat",
     { maxBuffer: 1024 * maxBufferSize },
     (err, stdout, stderr) => {
       if (err) {
@@ -277,8 +277,7 @@ router.post("/sendTx", (req, res) => {
   exec(
     elaPath +
       "/ela-cli wallet buildtx -w " +
-      elaPath +
-      "/keystore.dat --to " +
+      config.KEYSTORE_PATH + " --to " +
       recipient +
       " --amount " +
       amount +
@@ -291,8 +290,7 @@ router.post("/sendTx", (req, res) => {
         exec(
           elaPath +
             "/ela-cli wallet signtx -w " +
-            elaPath +
-            "/keystore.dat -f to_be_signed.txn -p " +
+            config.KEYSTORE_PATH + " -f to_be_signed.txn -p " +
             pwd,
           { maxBuffer: 1024 * maxBufferSize },
           async (err, stdout) => {
@@ -328,8 +326,7 @@ router.post("/login", (req, res) => {
   exec(
     elaPath +
       "/ela-cli wallet a -w " +
-      elaPath +
-      "/keystore.dat -p " +
+      config.KEYSTORE_PATH + " -p " +
       pwd +
       "",
     { maxBuffer: 1024 * maxBufferSize },
@@ -351,7 +348,7 @@ router.post("/createWallet", (req, res) => {
   console.log("PASSWORD RECEIVED", pwd, req.body)
 
   exec(
-    "cd " + elaPath + "; ./ela-cli wallet create -p " + pwd + "",
+    "cd " + config.KEYSTORE_DIR + "; " + config.ELA_DIR + "/ela-cli wallet create -p " + pwd + "",
     { maxBuffer: 1024 * maxBufferSize },
     async (err, stdout, stderr) => {
       console.log(stdout)
@@ -365,8 +362,7 @@ router.post("/createWallet", (req, res) => {
 
 // let users download the wallet file
 router.get("/downloadWallet", function (req, res) {
-  const file = `${elaPath}/keystore.dat`
-  res.download(file)
+  res.download(config.KEYSTORE_PATH)
 })
 
 router.post("/getBalance", (req, res) => {
@@ -414,8 +410,7 @@ router.post("/update", (req, res) => {
 
 // let users download the wallet file
 router.get("/downloadWallet", function (req, res) {
-  const file = `${elaPath}/keystore.dat`
-  res.download(file)
+  res.download(config.KEYSTORE_PATH)
 })
 
 const restartMainchain = async (callback) => {

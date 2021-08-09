@@ -11,9 +11,8 @@ function Config() {
   const [creating, setCreating] = useState(false)
 
   function createWallet() {
-
-    console.log(pwd1)
-    console.log(pwd2)
+    //console.log(pwd1)
+    //console.log(pwd2)
     setCreating(true)
 
     if (pwd1 == '' || pwd2 == '') {
