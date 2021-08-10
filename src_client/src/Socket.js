@@ -19,7 +19,7 @@ function Socket({ children }) {
     if (!broadcast_server) return
     broadcast_server.emit(
       "ela.system",
-      { id: "ela.system.SUBSCRIBE", data: "ela.system" },
+      { id: "ela.system.SUBSCRIBE"},
       (response) => {
         console.log(response)
       }
