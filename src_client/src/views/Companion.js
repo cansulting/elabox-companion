@@ -27,49 +27,17 @@ function Companion({ ota, elaStatus }) {
 
   const [isLoggedIn, setLoggedIn] = useState(true)
   const [isOpen, setOpen] = useState(false)
-  // const [servicesRunning, setServicesRunning] = useState(true);
-  // const [pwd, setPwd] = useState("");
+
   useEffect(() => {
     ota.handleCheckUpdates()
   }, [])
   function logOut() {
-    // setAuthTokens(null)
-    // localStorage.clear()
-    // console.log(localStorage)
     localStorage.setItem("logedin", false)
     setLoggedIn(false)
     console.log(localStorage)
     // console.log("Logging out")
   }
 
-  // const checkServices = () => {
-  //   backend.serviceStatus().then((responseJson) => {
-  //     const { elaRunning, didRunning, carrierRunning } = responseJson;
-  //     console.log("checkServices elaRunning: ", elaRunning);
-  //     console.log("checkServices didRunning: ", didRunning);
-  //     console.log("checkServices carrierRunning: ", carrierRunning);
-  //     // setServicesRunning(elaRunning && carrierRunning && didRunning)
-  //     if (!didRunning) {
-  //       console.log("Restarting DID");
-  //       backend.restartDid();
-  //     }
-  //     if (!carrierRunning) {
-  //       console.log("Restarting Carrier");
-  //       backend.restartCarrier();
-  //     }
-
-  //     // ask for the pwd only if ela is not running
-  //     setServicesRunning(elaRunning);
-  //   });
-  // };
-
-  // const restartServices = () => {
-  //   console.log("Restarting ela");
-  //   // restart ela
-  //   backend.restartMainChain(pwd).then((responseJson) => {
-  //     checkServices();
-  //   });
-  // };
   if (!isLoggedIn) {
     return <Redirect to="/login" />
   }
@@ -115,35 +83,6 @@ function Companion({ ota, elaStatus }) {
           </React.Suspense>
         </div>
       </Router>
-      {/* {
-        <Modal isOpen={!servicesRunning}>
-          <ModalHeader>Restart Services</ModalHeader>
-          <ModalBody>
-            <center>
-              Your Elabox services are turned off. Enter your password to
-              restart them.
-              <br />
-              This process will take a few minutes
-              <br />
-              <br />
-            </center>
-            <Input
-              type="password"
-              id="pwd"
-              name="pwd"
-              placeholder="Enter ELA wallet password"
-              required
-              autofocus
-              onChange={(e) => setPwd(e.target.value)}
-            />
-          </ModalBody>
-          <ModalFooter>
-            <Button color="success" onClick={}>
-              Restart
-            </Button>
-          </ModalFooter>
-        </Modal>
-      } */}
     </>
   )
   // }

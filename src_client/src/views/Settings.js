@@ -555,6 +555,7 @@ class Settings extends Component {
                 Restart: "Download",
                 Resync: "",
               })}
+              onGreenPress={backend.downloadWallet}
             ></Widget05>
           </Col>
         </Row>

@@ -165,6 +165,13 @@ class API {
     })
     return data
   }
+  downloadWallet = () => {
+    const response = {
+      file: `http://${PUBLIC_URI}/downloadWallet`,
+    };
+    // now, let's download:
+    window.location.href = response.file;
+  }
 }
 
 export default new API()
