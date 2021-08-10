@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, Redirect } from 'react-router-dom';
 import { Button, Input, Spinner } from "reactstrap";
 import elaboxLogo from './images/logo-circle-transparent.png'
+import API from '../api/backend';
 
 function Download() {
 
@@ -12,12 +13,8 @@ function Download() {
   const [finished, setFinished] = useState(false)
 
   function downloadWallet() {
-    setDownloading(true)
-    const response = {
-      file: `http://${window.location.hostname}:3001/downloadWallet`,
-    };
-    // now, let's download:
-    window.location.href = response.file;
+    setDownloading(true);
+    API.downloadWallet();
     setTimeout(() => {
       // if success
       setFinished(true)
