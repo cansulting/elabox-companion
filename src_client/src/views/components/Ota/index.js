@@ -20,11 +20,8 @@ export default function Ota({ children }) {
   }, [status])
   // register to event server
   useEffect(() => {
-    broadcast_server.on("ela.installer", ({ data }) => {
+    broadcast_server.on("ela.installer.PROGRESS", ({ data }) => {
       setProgress(data)
-    })
-    broadcast_server.on(SERVICE_ID, (data) => {
-      console.log("RECIEVED update", data)
     })
   }, [])
   const handleCheckUpdates = async () => {
