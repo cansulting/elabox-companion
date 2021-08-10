@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import io from "socket.io-client"
 const BROADCAST_SERVER_URL = window.location.hostname + ":9000"
+export const SERVICE_ID = "ela.system"
 export const broadcast_server = io(BROADCAST_SERVER_URL, {
   transports: ["websocket"],
 })
