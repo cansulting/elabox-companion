@@ -691,18 +691,20 @@ async function processCheckNewUpdates(req, res) {
     res.status(500).send("Update error.")
   }
 }
-async function broadcast(id, broadcast_data) {
+// use to broadcast action to event server
+async function broadcast(package, actionId, broadcast_data) {
   broadcast_server.emit(
     config.ELA_SYSTEM,
     {
       id: config.ELA_SYSTEM_BROADCAST,
       data: JSON.stringify({
-        id,
+        id: actionId,
+        packageId:package,
         data: broadcast_data,
       }),
     },
     (response) => {
-      console.log(response)
+      console.log(actionId, "response", response)
     }
   )
 }
@@ -710,33 +712,33 @@ async function processDownloadPackage(req, res) {
   try {
     const path = config.TMP_PATH
     const version = await getLatestVersion()
-    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+    broadcast(config.INSTALLER_PK_ID, config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "downloading file",
       percent: 20,
     })
     await delay(1000)
-    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+    broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "downloading file",
       percent: 40,
     })
     await delay(1000)
-    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+    broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "downloading file",
       percent: 60,
     })
     await delay(1000)
-    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+    broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "downloading file",
       percent: 80,
     })
     await downloadElaFile(path, version, "box")
-    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+    broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "downloading file",
       percent: 100,
     })
     await delay(1000)
     //revert back
-    broadcast(config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+    broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "download complete",
       percent: 0,
     })

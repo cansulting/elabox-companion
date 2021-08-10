@@ -31,7 +31,8 @@ module.exports = {
   ELA_SYSTEM_TMP_INSTALLER: elaInstaller,                         // the path where temp installer will be copied during system update
   ELA_SYSTEM: "ela.system",
   ELA_SYSTEM_BROADCAST: "ela.system.BROADCAST",
-  ELA_SYSTEM_BROADCAST_ID_INSTALLER: "ela.installer",
+  INSTALLER_PK_ID: "ela.installer",
+  ELA_SYSTEM_BROADCAST_ID_INSTALLER: "ela.installer.PROGRESS",
   ELA_BOX_PATH:"https://storage.googleapis.com/elabox/packages",  // path where we install the packages
   SENDGRID_API:
     "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",
