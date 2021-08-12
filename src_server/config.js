@@ -1,7 +1,7 @@
 const path = require("path")
 const homeapps = "/home/elabox/apps"
 const homeappdata = "/home/elabox/data"
-const keystoredir = homeappdata + "/ela.mainchain" 
+const eladatadir = homeappdata + "/ela.mainchain" 
 let elaPath = homeapps + "/ela.mainchain"
 const cwd = path.join(__dirname, ".")
 const storagePath = path.join(cwd, "/storage")
@@ -18,9 +18,9 @@ module.exports = {
   SUPERNODE: homeapps,
   DID_DIR: homeapps + "/ela.did",
   ELA_DIR: elaPath,                                               //
-  KEYSTORE_DIR: keystoredir,                                      // where keystore will be saved
+  ELADATA_DIR: eladatadir,                                      // where keystore will be saved
   CARRIER_DIR: homeapps + "/ela.carrier",                         // carrier app directory
-  KEYSTORE_PATH: keystoredir + "/keystore.dat",                   // keystore data path
+  KEYSTORE_PATH: eladatadir + "/keystore.dat",                   // keystore data path
   SUPPORT_EMAIL: "purujit.bansal9@gmail.com",
   STORAGE_PATH: storagePath,
   TMP_PATH: tmpPath,                                              

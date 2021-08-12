@@ -59,7 +59,7 @@ utils()
 
 router.get("/synced", (req, res) => {
   exec(
-    "ls " + config.KEYSTORE_DIR + " | grep keystore.dat",
+    "ls " + config.ELADATA_DIR + " | grep keystore.dat",
     { maxBuffer: 1024 * maxBufferSize },
     (err, stdout, stderr) => {
       if (err) {
@@ -348,7 +348,7 @@ router.post("/createWallet", (req, res) => {
   console.log("PASSWORD RECEIVED", pwd, req.body)
 
   exec(
-    "cd " + config.KEYSTORE_DIR + "; " + config.ELA_DIR + "/ela-cli wallet create -p " + pwd + "",
+    "cd " + config.ELADATA_DIR + "; " + config.ELA_DIR + "/ela-cli wallet create -p " + pwd + "",
     { maxBuffer: 1024 * maxBufferSize },
     async (err, stdout, stderr) => {
       console.log(stdout)
@@ -416,7 +416,7 @@ router.get("/downloadWallet", function (req, res) {
 const restartMainchain = async (callback) => {
   console.log("Restarting mainchain")
   await killProcess("ela")
-  await requestSpawn(`nohup ./ela > /dev/null 2>output &`, callback, {
+  await requestSpawn(`nohup ./ela --datadir ${config.ELADATA_DIR}/elastos > /dev/null 2>output &`, callback, {
     maxBuffer: 1024 * maxBufferSize,
     detached: true,
     shell: true,
