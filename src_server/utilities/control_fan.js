@@ -2,6 +2,7 @@ const { exec } = require('child_process');
 const fs = require('fs');
 const tempFile = "/sys/class/thermal/thermal_zone0/temp"
 let fanOut = null
+const pin = '14'
 
 const isAvailable = () => {
     return fs.existsSync(tempFile)
@@ -12,7 +13,7 @@ const toggleFan = (toggle = 1) => {
     // set BCM 4 pin as 'output'
     if (!fanOut) {
         const { Gpio } = require('onoff');
-        fanOut = new Gpio('4', 'out');
+        fanOut = new Gpio(pin, 'out');
     }
     console.log("Fan Toggled", toggle)
     fanOut.writeSync(toggle)
