@@ -36,6 +36,6 @@ module.exports = {
   ELA_BOX_PATH:"https://storage.googleapis.com/elabox/packages",  // path where we install the packages
   SENDGRID_API:
     "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",
-  INSTALLER_SOCKET_URL: "http://localhost:9000",
+  INSTALLER_SOCKET_URL: "http://localhost",
   PORT: process.env.PORT || 3001,
 }
