@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { broadcast_server, SERVICE_ID } from "../../../Socket"
+import { event_server, SERVICE_ID } from "../../../Socket"
 import API from "../../../api/backend"
 export default function Ota({ children }) {
   const [status, setStatus] = useState("idle")
@@ -20,7 +20,7 @@ export default function Ota({ children }) {
   }, [status])
   // register to event server
   useEffect(() => {
-    broadcast_server.on("ela.installer.PROGRESS", ({ data }) => {
+    event_server.on("ela.installer.PROGRESS", ({ data }) => {
       setProgress(data)
     })
   }, [])

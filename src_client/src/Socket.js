@@ -2,13 +2,14 @@ import { useState, useEffect } from "react"
 import io from "socket.io-client"
 const BROADCAST_SERVER_URL = window.location.hostname
 export const SERVICE_ID = "ela.system"
-export const broadcast_server = io(BROADCAST_SERVER_URL, {
+export const event_server = io(BROADCAST_SERVER_URL, {
   transports: ["websocket"],
 })
 function Socket({ children }) {
   const [elaStatus, setElaStatus] = useState()
   const handleCheckStatus = () => {
-    broadcast_server.emit("elastatus", (currentStatus) => {
+    event_server.emit("elastatus", (currentStatus) => {
+      console.log("Status changed", currentStatus)
       if (currentStatus === "updating") {
         window.location.href = "/"
       }
@@ -16,31 +17,34 @@ function Socket({ children }) {
     })
   }
   useEffect(() => {
-    if (!broadcast_server) return
-    broadcast_server.emit(
-      "ela.system",
-      { id: "ela.system.SUBSCRIBE"},
-      (response) => {
-        console.log(response)
-      }
-    )
-    broadcast_server.emit(
-      "ela.system",
-      { id: "ela.system.SUBSCRIBE", data: "ela.installer" },
-      (response) => {
-        console.log(response)
-      }
-    )
-    broadcast_server.on("connect", () => {
-      handleCheckStatus()
+    if (!event_server) return
+    event_server.on("ela.broadcast.SYSTEM_STATUS_CHANGED", (data) => {
+      console.log("Status changed", data)
     })
-    broadcast_server.on("disconnect", () => {
+    event_server.on("connect", () => {
+      handleCheckStatus()
+      event_server.emit(
+        "ela.system",
+        { id: "ela.system.SUBSCRIBE"},
+        (response) => {
+          console.log(response)
+        }
+      )
+      event_server.emit(
+        "ela.system",
+        { id: "ela.system.SUBSCRIBE", data: "ela.installer" },
+        (response) => {
+          console.log(response)
+        }
+      )
+    })
+    event_server.on("disconnect", () => {
       console.log("broadcast server disconnected")
     })
-    broadcast_server.on("connect_error", (response) => {
+    event_server.on("connect_error", (response) => {
       console.log(response)
     })
-  }, [broadcast_server, elaStatus])
+  }, [event_server, elaStatus])
   return children
 }
 export default Socket

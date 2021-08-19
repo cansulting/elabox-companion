@@ -14,7 +14,7 @@ const runCarrier = () => {
           (err, stdout, stderr) => {
             if (err || stderr) {
               console.log("Failed CP", err, stderr);
-              throw (err)
+              reject (err)
     
             } else {
               console.log("Success CP");
@@ -29,8 +29,12 @@ const runCarrier = () => {
 
 // check carrier IP address every 4 hours
 const init = async () =>{ 
-    await runCarrier()
-    setInterval(runCarrier, 1000 * 60 * 60 * 4)
+    runCarrier().then((_) => {
+      setInterval(runCarrier, 1000 * 60 * 60 * 4)
+    }).catch( err => {
+      console.log("Error runCarrier()", err)
+    })
+    
 }
 
 module.exports = {
