@@ -20,7 +20,7 @@ else
     # stop and restart the carrier
     CARRIER_PID=$(pgrep ela-bootstrapd)
     echo "Killing carrier PID "${CARRIER_PID}...
-    if [ "$CARRIER_PID" != "" ]; then
+    if [[ "$CARRIER_PID" != "" && "$CARRIER_PID" != " " ]]; then
         kill ${CARRIER_PID}
     fi
     ${CARRIER_PATH}/ela-bootstrapd --config=${BOOTSTRAP_FILE} --foreground

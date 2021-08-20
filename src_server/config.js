@@ -12,18 +12,20 @@ const elaInstallerPath = "/usr/ela/system/ela.installer/"
 const elaSystemInstallerPath = path.join(elaInstallerPath, "main")
 const elaTmpPath = "/tmp/ela"
 const elaInstaller = path.join(elaTmpPath, "/main")
+const buildMode = process.env.ELABUILD || "RELEASE"
+console.log(buildMode + " MODE")
 console.log("Binaries are on", homeapps)
 
 module.exports = {
   SUPERNODE: homeapps,
   DID_DIR: homeapps + "/ela.did",
   ELA_DIR: elaPath,                                               //
-  ELADATA_DIR: eladatadir,                                      // where keystore will be saved
-  CARRIER_DIR: homeapps + "/ela.carrier",                         // carrier app directory
+  ELADATA_DIR: eladatadir,                                       // where keystore will be saved
+  CARRIER_DIR: homeapps + "/ela.carrier",                        // carrier app directory
   KEYSTORE_PATH: eladatadir + "/keystore.dat",                   // keystore data path
   SUPPORT_EMAIL: "purujit.bansal9@gmail.com",
   STORAGE_PATH: storagePath,
-  TMP_PATH: tmpPath,                                              
+  TMP_PATH: tmpPath,                                              // where files will be temporary save. specifically use for installer
   ELA_SYSTEM_PATH: elaSystemPath,                                 // dir where the system apps installed
   ELA_SYSTEM_INFO_PATH: elaSystemInfoPath,                        // where information about the system installed
   ELA_SYSTEM_INSTALLER_PATH: elaSystemInstallerPath,              // dir for installer binary
@@ -33,7 +35,10 @@ module.exports = {
   ELA_SYSTEM_BROADCAST: "ela.system.BROADCAST",
   INSTALLER_PK_ID: "ela.installer",
   ELA_SYSTEM_BROADCAST_ID_INSTALLER: "ela.installer.PROGRESS",
-  ELA_BOX_PATH:"https://storage.googleapis.com/elabox/packages",  // path where we install the packages
+  BUILD_MODE: buildMode,
+  ELA_BOX_PATH: buildMode !== "DEBUG" ? 
+    "https://storage.googleapis.com/elabox/packages" : 
+    "https://storage.googleapis.com/elabox-debug/packages" ,      // path where we download the packages
   SENDGRID_API:
     "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",
   INSTALLER_SOCKET_URL: "http://localhost",
