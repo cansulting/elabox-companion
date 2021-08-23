@@ -8,6 +8,7 @@ import {
   Button,
   Progress,
   Spinner,
+  Alert
 } from "reactstrap"
 export default function Updates({ isMobile, ota }) {
   const {
@@ -21,6 +22,8 @@ export default function Updates({ isMobile, ota }) {
     isDownloading,
     progress,
     disabledButton,
+    errmsg,
+    clearErrMsg
   } = ota
   let body = ""
   let btnLabel = ""
@@ -78,17 +81,20 @@ export default function Updates({ isMobile, ota }) {
     btnLabel = "Please Wait"
   }
   return (
-    <div
-      style={{
-        ...{
-          paddingLeft: "18%",
-          width: "100%",
-          backgroundColor: "#1E1E26",
-        },
-        ...(isMobile && { paddingLeft: undefined }),
-      }}
-      className="animated fadeIn w3-container"
-    >
+      <div
+        style={{
+          ...{
+            paddingLeft: "18%",
+            width: "100%",
+            backgroundColor: "#1E1E26",
+          },
+          ...(isMobile && { paddingLeft: undefined }),
+        }}
+        className="animated fadeIn w3-container"
+      >
+      <Alert color="info" color="danger" isOpen={errmsg !== null} toggle={ () => clearErrMsg()}>
+        {errmsg}
+      </Alert>
       <Row>
         <Col>
           <Card

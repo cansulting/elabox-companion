@@ -7,6 +7,7 @@ export default function Ota({ children }) {
   const [latestVersionDetails, setLatestVersionDetails] = useState("")
   const [updatesCount, setUpdatesCount] = useState(0)
   const [progress, setProgress] = useState(0)
+  const [errmsg, setErrorMsg] = useState(null)
   useEffect(() => {
     const getDetails = async () => {
       const currentVersionDetails = await API.getVersionDetails("current")
@@ -58,8 +59,13 @@ export default function Ota({ children }) {
         setStatus("new-updates")
       }
     } catch (error) {
-      resetStatus()
+      setStatus("new-download")
+      console.log("Failed downloading update " + error)
+      setErrorMsg("Failed downloading update please try again later.")
     }
+  }
+  const clearErrMsg = () => {
+    setErrorMsg(null)
   }
   const isLoading = !currentVersionDetails && !latestVersionDetails
   const isUpdating = status === "updating"
@@ -94,6 +100,8 @@ export default function Ota({ children }) {
           handleCheckUpdates,
           handleUpdates,
           handleDownloadPackage,
+          errmsg,
+          clearErrMsg,
         })}
       </div>
     </div>
