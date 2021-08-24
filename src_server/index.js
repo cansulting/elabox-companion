@@ -15,8 +15,6 @@ var errorHandler = require("errorhandler")
 const path = require("path")
 const fsExtra = require("fs-extra")
 const app = express()
-// const NODE_URL = "localhost";
-const NODE_URL = "192.168.18.71"
 //socket server
 const broadcast_server = io(config.INSTALLER_SOCKET_URL, {
   transports: ["websocket"],
