@@ -587,7 +587,7 @@ async function getLatestVersion() {
   let version=1;
   while(version){
     version+=1;        
-    const isExist=await urlExist(`${config.ELA_BOX_PATH}/${version}.json`)
+    const isExist=await urlExist(`${config.PACKAGES_URL}/${version}.json`)
     if(!isExist){
       version-=1      
       break;
@@ -641,9 +641,9 @@ async function downloadElaFile(destinationPath, version, extension = "box") {
     destinationPath,
     `/${version}.${extension}`
   )
-console.log(`${config.ELA_BOX_PATH}/${version}.${extension}`)
+console.log(`${config.PACKAGES_URL}/${version}.${extension}`)
   const downloader=new Downloader({
-    url:`${config.ELA_BOX_PATH}/${version}.${extension}`,
+    url:`${config.PACKAGES_URL}/${version}.${extension}`,
     directory:destinationPath
   })
   await downloader.download()

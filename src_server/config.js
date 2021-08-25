@@ -36,7 +36,7 @@ module.exports = {
   INSTALLER_PK_ID: "ela.installer",
   ELA_SYSTEM_BROADCAST_ID_INSTALLER: "ela.installer.PROGRESS",
   BUILD_MODE: buildMode,
-  ELA_BOX_PATH: buildMode === "RELEASE" ? 
+  PACKAGES_URL: buildMode === "RELEASE" ? 
     "https://storage.googleapis.com/elabox/packages" : (
     buildMode === "DEBUG" ?
       "https://storage.googleapis.com/elabox-debug/packages" :
