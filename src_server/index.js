@@ -755,10 +755,10 @@ const server = app.listen(config.PORT, function () {
   checkProcessingRunning("ela").then((running) => {
     if (!running) restartMainchain((response) => console.log(response))
   })
-
+  /*
   checkProcessingRunning("did").then((running) => {
     if (!running) restartDid((response) => console.log(response))
-  })
+  })*/
 
   checkProcessingRunning("ela-bootstrapd").then((running) => {
     if (!running) restartCarrier((response) => console.log(response))

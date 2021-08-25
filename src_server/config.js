@@ -12,7 +12,7 @@ const elaInstallerPath = "/usr/ela/system/ela.installer/"
 const elaSystemInstallerPath = path.join(elaInstallerPath, "main")
 const elaTmpPath = "/tmp/ela"
 const elaInstaller = path.join(elaTmpPath, "/main")
-const buildMode = process.env.ELABUILD || "RELEASE"
+const buildMode = process.env.ELABUILD || "DEBUG"
 console.log(buildMode + " MODE")
 console.log("Binaries are on", homeapps)
 

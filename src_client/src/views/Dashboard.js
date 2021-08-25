@@ -16,50 +16,6 @@ const Dashboard = ({ isMobile }) => {
 
   useEffect(() => {}, []);
 
-  // componentDidMount() {
-  //   console.log("componentDidMount")
-  //   backend.serviceStatus()
-  //             .then(responseJson => {
-  //               console.log("componentDidMount3")
-  //               let elaRunning = responseJson.elaRunning;
-  //               let didRunning = responseJson.didRunning;
-  //               let carrierRunning = responseJson.carrierRunning;
-  //               let tokenRunning = responseJson.tokenRunning;
-  //               let carrierIp = responseJson.carrierIp
-  //               console.log("Carrier", carrierIp)
-  //               this.setState({elaRunning, didRunning, carrierRunning, tokenRunning, carrierIp});
-  //   backend.latestBlock()
-  //     .then(responseJson => {
-  //       console.log("componentDidMount1")
-
-  //       let nodeinfo = JSON.parse(responseJson.nodeinfo);
-  //       let nodeinfoDid = JSON.parse(responseJson.nodeinfodid);
-  //       backend.blockSizes()
-  //         .then(responseJson => {
-  //           console.log("componentDidMount2")
-
-  //           // mainchain
-  //           let blockSizeList = responseJson.blockSizeList
-  //           let blockTime = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date(responseJson.blockTime * 1000));
-  //           let blockHash = responseJson.blockHash;
-  //           let blockHashFormatted = blockHash.substring(0, 9) + "..." + blockHash.substring(54, 64);
-  //           let blockMiner = responseJson.miner;
-  //           // DID
-  //           let blockSizeListDid = responseJson.blockSizeListDid
-  //           let blockTimeDid = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date(responseJson.blockTimeDid * 1000));
-  //           let blockHashDid = responseJson.blockHashDid;
-  //           let blockHashFormattedDid = blockHashDid.substring(0, 9) + "..." + blockHashDid.substring(54, 64);
-  //           let blockMinerDid = responseJson.minerDid;
-  //               backend.nbOfTx()
-  //                 .then(responseJson => {
-
-  //                   this.setState({ blockheight: nodeinfo.result, blockheightDid: nodeinfoDid.result, blocktime: blockTime, blocktimeDid: blockTimeDid, blockSizeList: blockSizeList, blockSizeListDid: blockSizeListDid, blockhash: blockHashFormatted, blockhashDid: blockHashFormattedDid, miner: blockMiner, minerDid: blockMinerDid, latestSize: blockSizeList[9], latestSizeDid: blockSizeListDid[9], nbOfTxList: responseJson.nbOfTxList, latestNbOfTx: responseJson.nbOfTxList[9], nbOfTxListDid: responseJson.nbOfTxListDid, latestNbOfTxDid: responseJson.nbOfTxListDid[9], elaRunning, didRunning, carrierRunning, tokenRunning, carrierIp })
-  //                 });
-  //             });
-  //         });
-  //     });
-  // }
-
   var cardChartData1 = {
     labels: ["       ", " ", " ", " ", " ", " ", " ", " ", " ", "       "],
     datasets: [{ data: RootStore.blockchain.ela.blockSizes.slice().reverse() }],
@@ -364,11 +320,11 @@ const Dashboard = ({ isMobile }) => {
         </Col>
       </Row>
 
-      <Row style={{ paddingTop: "50px" }}>
+      <Row style={{ paddingTop: "20px" }}>
         <Col xs="12" sm="4" lg="4">
           {did.isRunning ? (
             <Widget02
-              header="DID"
+              header="EID"
               mainText="Running"
               icon={didLogo}
               color="success"
@@ -377,74 +333,17 @@ const Dashboard = ({ isMobile }) => {
             />
           ) : (
             <Widget02
-              header="DID"
-              mainText="Stopped"
+              header="EID"
+              mainText={""/*"Stopped"*/}
               icon={didLogo}
-              color="danger"
+              color={"success"/*"danger"*/}
               variant="1"
             />
           )}
         </Col>
       </Row>
 
-      <CardGroup className="mb-4">
-        <Widget04 icon="fa fa-gears" header={did.blockCount}>
-          Best block
-        </Widget04>
-        <Widget04
-          icon="fa fa-clock-o"
-          header={formatTime(did.latestBlock.blockTime)}
-        >
-          Block Time
-        </Widget04>
-        <Widget04
-          icon="fa fa-hashtag"
-          header={shortifyHash(did.latestBlock.blockHash)}
-        >
-          Block Hash
-        </Widget04>
-        <Widget04 icon="fa fa-gears" header={did.latestBlock.miner}>
-          MINER
-        </Widget04>
-      </CardGroup>
-
-      <Row>
-        <Col xs="12" sm="6" lg="6 ">
-          <Card className="text-white" style={{ backgroundColor: "#272A3D" }}>
-            <CardBody className="pb-0">
-              <div>Transactions per block</div>
-              <div className="text-value">{did.nbOfTxs[0]}</div>
-            </CardBody>
-            <div className="chart-wrapper mx-3" style={{ height: "70px" }}>
-              <Line
-                data={cardChartData4}
-                options={cardChartOpts4}
-                height={70}
-              />
-            </div>
-          </Card>
-        </Col>
-
-        <Col xs="12" sm="6" lg="6">
-          <Card className="text-white" style={{ backgroundColor: "#272A3D" }}>
-            <CardBody className="pb-0">
-              <ButtonGroup className="float-right"></ButtonGroup>
-              <div>Latest block size</div>
-              <div className="text-value">{did.blockSizes[0]}</div>
-              {/* <div>Latest block sizes</div> */}
-            </CardBody>
-            <div className="chart-wrapper mx-3" style={{ height: "70px" }}>
-              <Line
-                data={cardChartData3}
-                options={cardChartOpts3}
-                height={70}
-              />
-            </div>
-          </Card>
-        </Col>
-      </Row>
-
-      <Row style={{ paddingTop: "50px" }}>
+      <Row >
         <Col xs="12" sm="4" lg="4">
           {carrier.isRunning ? (
             <Widget02

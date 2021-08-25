@@ -495,7 +495,7 @@ class Settings extends Component {
             ></Widget05>
           </Col>
 
-          <Col xs="12" sm="6" lg="4">
+          {/*<Col xs="12" sm="6" lg="4">
             <Widget05
               dataBox={() => ({
                 title: "DID",
@@ -506,7 +506,7 @@ class Settings extends Component {
               onGreenPress={this.showRestartDid}
               onRedPress={this.showResyncDid}
             ></Widget05>
-          </Col>
+          </Col>*/}
 
           <Col xs="12" sm="6" lg="4">
             <Widget05

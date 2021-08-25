@@ -97,7 +97,7 @@ function PrivateRoute({ children, ...rest }) {
     <Route
       {...rest}
       render={({ location }) =>
-        isConfiged == "true" ? (
+        isConfiged === "true" ? (
           children
         ) : (
           <Redirect
