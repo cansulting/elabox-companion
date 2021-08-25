@@ -36,9 +36,11 @@ module.exports = {
   INSTALLER_PK_ID: "ela.installer",
   ELA_SYSTEM_BROADCAST_ID_INSTALLER: "ela.installer.PROGRESS",
   BUILD_MODE: buildMode,
-  ELA_BOX_PATH: buildMode !== "DEBUG" ? 
-    "https://storage.googleapis.com/elabox/packages" : 
-    "https://storage.googleapis.com/elabox-debug/packages" ,      // path where we download the packages
+  ELA_BOX_PATH: buildMode === "RELEASE" ? 
+    "https://storage.googleapis.com/elabox/packages" : (
+    buildMode === "DEBUG" ?
+      "https://storage.googleapis.com/elabox-debug/packages" :
+      "https://storage.googleapis.com/elabox-staging/packages") ,      // path where we download the packages
   SENDGRID_API:
     "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",
   INSTALLER_SOCKET_URL: "http://localhost",
