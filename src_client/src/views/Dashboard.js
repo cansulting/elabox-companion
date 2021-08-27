@@ -264,7 +264,7 @@ const Dashboard = ({ isMobile }) => {
       </Row>
 
       <CardGroup className="mb-4">
-        <Widget04 icon="fa fa-gears" header={ela.blockCount}>
+        <Widget04 icon="fa fa-gears" header={ela.blockCount.toString()}>
           Best block
         </Widget04>
         <Widget04

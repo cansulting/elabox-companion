@@ -18,10 +18,8 @@ else
     # update the IP address in the conf file
     sed -i 's/external_ip = "'$CARRIER_IP'"/external_ip = "'$CURRENT_IP'"/g' ${BOOTSTRAP_FILE}
     # stop and restart the carrier
-    CARRIER_PID=$(pgrep ela-bootstrapd)
-    echo "Killing carrier PID "${CARRIER_PID}...
-    if [[ "$CARRIER_PID" != "" && "$CARRIER_PID" != " " ]]; then
-        kill ${CARRIER_PID}
-    fi
-    ${CARRIER_PATH}/ela-bootstrapd --config=${BOOTSTRAP_FILE} --foreground
+    echo "Killing carrier "$(pgrep ela-bootstrapd)
+    sudo pkill ela-bootstrapd
+    #${CARRIER_PATH}/ela-bootstrapd --config=${BOOTSTRAP_FILE} --foreground
+    ${CARRIER_PATH}/ela-bootstrapd --config=${BOOTSTRAP_FILE}
 fi

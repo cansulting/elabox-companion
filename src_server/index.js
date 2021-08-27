@@ -435,9 +435,11 @@ const restartDid = async (callback) => {
 
 const restartCarrier = async (callback) => {
   console.log("Restarting Carrier")
+  console.log("To view carrier log >>>> sudo cat tail /var/log/syslog")
   await killProcess("ela-bootstrapd")
   await requestSpawn(
-    "./ela-bootstrapd --config=bootstrapd.conf --foreground",
+    //"./ela-bootstrapd --config=bootstrapd.conf --foreground",
+    "./ela-bootstrapd --config=bootstrapd.conf",
     callback,
     {
       maxBuffer: 1024 * 500 * 10000,

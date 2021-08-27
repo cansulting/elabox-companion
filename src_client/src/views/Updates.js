@@ -50,13 +50,13 @@ export default function Updates({ isMobile, ota }) {
       <Progress
         style={{ height: "50px" }}
         animated
-        color="info"
+        color="rgb(44, 113, 246)"
         value={progress.percent}
       >
-        {progress.status}
+        {/*progress.status*/}
       </Progress>
     )
-    headerLabel = "Processing...."
+    headerLabel = "Downloading Update " + ( "0" | progress.percent) + "%"
     btnLabel = <Spinner size="sm" color="light" children={""} />
   } else if (hasNewUpdates) {
     body = (
