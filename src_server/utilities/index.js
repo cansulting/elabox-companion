@@ -5,6 +5,7 @@ const carrier = require("./carrier")
 function init() {
   console.log("Initializing carrier, rewards and fan.")
   carrier.init()
+  fan(1)
 
   // ran every 10 minutes
   setInterval(async () => {

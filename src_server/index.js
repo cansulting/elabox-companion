@@ -414,12 +414,19 @@ router.get("/downloadWallet", function (req, res) {
 const restartMainchain = async (callback) => {
   console.log("Restarting mainchain")
   await killProcess("ela")
-  await requestSpawn(`nohup ./ela --datadir ${config.ELADATA_DIR}/elastos > /dev/null 2>output &`, callback, {
+  await requestSpawn(`nohup ./ela --datadir ${config.ELABLOCKS_DIR} > /dev/null 2>output &`, callback, {
     maxBuffer: 1024 * maxBufferSize,
     detached: true,
     shell: true,
     cwd: elaPath,
   })
+}
+
+const resyncMainchain = async (callback) => {
+  console.log("Resyncing mainchain")
+  await killProcess("ela")
+  fs.rmdirSync(config.ELABLOCKS_DIR, { maxRetries: 3, force: true, recursive: true} )
+  await restartMainchain(callback)
 }
 
 const restartDid = async (callback) => {
@@ -475,6 +482,10 @@ const requestSpawn = async (command, callback, options) => {
 
 router.post("/restartMainchain", async (req, res) => {
   await restartMainchain((resp) => res.json(resp))
+})
+
+router.post("/resyncMainchain", async (req, res) => {
+  await resyncMainchain((resp) => res.json(resp))
 })
 
 router.post("/restartDid", async (req, res) => {

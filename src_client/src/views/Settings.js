@@ -57,7 +57,18 @@ class Settings extends Component {
       [name]: value,
     })
   }
+  resyncMainchain = () => {
+    this.setState({ mainchainResyncModal: false })
 
+    backend
+      .resyncMainchain()
+      .then((responseJson) => {
+          RootStore.blockchain.ela.fetchData()
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
   restartMainchain = () => {
     // e.preventDefault();
     this.setState({ mainchainRestartModal: false })

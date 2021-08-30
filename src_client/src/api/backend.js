@@ -68,6 +68,16 @@ class API {
     }).then((response) => response.json())
   }
 
+  resyncMainchain = (pwd) => {
+    return fetch(`http://${PUBLIC_URI}/resyncMainchain`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }).then((response) => response.json())
+  }
+
   restartDid = () => {
     return fetch(`http://${PUBLIC_URI}/restartDid`, {
       method: "POST",

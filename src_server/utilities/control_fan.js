@@ -19,21 +19,26 @@ const toggleFan = (toggle = 1) => {
     fanOut.writeSync(toggle)
 }
 
-const fanControl = () => {
+// use to automatically control fan. 
+// @defaultValue if not null thenn toggle by specific value
+const fanControl = (defaultValue = null) => {
      return new Promise((resolve, reject) => {
          try {
+            if (defaultValue !== null) {
+                toogleFan(defaultValue)
+                return
+            }
             if (!isAvailable()) {
                 reject("Temperature access not available")
                 return
             }
-
             exec('cat ' + tempFile, { maxBuffer: 1024 * 500 }, (err, stdout, stderr) => {
                 console.log(stdout)
                 if (err) {
                     console.log("FAN ERROR", err)
                     reject(err)
                 }
-                if (stdout > 70000) {
+                if (stdout > 60000) {
                     toggleFan(1)
                     resolve()
                 }
