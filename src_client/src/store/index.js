@@ -6,5 +6,5 @@ const RootStore = types.model({
 });
 
 export default RootStore.create({
-  blockchain: { ela: {}, did: {}, carrier: {} },
+  blockchain: { ela: {}, eid: {}, carrier: {} },
 });

@@ -20,7 +20,7 @@ class App extends React.Component {
     super(props);
     try {
       RootStore.blockchain.ela.fetchData();
-      RootStore.blockchain.did.fetchData();
+      RootStore.blockchain.eid.fetchData();
       RootStore.blockchain.carrier.fetchData();
       backend.checkInstallation().then((responseJson) => {
         localStorage.setItem("isconfiged", responseJson.configed.trim());

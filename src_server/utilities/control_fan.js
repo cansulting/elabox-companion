@@ -25,7 +25,7 @@ const fanControl = (defaultValue = null) => {
      return new Promise((resolve, reject) => {
          try {
             if (defaultValue !== null) {
-                toogleFan(defaultValue)
+                toggleFan(defaultValue)
                 return
             }
             if (!isAvailable()) {

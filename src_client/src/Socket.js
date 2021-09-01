@@ -15,15 +15,22 @@ event_server.on("connect", () => {
   if (onStatusChanged)
     onStatusChanged()
   event_server.emit(
-    "ela.system",
+    SERVICE_ID,
     { id: "ela.system.SUBSCRIBE"},
     (response) => {
       console.log(response)
     }
   )
   event_server.emit(
-    "ela.system",
+    SERVICE_ID,
     { id: "ela.system.SUBSCRIBE", data: "ela.installer" },
+    (response) => {
+      console.log(response)
+    }
+  )
+  event_server.emit(
+    SERVICE_ID,
+    { id: "ela.system.SUBSCRIBE", data: "ela.eid"},
     (response) => {
       console.log(response)
     }

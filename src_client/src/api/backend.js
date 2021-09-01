@@ -23,8 +23,9 @@ class API {
     return response.data
   }
 
-  fetchDid = async () => {
-    const response = await this.axios.get("/did")
+  fetchEID = async () => {
+    const response = await this.axios.get("/eid")
+    //console.log(response)
     return response.data
   }
 
@@ -78,8 +79,8 @@ class API {
     }).then((response) => response.json())
   }
 
-  restartDid = () => {
-    return fetch(`http://${PUBLIC_URI}/restartDid`, {
+  restartEID = () => {
+    return fetch(`http://${PUBLIC_URI}/restartEID`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -88,8 +89,8 @@ class API {
     }).then((response) => response.json())
   }
 
-  resyncDid = () => {
-    return fetch(`http://${PUBLIC_URI}/resyncDid`, {
+  resyncEID = () => {
+    return fetch(`http://${PUBLIC_URI}/resyncEID`, {
       method: "POST",
       headers: {
         Accept: "application/json",

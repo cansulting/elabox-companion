@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Bar, Line } from "react-chartjs-2";
+import EID from "./components/EID";
 import { ButtonGroup, CardBody, Col, Row, Card, CardGroup } from "reactstrap";
 import Widget02 from "./widgets/Widget02";
 import Widget04 from "./widgets/Widget04";
 import mainchainLogo from "./images/mainchain_white.png";
-import didLogo from "./images/did_white.png";
 import carrierLogo from "./images/carrier_white.png";
 import RootStore from "../store";
 import { observer } from "mobx-react";
@@ -12,7 +12,7 @@ import { formatTime } from "../utils/time";
 import { shortifyHash } from "../utils/string";
 
 const Dashboard = ({ isMobile }) => {
-  const { ela, did, carrier } = RootStore.blockchain;
+  const { ela, eid, carrier } = RootStore.blockchain;
 
   useEffect(() => {}, []);
 
@@ -121,111 +121,7 @@ const Dashboard = ({ isMobile }) => {
     },
   };
 
-  // Card Chart 2
-  const cardChartData3 = {
-    labels: ["       ", " ", " ", " ", " ", " ", " ", " ", " ", "       "],
-    datasets: [{ data: RootStore.blockchain.did.blockSizes.slice().reverse() }],
-  };
-
-  const cardChartOpts3 = {
-    tooltips: {
-      enabled: true,
-    },
-    maintainAspectRatio: false,
-    legend: {
-      display: false,
-    },
-    scales: {
-      xAxes: [
-        {
-          gridLines: {
-            color: "transparent",
-            zeroLineColor: "transparent",
-          },
-          ticks: {
-            fontSize: 2,
-            fontColor: "transparent",
-          },
-        },
-      ],
-      yAxes: [
-        {
-          display: false,
-          ticks: {
-            display: false,
-            min: Math.min.apply(Math, cardChartData3.datasets[0].data) - 5,
-            max: Math.max.apply(Math, cardChartData3.datasets[0].data) + 5,
-          },
-        },
-      ],
-    },
-    elements: {
-      line: {
-        borderWidth: 2,
-        borderColor: "#D048B6",
-        fill: false,
-      },
-      point: {
-        radius: 4,
-        backgroundColor: "#D048B6",
-        hitRadius: 10,
-        hoverRadius: 6,
-      },
-    },
-  };
-
-  // Card Chart 2
-  const cardChartData4 = {
-    labels: ["       ", " ", " ", " ", " ", " ", " ", " ", " ", "       "],
-    datasets: [{ data: RootStore.blockchain.did.nbOfTxs.slice().reverse() }],
-  };
-
-  const cardChartOpts4 = {
-    tooltips: {
-      enabled: true,
-    },
-    maintainAspectRatio: false,
-    legend: {
-      display: false,
-    },
-    scales: {
-      xAxes: [
-        {
-          gridLines: {
-            color: "transparent",
-            zeroLineColor: "transparent",
-          },
-          ticks: {
-            fontSize: 2,
-            fontColor: "transparent",
-          },
-        },
-      ],
-      yAxes: [
-        {
-          display: false,
-          ticks: {
-            display: false,
-            min: Math.min.apply(Math, cardChartData4.datasets[0].data) - 5,
-            max: Math.max.apply(Math, cardChartData4.datasets[0].data) + 5,
-          },
-        },
-      ],
-    },
-    elements: {
-      line: {
-        borderWidth: 2,
-        borderColor: "#D048B6",
-        fill: false,
-      },
-      point: {
-        radius: 4,
-        backgroundColor: "#D048B6",
-        hitRadius: 10,
-        hoverRadius: 6,
-      },
-    },
-  };
+  
 
   return (
     <div
@@ -320,30 +216,9 @@ const Dashboard = ({ isMobile }) => {
         </Col>
       </Row>
 
-      <Row style={{ paddingTop: "20px" }}>
-        <Col xs="12" sm="4" lg="4">
-          {did.isRunning ? (
-            <Widget02
-              header="EID"
-              mainText="Running"
-              icon={didLogo}
-              color="success"
-              variant="1"
-              initializing={!did.servicesRunning}
-            />
-          ) : (
-            <Widget02
-              header="EID"
-              mainText={""/*"Stopped"*/}
-              icon={didLogo}
-              color={"success"/*"danger"*/}
-              variant="1"
-            />
-          )}
-        </Col>
-      </Row>
+      <EID eid={eid}/>
 
-      <Row >
+      <Row style={{ paddingTop: "50px" }}>
         <Col xs="12" sm="4" lg="4">
           {carrier.isRunning ? (
             <Widget02

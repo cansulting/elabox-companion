@@ -1,5 +1,5 @@
 const express = require("express")
-const io = require("socket.io-client")
+const eventhandler = require("./helper/eventHandler")
 const Downloader = require('nodejs-file-downloader');
 const urlExist=require("url-exist")
 // to allow cross-origin request
@@ -9,24 +9,19 @@ const logger = require("morgan")
 const fs = require("fs")
 const config = require("./config")
 const utils = require("./utilities")
-var shell = require("shelljs")
 var errorHandler = require("errorhandler")
 //ota
 const path = require("path")
 const fsExtra = require("fs-extra")
 const app = express()
-//socket server
-const broadcast_server = io(config.INSTALLER_SOCKET_URL, {
-  transports: ["websocket"],
-})
+const eid = require("./eid")
 
 // define port number
 const { exec, spawn } = require("child_process")
-const { execShell, checkProcessingRunning, killProcess } = require("./helper")
+const { execShell, checkProcessingRunning, killProcess, requestSpawn } = require("./helper")
 const isPortReachable = require("is-port-reachable")
 const { json } = require("body-parser")
 const delay = require("delay")
-const { restart } = require("nodemon")
 
 // initializes log watchers
 require("./watchers")
@@ -122,49 +117,9 @@ router.get("/ela", async (req, res) => {
   }
 })
 
-router.get("/did", async (req, res) => {
+router.get("/eid", async (req, res) => {
   try {
-    const isRunning = await checkProcessingRunning("did")
-
-    const servicesRunning = await isPortReachable(20606, { host: "localhost" })
-
-    console.log("serviceRunning", servicesRunning)
-
-    if (!isRunning || !servicesRunning) {
-      return res.json({ isRunning, servicesRunning })
-    }
-
-    const blockCountResponse = await execShell(
-      'curl http://User:Password@localhost:20606 -H "Content-Type: application/json" -d \'{"method": "getcurrentheight"}\' ',
-      { maxBuffer: 1024 * maxBufferSize }
-    )
-    const blockCount = JSON.parse(blockCountResponse).result
-
-    const latestBlock = await getBlockSizeDid(blockCount)
-    const blockSizeList = []
-    const nbOfTxList = []
-
-    for (let i = 0; i < blockCount && i < 10; i++) {
-      const blockSize = await getBlockSizeDid(blockCount - i)
-      blockSizeList.push(blockSize.size)
-    }
-    for (let i = 0; i < blockCount && i < 10; i++) {
-      const nbOfTx = await getNbOfTxDid(blockCount - i)
-      nbOfTxList.push(nbOfTx)
-    }
-
-    return res.status(200).json({
-      blockCount: blockCount,
-      blockSizes: blockSizeList,
-      nbOfTxs: nbOfTxList,
-      isRunning: isRunning,
-      servicesRunning,
-      latestBlock: {
-        blockTime: latestBlock.time,
-        blockHash: latestBlock.hash,
-        miner: latestBlock.minerinfo,
-      },
-    })
+    eid.getStatus().then( (data) => res.status(200).json(data))
   } catch (err) {
     res.status(500).send({ error: err })
   }
@@ -204,50 +159,10 @@ function getBlockSize(height) {
   })
 }
 
-function getBlockSizeDid(height) {
-  return new Promise(function (resolve, reject) {
-    exec(
-      "curl http://localhost:20604/api/v1/block/details/height/" + height + "",
-      { maxBuffer: 1024 * maxBufferSize },
-      (err, stdout, stderr) => {
-        if (err) {
-          reject(err)
-        } else {
-          let details = JSON.parse(stdout)
-          resolve(details.Result)
-        }
-      }
-    )
-  }).catch((error) => {
-    console.log(error)
-  })
-}
-
 function getNbOfTx(height) {
   return new Promise(function (resolve, reject) {
     exec(
       "curl http://localhost:20334/api/v1/block/transactions/height/" +
-        height +
-        "",
-      { maxBuffer: 1024 * maxBufferSize },
-      (err, stdout, stderr) => {
-        if (err) {
-          reject(err)
-        } else {
-          let details = JSON.parse(stdout)
-          resolve(details.Result.Transactions.length)
-        }
-      }
-    )
-  }).catch((error) => {
-    console.log(error)
-  })
-}
-
-function getNbOfTxDid(height) {
-  return new Promise(function (resolve, reject) {
-    exec(
-      "curl http://localhost:20604/api/v1/block/transactions/height/" +
         height +
         "",
       { maxBuffer: 1024 * maxBufferSize },
@@ -370,22 +285,17 @@ router.post("/getBalance", (req, res) => {
     { maxBuffer: 1024 * maxBufferSize },
     async (err, stdout, stderr) => {
       console.log("getBalance", stdout)
-      let balanceInfo = JSON.parse(stdout)
-      let balance = balanceInfo.Result
+      let balance = '...'
+      if (stdout !== '') {
+        let balanceInfo = JSON.parse(stdout)
+        balance = balanceInfo.Result
+      }
       res.json({ balance })
     }
   )
 })
 
 router.get("/checkInstallation", async (req, res) => {
-  // exec('test -e run-fan.pdd && echo false || echo true',{maxBuffer: 1024 * 500}, async (err, stdout, stderr) => {
-  //   let configed = stdout
-  //   exec('test -e /home/ubuntu/elabox/companion/maintenance.txt && echo true || echo false',{maxBuffer: 1024 * 500}, async (err, stdout, stderr) => {
-  //     let maintenance = stdout
-  //     res.json({configed, maintenance})
-  //   });
-  // });
-
   res.send({ configed: JSON.stringify(await checkFile(keyStorePath)) })
 })
 
@@ -429,17 +339,6 @@ const resyncMainchain = async (callback) => {
   await restartMainchain(callback)
 }
 
-const restartDid = async (callback) => {
-  console.log("Restarting DID")
-  await killProcess("did")
-  await requestSpawn(`nohup ./did > /dev/null 2>output &`, callback, {
-    maxBuffer: 1024 * maxBufferSize,
-    detached: true,
-    shell: true,
-    cwd: didPath,
-  })
-}
-
 const restartCarrier = async (callback) => {
   console.log("Restarting Carrier")
   console.log("To view carrier log >>>> sudo cat tail /var/log/syslog")
@@ -457,29 +356,6 @@ const restartCarrier = async (callback) => {
   )
 }
 
-const requestSpawn = async (command, callback, options) => {
-  try {
-    await delay(1000)
-
-    const carrierSpawn = spawn(command, options)
-    carrierSpawn.unref()
-
-    carrierSpawn.stdout.on("data", (data) => {
-      console.log(`${data}`)
-    })
-    carrierSpawn.stderr.on("data", (data) => {
-      console.log(`ERROR ${data}`)
-    })
-    carrierSpawn.on("exit", (code, signal) => {
-      if (!code) callback({ sucess: true })
-      else callback({ success: false, error: signal })
-    })
-  } catch (err) {
-    console.log(err)
-    callback({ success: false, error: err })
-  }
-}
-
 router.post("/restartMainchain", async (req, res) => {
   await restartMainchain((resp) => res.json(resp))
 })
@@ -488,8 +364,12 @@ router.post("/resyncMainchain", async (req, res) => {
   await resyncMainchain((resp) => res.json(resp))
 })
 
-router.post("/restartDid", async (req, res) => {
-  await restartDid((resp) => res.json(resp))
+router.post("/restartEID", async (req, res) => {
+  await eid.restart((resp) => res.json(resp))
+})
+
+router.post("/resyncEID", async (req, res) => {
+  await eid.resync((resp) => res.json(resp))
 })
 
 router.post("/restartCarrier", async (req, res) => {
@@ -532,6 +412,10 @@ router.get("/update_version", processUpdateVersion)
 router.post("/version_info", processVersionCheck)
 router.get("/check_new_updates", processCheckNewUpdates)
 router.get("/download_package", processDownloadPackage)
+router.get("/latest_eid", async (req, res) => {
+  const block = await eid.getLatestBlock()
+  res.json(block)
+})
 //end ota routes
 
 const checkFile = (file) => {
@@ -702,54 +586,38 @@ async function processCheckNewUpdates(req, res) {
     res.status(500).send("Update error.")
   }
 }
-// use to broadcast action to event server
-async function broadcast(package, actionId, broadcast_data) {
-  broadcast_server.emit(
-    config.ELA_SYSTEM,
-    {
-      id: config.ELA_SYSTEM_BROADCAST,
-      data: JSON.stringify({
-        id: actionId,
-        packageId:package,
-        data: broadcast_data,
-      }),
-    },
-    (response) => {
-      console.log(actionId, "response", response)
-    }
-  )
-}
+
 async function processDownloadPackage(req, res) {
   try {
     const path = config.TMP_PATH
     const version = await getLatestVersion()
-    broadcast(config.INSTALLER_PK_ID, config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+    eventhandler.broadcast(config.INSTALLER_PK_ID, config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "downloading file",
       percent: 20,
     })
     await delay(1000)
-    broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+    eventhandler.broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "downloading file",
       percent: 40,
     })
     await delay(1000)
-    broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+    eventhandler.broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "downloading file",
       percent: 60,
     })
     await delay(1000)
-    broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+    eventhandler.broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "downloading file",
       percent: 80,
     })
     await downloadElaFile(path, version, "box")
-    broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+    eventhandler.broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "downloading file",
       percent: 100,
     })
     await delay(1000)
     //revert back
-    broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
+    eventhandler.broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
       status: "download complete",
       percent: 0,
     })
@@ -764,21 +632,14 @@ app.use("/", router)
 
 const server = app.listen(config.PORT, function () {
   console.log("Runnning on " + config.PORT)
-
-  checkProcessingRunning("ela").then((running) => {
-    if (!running) restartMainchain((response) => console.log(response))
-  })
-  /*
-  checkProcessingRunning("did").then((running) => {
-    if (!running) restartDid((response) => console.log(response))
-  })*/
-
+  // checkProcessingRunning("ela").then((running) => {
+  //   if (!running) restartMainchain((response) => console.log(response))
+  // })
+  eid.init()
   checkProcessingRunning("ela-bootstrapd").then((running) => {
     if (!running) restartCarrier((response) => console.log(response))
   })
 })
 
-broadcast_server.on("connect_error", (response) => {
-  console.log("ERRR " + response)
-})
+
 module.exports = app

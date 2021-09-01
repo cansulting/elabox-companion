@@ -41,7 +41,7 @@ export const Ela = types
     return { fetchData, restart };
   });
 
-export const Did = types
+export const eid = types
   .model({
     servicesRunning: types.optional(types.boolean, false),
     restarting: types.optional(types.boolean, false),
@@ -54,7 +54,7 @@ export const Did = types
   .actions((self) => {
     const fetchData = flow(function* () {
       try {
-        const response = yield API.fetchDid();
+        const response = yield API.fetchEID();
         applySnapshot(self, response);
       } catch (err) {
         console.error(err);
@@ -64,7 +64,7 @@ export const Did = types
     const restart = flow(function* () {
       try {
         self.restarting = true;
-        const response = yield API.restartDid();
+        const response = yield API.restartEID();
         console.log(response);
       } catch (err) {
         console.log(err);
@@ -109,7 +109,7 @@ export const Carrier = types
 
 const BlockChainStore = types.model({
   ela: Ela,
-  did: Did,
+  eid: eid,
   carrier: Carrier,
 });
 

@@ -22,6 +22,9 @@ module.exports = {
   ELA_DIR: elaPath,                                               //
   ELADATA_DIR: eladatadir,                                       // where keystore will be saved
   ELABLOCKS_DIR: eladatadir + "/elastos",                        // mainchain blocks will be save
+  EID_DIR: homeapps + "/ela.eid",
+  EIDDATA_DIR: homeappdata + "/ela.eid",                         // eid directory
+  EID_PORT: 20645,                                               // eid port that can be access for web3 api
   CARRIER_DIR: homeapps + "/ela.carrier",                        // carrier app directory
   KEYSTORE_PATH: eladatadir + "/keystore.dat",                   // keystore data path
   SUPPORT_EMAIL: "purujit.bansal9@gmail.com",
@@ -33,6 +36,8 @@ module.exports = {
   ELA_SYSTEM_TMP_PATH: elaTmpPath,                                // temp/cache path
   ELA_SYSTEM_TMP_INSTALLER: elaInstaller,                         // the path where temp installer will be copied during system update
   ELA_SYSTEM: "ela.system",
+  ELA_EID: "ela.eid",
+  ELA_EID_UPDATE_ACTION: "ela.eid.action.UPDATE",
   ELA_SYSTEM_BROADCAST: "ela.system.BROADCAST",
   INSTALLER_PK_ID: "ela.installer",
   ELA_SYSTEM_BROADCAST_ID_INSTALLER: "ela.installer.PROGRESS",

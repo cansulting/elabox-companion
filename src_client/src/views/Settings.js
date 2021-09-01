@@ -30,8 +30,8 @@ class Settings extends Component {
       pwd: "",
       mainchainRestartModal: false,
       mainchainResyncModal: false,
-      didRestartModal: false,
-      didResyncModal: false,
+      eidRestartModal: false,
+      eidResyncModal: false,
       carrierRestartModal: false,
       update: false,
       checkUpdateModal: false,
@@ -87,15 +87,15 @@ class Settings extends Component {
       })
   }
 
-  restartDid = () => {
+  restartEid = () => {
     // e.preventDefault();
-    this.setState({ didRestartModal: false })
+    this.setState({ eidRestartModal: false })
 
     backend
-      .restartDid()
+      .restartEID()
       .then((responseJson) => {
         if (responseJson.success) {
-          RootStore.blockchain.did.fetchData()
+          RootStore.blockchain.eid.fetchData()
         } else {
           // TODO : notify error with some modal
         }
@@ -105,12 +105,12 @@ class Settings extends Component {
       })
   }
 
-  resyncDid = () => {
+  resyncEID = () => {
     // e.preventDefault();
-    this.setState({ didResyncModal: false })
+    this.setState({ eidResyncModal: false })
 
     backend
-      .resyncDid()
+      .resyncEID()
       .then((responseJson) => {
         console.log(responseJson)
         if (responseJson.ok == "ok") {
@@ -155,17 +155,17 @@ class Settings extends Component {
   closeResyncMain = () => {
     this.setState({ mainchainResyncModal: false })
   }
-  showRestartDid = () => {
-    this.setState({ didRestartModal: true })
+  showRestartEID = () => {
+    this.setState({ eidRestartModal: true })
   }
-  closeRestartDid = () => {
-    this.setState({ didRestartModal: false })
+  closeRestartEid = () => {
+    this.setState({ eidRestartModal: false })
   }
-  showResyncDid = () => {
-    this.setState({ didResyncModal: true })
+  showResyncEID = () => {
+    this.setState({ eidResyncModal: true })
   }
-  closeResyncDid = () => {
-    this.setState({ didResyncModal: false })
+  closeResyncEID = () => {
+    this.setState({ eidResyncModal: false })
   }
   showRestartCarrier = () => {
     this.setState({ carrierRestartModal: true })
@@ -410,11 +410,11 @@ class Settings extends Component {
           </ModalFooter>
         </Modal>
 
-        <Modal isOpen={this.state.didRestartModal}>
-          <ModalHeader>Restart DID sidechain</ModalHeader>
+        <Modal isOpen={this.state.eidRestartModal}>
+          <ModalHeader>Restart EID sidechain</ModalHeader>
           <ModalBody>
             <center>
-              You are about to restart the DID sidechain
+              You are about to restart the EID sidechain
               <br />
               This process will take a few minutes
               <br />
@@ -422,35 +422,35 @@ class Settings extends Component {
             </center>
           </ModalBody>
           <ModalFooter>
-            <Button color="success" onClick={this.restartDid}>
+            <Button color="success" onClick={this.restartEid}>
               Restart
             </Button>
-            <Button color="danger" onClick={this.closeRestartDid}>
+            <Button color="danger" onClick={this.closeRestartEid}>
               Cancel
             </Button>
           </ModalFooter>
         </Modal>
 
-        <Modal isOpen={this.state.didResyncModal}>
-          <ModalHeader>Resync DID sidechain</ModalHeader>
+        <Modal isOpen={this.state.eidResyncModal}>
+          <ModalHeader>Resync EID sidechain</ModalHeader>
           <ModalBody>
             <center>
               <b>PLEASE READ CAREFULY</b>
               <br />
-              Resycing the DID sidechain will take a few days.
+              Resycing the EID sidechain will take a few days.
               <br />
               You should try to restart the node first!
               <br />
               <br />
-              Click Re-sync to re-sync the DID sidechain
+              Click Re-sync to re-sync the EID sidechain
               <br />
             </center>
           </ModalBody>
           <ModalFooter>
-            <Button color="success" onClick={this.resyncDid}>
+            <Button color="success" onClick={this.resyncEID}>
               Re-sync
             </Button>
-            <Button color="danger" onClick={this.closeResyncDid}>
+            <Button color="danger" onClick={this.closeResyncEID}>
               Cancel
             </Button>
           </ModalFooter>
@@ -506,18 +506,18 @@ class Settings extends Component {
             ></Widget05>
           </Col>
 
-          {/*<Col xs="12" sm="6" lg="4">
+          <Col xs="12" sm="6" lg="4">
             <Widget05
               dataBox={() => ({
-                title: "DID",
+                title: "EID",
                 variant: "facebook",
                 Restart: "Restart",
                 Resync: "Re-sync",
               })}
-              onGreenPress={this.showRestartDid}
-              onRedPress={this.showResyncDid}
+              onGreenPress={this.showRestartEID}
+              onRedPress={this.showResyncEID}
             ></Widget05>
-          </Col>*/}
+          </Col>
 
           <Col xs="12" sm="6" lg="4">
             <Widget05
