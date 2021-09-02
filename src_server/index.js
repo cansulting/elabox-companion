@@ -632,9 +632,9 @@ app.use("/", router)
 
 const server = app.listen(config.PORT, function () {
   console.log("Runnning on " + config.PORT)
-  // checkProcessingRunning("ela").then((running) => {
-  //   if (!running) restartMainchain((response) => console.log(response))
-  // })
+  checkProcessingRunning("ela").then((running) => {
+    if (!running) restartMainchain((response) => console.log(response))
+  })
   eid.init()
   checkProcessingRunning("ela-bootstrapd").then((running) => {
     if (!running) restartCarrier((response) => console.log(response))

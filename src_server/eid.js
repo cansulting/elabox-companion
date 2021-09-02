@@ -122,14 +122,18 @@ async function getStatus() {
         const latestBlockN =latestBlock.number;
         const blockSizeList = []
         const nbOfTxList = []
-        let blockCount = 0
+        let bestBlockSize = 0
+        let bestBlockN = latestBlockN
         let startingBlock = latestBlockN - 10
         if (startingBlock <= 0)
             startingBlock = 0
         for (let index = startingBlock; index < latestBlockN; index++) {
-            blockCount ++
             const block = await web3.eth.getBlock(index)
             blockSizeList.push(block.size)
+            if (block.size > bestBlockSize ) {
+                bestBlockSize = block.size
+                bestBlockN = block.number
+            }
             const txcount = await web3.eth.getBlockTransactionCount(index)
             nbOfTxList.push(txcount)
         }
@@ -137,7 +141,7 @@ async function getStatus() {
         return {
             isRunning: isRunning,
             servicesRunning,
-            blockCount: blockCount,
+            blockCount: bestBlockN,
             blockSizes: blockSizeList,
             nbOfTxs: nbOfTxList,
             latestBlock: {
