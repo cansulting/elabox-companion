@@ -18,13 +18,16 @@ console.log("Binaries are on", homeapps)
 
 module.exports = {
   SUPERNODE: homeapps,
-  DID_DIR: homeapps + "/ela.did",
+  ESC_DIR: homeapps + "/ela.esc",
+  EID_DIR: homeapps + "/ela.eid",
   ELA_DIR: elaPath,                                               //
   ELADATA_DIR: eladatadir,                                       // where keystore will be saved
   ELABLOCKS_DIR: eladatadir + "/elastos",                        // mainchain blocks will be save
-  EID_DIR: homeapps + "/ela.eid",
-  EIDDATA_DIR: homeappdata + "/ela.eid",                         // eid directory
+  EIDDATA_DIR: homeappdata + "/ela.eid",                         // eid data directory
+  ESCDATA_DIR: homeappdata + "/ela.esc",
   EID_PORT: 20645,                                               // eid port that can be access for web3 api
+  ESC_PORT: 20646,
+  ELA_PORT: 20336,                
   CARRIER_DIR: homeapps + "/ela.carrier",                        // carrier app directory
   KEYSTORE_PATH: eladatadir + "/keystore.dat",                   // keystore data path
   SUPPORT_EMAIL: "purujit.bansal9@gmail.com",

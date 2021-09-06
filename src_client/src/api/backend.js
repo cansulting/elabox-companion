@@ -29,6 +29,12 @@ class API {
     return response.data
   }
 
+  fetchESC = async () => {
+    const response = await this.axios.get("/esc")
+    //console.log(response)
+    return response.data
+  }
+
   fetchCarrier = async () => {
     const response = await this.axios.get("/carrier")
     return response.data
@@ -91,6 +97,26 @@ class API {
 
   resyncEID = () => {
     return fetch(`http://${PUBLIC_URI}/resyncEID`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }).then((response) => response.json())
+  }
+
+  restartESC = () => {
+    return fetch(`http://${PUBLIC_URI}/restartESC`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }).then((response) => response.json())
+  }
+
+  resyncESC = () => {
+    return fetch(`http://${PUBLIC_URI}/resyncESC`, {
       method: "POST",
       headers: {
         Accept: "application/json",

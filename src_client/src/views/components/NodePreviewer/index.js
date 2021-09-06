@@ -7,18 +7,19 @@ import Widget04 from "../../widgets/Widget04";
 import didLogo from "../../images/did_white.png";
 import { formatTime } from "../../../utils/time";
 import { shortifyHash } from "../../../utils/string";
+
 // Card Chart 2
-const cardChartData3 = (eid) => ({
+const cardChartData3 = (blockdata) => ({
   labels: ["       ", " ", " ", " ", " ", " ", " ", " ", " ", "       "],
-  datasets: [{ data: eid.blockSizes.slice() }],
+  datasets: [{ data: blockdata.blockSizes.slice() }],
 });
 // Card Chart 4
-const cardChartData4 = (eid) => ({
+const cardChartData4 = (blockdata) => ({
   labels: ["       ", " ", " ", " ", " ", " ", " ", " ", " ", "       "],
-  datasets: [{ data: eid.nbOfTxs.slice() }],
+  datasets: [{ data: blockdata.nbOfTxs.slice() }],
 });
 
-const cardChartOpts3 = (eid) => ({
+const cardChartOpts3 = (blockdata) => ({
   tooltips: {
     enabled: true,
   },
@@ -44,8 +45,8 @@ const cardChartOpts3 = (eid) => ({
         display: false,
         ticks: {
           display: false,
-          min: Math.min.apply(Math, cardChartData3(eid).datasets[0].data) - 5,
-          max: Math.max.apply(Math, cardChartData3(eid).datasets[0].data) + 5,
+          min: Math.min.apply(Math, cardChartData3(blockdata).datasets[0].data) - 5,
+          max: Math.max.apply(Math, cardChartData3(blockdata).datasets[0].data) + 5,
         },
       },
     ],
@@ -65,7 +66,7 @@ const cardChartOpts3 = (eid) => ({
   },
 });
 
-const cardChartOpts4 = (eid) => ({
+const cardChartOpts4 = (blockdata) => ({
   tooltips: {
     enabled: true,
   },
@@ -91,8 +92,8 @@ const cardChartOpts4 = (eid) => ({
         display: false,
         ticks: {
           display: false,
-          min: Math.min.apply(Math, cardChartData4(eid).datasets[0].data) - 5,
-          max: Math.max.apply(Math, cardChartData4(eid).datasets[0].data) + 5,
+          min: Math.min.apply(Math, cardChartData4(blockdata).datasets[0].data) - 5,
+          max: Math.max.apply(Math, cardChartData4(blockdata).datasets[0].data) + 5,
         },
       },
     ],
@@ -112,8 +113,8 @@ const cardChartOpts4 = (eid) => ({
   },
 });
 
-const EID = (props) => {
-  const { eid } = props;
+const Previewer = (props) => {
+  const { blockdata, label = 'Node' } = props;
   // useEffect(() => {
   //   if (setup) 
   //     return;
@@ -129,18 +130,18 @@ const EID = (props) => {
     <div>
       <Row style={{ paddingTop: "50px" }}>
         <Col xs="12" sm="4" lg="4">
-          {eid.isRunning ? (
+          {blockdata.isRunning ? (
             <Widget02
-              header="EID"
+              header={label}
               mainText="Running"
               icon={didLogo}
               color="success"
               variant="1"
-              initializing={!eid.servicesRunning}
+              initializing={!blockdata.servicesRunning}
             />
           ) : (
             <Widget02
-              header="EID"
+              header={label}
               mainText="Stopped"
               icon={didLogo}
               color="danger"
@@ -149,25 +150,25 @@ const EID = (props) => {
           )}
         </Col>
       </Row>
-      { eid.isRunning && eid.servicesRunning  &&
+      { blockdata.isRunning && blockdata.servicesRunning  &&
       <div>
         <CardGroup className="mb-4">
-          <Widget04 icon="fa fa-gears" header={eid.blockCount.toString()}>
+          <Widget04 icon="fa fa-gears" header={blockdata.blockCount.toString()}>
             Best block
           </Widget04>
           <Widget04
             icon="fa fa-clock-o"
-            header={formatTime(eid.latestBlock.blockTime)}
+            header={formatTime(blockdata.latestBlock.blockTime)}
           >
             Block Time
           </Widget04>
           <Widget04
             icon="fa fa-hashtag"
-            header={shortifyHash(eid.latestBlock.blockHash)}
+            header={shortifyHash(blockdata.latestBlock.blockHash)}
           >
             Block Hash
           </Widget04>
-          <Widget04 icon="fa fa-gears" header={eid.latestBlock.miner}>
+          <Widget04 icon="fa fa-gears" header={blockdata.latestBlock.miner}>
             MINER
           </Widget04>
         </CardGroup>
@@ -176,12 +177,12 @@ const EID = (props) => {
             <Card className="text-white" style={{ backgroundColor: "#272A3D" }}>
               <CardBody className="pb-0">
                 <div>Transactions per block</div>
-                <div className="text-value">{eid.nbOfTxs[0]}</div>
+                <div className="text-value">{blockdata.nbOfTxs[0]}</div>
               </CardBody>
               <div className="chart-wrapper mx-3" style={{ height: "70px" }}>
                 <Line
-                  data={cardChartData4(eid)}
-                  options={cardChartOpts4(eid)}
+                  data={cardChartData4(blockdata)}
+                  options={cardChartOpts4(blockdata)}
                   height={70}
                 />
               </div>
@@ -193,13 +194,13 @@ const EID = (props) => {
               <CardBody className="pb-0">
                 <ButtonGroup className="float-right"></ButtonGroup>
                 <div>Latest block size</div>
-                <div className="text-value">{eid.blockSizes[0]}</div>
+                <div className="text-value">{blockdata.blockSizes[0]}</div>
                 {/* <div>Latest block sizes</div> */}
               </CardBody>
               <div className="chart-wrapper mx-3" style={{ height: "70px" }}>
                 <Line
-                  data={cardChartData3(eid)}
-                  options={cardChartOpts3(eid)}
+                  data={cardChartData3(blockdata)}
+                  options={cardChartOpts3(blockdata)}
                   height={70}
                 />
               </div>
@@ -213,4 +214,4 @@ const EID = (props) => {
     )
 }
 
-export default EID
+export default Previewer

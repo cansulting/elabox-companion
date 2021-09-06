@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Bar, Line } from "react-chartjs-2";
-import EID from "./components/EID";
+import NodePreview from "./components/NodePreviewer";
 import { ButtonGroup, CardBody, Col, Row, Card, CardGroup } from "reactstrap";
 import Widget02 from "./widgets/Widget02";
 import Widget04 from "./widgets/Widget04";
@@ -12,7 +12,7 @@ import { formatTime } from "../utils/time";
 import { shortifyHash } from "../utils/string";
 
 const Dashboard = ({ isMobile }) => {
-  const { ela, eid, carrier } = RootStore.blockchain;
+  const { ela, eid, carrier, esc } = RootStore.blockchain;
 
   useEffect(() => {}, []);
 
@@ -216,7 +216,8 @@ const Dashboard = ({ isMobile }) => {
         </Col>
       </Row>
 
-      <EID eid={eid}/>
+      <NodePreview blockdata={eid} label='EID'/>
+      <NodePreview blockdata={esc} label='ESC'/>
 
       <Row style={{ paddingTop: "50px" }}>
         <Col xs="12" sm="4" lg="4">

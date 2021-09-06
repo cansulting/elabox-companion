@@ -14,13 +14,27 @@ var errorHandler = require("errorhandler")
 const path = require("path")
 const fsExtra = require("fs-extra")
 const app = express()
-const eid = require("./eid")
+
+// nodes
+const NodeHandler = require("./nodeHandler")
+const MainchainHandler = require("./mainchainHandler")
+const mainchain = new MainchainHandler()
+const eid = new NodeHandler({
+  binaryName: "geth",
+  cwd: config.EID_DIR,
+  dataPath: config.EIDDATA_DIR + "/blocks",
+  wsport: config.EID_PORT,
+})
+const esc = new NodeHandler({
+  binaryName: "esc",
+  cwd: config.ESC_DIR,
+  dataPath: config.ESCDATA_DIR + "/blocks",
+  wsport: config.ESC_PORT,
+})
 
 // define port number
 const { exec, spawn } = require("child_process")
 const { execShell, checkProcessingRunning, killProcess, requestSpawn } = require("./helper")
-const isPortReachable = require("is-port-reachable")
-const { json } = require("body-parser")
 const delay = require("delay")
 
 // initializes log watchers
@@ -41,7 +55,6 @@ const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(config.SENDGRID_API)
 
 let elaPath = config.ELA_DIR
-let didPath = config.DID_DIR
 let keyStorePath = config.KEYSTORE_PATH
 router.get("/", (req, res) => {
   res.send("HELLO WORLD")
@@ -69,49 +82,8 @@ router.get("/synced", (req, res) => {
 })
 
 router.get("/ela", async (req, res) => {
-  const isRunning = await checkProcessingRunning("ela")
-
-  const servicesRunning = await isPortReachable(20336, { host: "localhost" })
-
-  console.log("ela serviceRunning", servicesRunning)
-
-  if (!isRunning || !servicesRunning) {
-    return res.json({ isRunning, servicesRunning })
-  }
-
   try {
-    const blockCountResponse = await execShell(
-      `curl -X POST http://User:Password@localhost:20336 -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' `,
-      { maxBuffer: 1024 * maxBufferSize }
-    )
-
-    const blockCount = JSON.parse(blockCountResponse).result
-    const latestBlock = await getBlockSize(blockCount - 1)
-    const blockSizeList = []
-    const nbOfTxList = []
-
-    for (let i = 0; i < blockCount - 1 && i < 10; i++) {
-      const blockSize = await getBlockSize(blockCount - 1 - i)
-      blockSizeList.push(blockSize.size)
-    }
-
-    for (let i = 0; i < blockCount - 1 && i < 10; i++) {
-      const nbOfTx = await getNbOfTx(blockCount - 1 - i)
-      nbOfTxList.push(nbOfTx)
-    }
-
-    return res.json({
-      blockCount: blockCount - 1,
-      blockSizes: blockSizeList,
-      nbOfTxs: nbOfTxList,
-      isRunning: isRunning,
-      servicesRunning,
-      latestBlock: {
-        blockTime: latestBlock.time,
-        blockHash: latestBlock.hash,
-        miner: latestBlock.minerinfo,
-      },
-    })
+    return res.json(await mainchain.getStatus())
   } catch (err) {
     return res.status(500).json({ error: err })
   }
@@ -120,6 +92,14 @@ router.get("/ela", async (req, res) => {
 router.get("/eid", async (req, res) => {
   try {
     eid.getStatus().then( (data) => res.status(200).json(data))
+  } catch (err) {
+    res.status(500).send({ error: err })
+  }
+})
+
+router.get("/esc", async (req, res) => {
+  try {
+    esc.getStatus().then( (data) => res.status(200).json(data))
   } catch (err) {
     res.status(500).send({ error: err })
   }
@@ -139,46 +119,6 @@ router.get("/carrier", async (req, res) => {
     res.status(500).send({ error: err })
   }
 })
-
-function getBlockSize(height) {
-  return new Promise(function (resolve, reject) {
-    exec(
-      "curl http://localhost:20334/api/v1/block/details/height/" + height + "",
-      { maxBuffer: 1024 * maxBufferSize },
-      (err, stdout, stderr) => {
-        if (err) {
-          reject(err)
-        } else {
-          let details = JSON.parse(stdout)
-          resolve(details.Result)
-        }
-      }
-    )
-  }).catch((error) => {
-    console.log(error)
-  })
-}
-
-function getNbOfTx(height) {
-  return new Promise(function (resolve, reject) {
-    exec(
-      "curl http://localhost:20334/api/v1/block/transactions/height/" +
-        height +
-        "",
-      { maxBuffer: 1024 * maxBufferSize },
-      (err, stdout, stderr) => {
-        if (err) {
-          reject(err)
-        } else {
-          let details = JSON.parse(stdout)
-          resolve(details.Result.Transactions.length)
-        }
-      }
-    )
-  }).catch((error) => {
-    console.log(error)
-  })
-}
 
 router.post("/sendTx", (req, res) => {
   let amount = req.body.amount
@@ -321,24 +261,6 @@ router.get("/downloadWallet", function (req, res) {
   res.download(config.KEYSTORE_PATH)
 })
 
-const restartMainchain = async (callback) => {
-  console.log("Restarting mainchain")
-  await killProcess("ela")
-  await requestSpawn(`nohup ./ela --datadir ${config.ELABLOCKS_DIR} > /dev/null 2>output &`, callback, {
-    maxBuffer: 1024 * maxBufferSize,
-    detached: true,
-    shell: true,
-    cwd: elaPath,
-  })
-}
-
-const resyncMainchain = async (callback) => {
-  console.log("Resyncing mainchain")
-  await killProcess("ela")
-  fs.rmdirSync(config.ELABLOCKS_DIR, { maxRetries: 3, force: true, recursive: true} )
-  await restartMainchain(callback)
-}
-
 const restartCarrier = async (callback) => {
   console.log("Restarting Carrier")
   console.log("To view carrier log >>>> sudo cat tail /var/log/syslog")
@@ -357,11 +279,11 @@ const restartCarrier = async (callback) => {
 }
 
 router.post("/restartMainchain", async (req, res) => {
-  await restartMainchain((resp) => res.json(resp))
+  await mainchain.restart((resp) => res.json(resp))
 })
 
 router.post("/resyncMainchain", async (req, res) => {
-  await resyncMainchain((resp) => res.json(resp))
+  await mainchain.resync((resp) => res.json(resp))
 })
 
 router.post("/restartEID", async (req, res) => {
@@ -370,6 +292,14 @@ router.post("/restartEID", async (req, res) => {
 
 router.post("/resyncEID", async (req, res) => {
   await eid.resync((resp) => res.json(resp))
+})
+
+router.post("/restartESC", async (req, res) => {
+  await esc.restart((resp) => res.json(resp))
+})
+
+router.post("/resyncESC", async (req, res) => {
+  await esc.resync((resp) => res.json(resp))
 })
 
 router.post("/restartCarrier", async (req, res) => {
@@ -630,16 +560,16 @@ async function processDownloadPackage(req, res) {
 // define the router to use
 app.use("/", router)
 
-const server = app.listen(config.PORT, function () {
+app.listen(config.PORT, async function () {
   console.log("Runnning on " + config.PORT)
-  checkProcessingRunning("ela").then((running) => {
-    if (!running) restartMainchain((response) => console.log(response))
-  })
-  eid.init()
   checkProcessingRunning("ela-bootstrapd").then((running) => {
     if (!running) restartCarrier((response) => console.log(response))
   })
+  await mainchain.init()
+  mainchain.setOnComplete( async () => {
+    await eid.init()
+    await eid.setOnComplete(() => esc.init())
+  })
 })
-
 
 module.exports = app
