@@ -1,4 +1,4 @@
-import React from "react"
+import React,  { useState }  from "react"
 import {
   Row,
   Col,
@@ -8,7 +8,11 @@ import {
   Button,
   Progress,
   Spinner,
-  Alert
+  Alert,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter 
 } from "reactstrap"
 export default function Updates({ isMobile, ota }) {
   const {
@@ -23,11 +27,15 @@ export default function Updates({ isMobile, ota }) {
     progress,
     disabledButton,
     errmsg,
-    clearErrMsg
+    clearErrMsg,
+    warningShown,
+    showWarning,
   } = ota
   let body = ""
   let btnLabel = ""
   let headerLabel = ""
+  // Warning label can be changed
+  let warningLabel = "This will update Elabox client and system to the latest version. You may download a backup of your wallet in order to ensure that your data is safe in case of an interuption happening during the update which may cause some issues on the system."
   const showNewDownload =
     hasNewDownload ||
     hasNewUpdates ||
@@ -35,6 +43,10 @@ export default function Updates({ isMobile, ota }) {
     isUpdating ||
     isUpdated ||
     notUpdated
+
+  const [modal, setWarningModal] = useState(false);
+  const toggleWarningModal = () => setWarningModal(!modal);
+
   if (hasNewDownload) {
     body = (
       <div>
@@ -56,7 +68,7 @@ export default function Updates({ isMobile, ota }) {
         {/*progress.status*/}
       </Progress>
     )
-    headerLabel = "Downloading Update " + ( "0" | progress.percent) + "%"
+    headerLabel = "Downloading Update " + ("0" | progress.percent) + "%"
     btnLabel = <Spinner size="sm" color="light" children={""} />
   } else if (hasNewUpdates) {
     body = (
@@ -81,20 +93,38 @@ export default function Updates({ isMobile, ota }) {
     btnLabel = "Please Wait"
   }
   return (
-      <div
-        style={{
-          ...{
-            paddingLeft: "18%",
-            width: "100%",
-            backgroundColor: "#1E1E26",
-          },
-          ...(isMobile && { paddingLeft: undefined }),
-        }}
-        className="animated fadeIn w3-container"
-      >
-      <Alert color="info" color="danger" isOpen={errmsg !== null} toggle={ () => clearErrMsg()}>
+    <div
+      style={{
+        ...{
+          paddingLeft: "18%",
+          width: "100%",
+          backgroundColor: "#1E1E26",
+        },
+        ...(isMobile && { paddingLeft: undefined }),
+      }}
+      className="animated fadeIn w3-container"
+    >
+      <Alert color="info" color="danger" isOpen={errmsg !== null} toggle={() => clearErrMsg()}>
         {errmsg}
       </Alert>
+
+      
+      <Modal isOpen={modal} toggle={toggleWarningModal} className="warningModal">
+        <ModalHeader toggle={() => toggleWarningModal()} >Warning</ModalHeader>
+        <ModalBody>
+
+          {warningLabel}
+
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick=
+            {() => 
+              {showWarning(); toggleWarningModal(); ota.handleUpdates()              }
+            }>Continue</Button>{' '}
+          <Button color="secondary" onClick={toggleWarningModal}>Cancel</Button>
+        </ModalFooter>
+      </Modal>
+
       <Row>
         <Col>
           <Card
@@ -122,7 +152,9 @@ export default function Updates({ isMobile, ota }) {
                           if (hasNewDownload) {
                             ota.handleDownloadPackage()
                           } else if (hasNewUpdates) {
-                            ota.handleUpdates()
+                            if (!warningShown){
+                              toggleWarningModal()
+                            } 
                           }
                         }}
                         disabled={ota.disabledButton}

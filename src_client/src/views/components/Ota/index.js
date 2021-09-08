@@ -8,6 +8,9 @@ export default function Ota({ children }) {
   const [updatesCount, setUpdatesCount] = useState(0)
   const [progress, setProgress] = useState(0)
   const [errmsg, setErrorMsg] = useState(null)
+  const [warningShown, showWarn] = useState(false)
+
+
   useEffect(() => {
     const getDetails = async () => {
       const currentVersionDetails = await API.getVersionDetails("current")
@@ -34,6 +37,8 @@ export default function Ota({ children }) {
         setUpdatesCount(checkUpdatesResponse.count)
         setStatus("new-download")
       } else {
+        console.log("RESPONSE ", checkUpdatesResponse);
+
         setStatus("no-updates")
       }
     } catch (error) {
@@ -44,6 +49,7 @@ export default function Ota({ children }) {
     setStatus("idle")
   }
   const handleUpdates = async () => {
+    console.log("UPDATING...")
     try {
       setStatus("updating")
       API.processUpdate()
@@ -67,6 +73,13 @@ export default function Ota({ children }) {
   const clearErrMsg = () => {
     setErrorMsg(null)
   }
+
+  const showWarning = () => {
+    console.log("Warning Shown");
+    showWarn(true)
+  }
+
+
   const isLoading = !currentVersionDetails && !latestVersionDetails
   const isUpdating = status === "updating"
   const noUpdates = status === "no-updates"
@@ -102,6 +115,8 @@ export default function Ota({ children }) {
           handleDownloadPackage,
           errmsg,
           clearErrMsg,
+          warningShown,
+          showWarning,
         })}
       </div>
     </div>
