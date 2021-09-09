@@ -261,6 +261,22 @@ router.post("/createWallet", (req, res) => {
   console.log("PASSWORD RECEIVED", pwd, req.body)
 
   exec(
+    "echo 'elabox:" + pwd + "' | sudo chpasswd",
+    { maxBuffer: 1024 * maxBufferSize },
+    async (err, stdout, stderr) => {
+      console.log("Changing Pi Password... ")
+      if(!stdout){
+        console.log("Password setting succeeds")
+        console.log(stdout)
+      }
+      if (stderr){
+        console.log("System password setup failed: ", stderr);
+      }
+    }
+  )
+
+
+  exec(
     "cd " + config.ELADATA_DIR + "; " + config.ELA_DIR + "/ela-cli wallet create -p " + pwd + "",
     { maxBuffer: 1024 * maxBufferSize },
     async (err, stdout, stderr) => {
@@ -269,6 +285,7 @@ router.post("/createWallet", (req, res) => {
       res.json({ ok: "ok" })
     }
   )
+
 
   // console.log(pwd)
 })
