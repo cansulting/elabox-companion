@@ -70,7 +70,7 @@ class MainchainHandler {
         console.log("Restarting ela...")
         await processhelper.killProcess('ela')
         await delay(5000)
-        await start(callback)
+        await this.start(callback)
     }
     // close the node and resync
     async resync(callback) {

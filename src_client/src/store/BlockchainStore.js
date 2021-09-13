@@ -108,7 +108,6 @@ export const esc = types
   .actions((self) => {
     const fetchData = flow(function* () {
       try {
-        console.log("ESC")
         const response = yield API.fetchESC();
         applySnapshot(self, response);
       } catch (err) {
