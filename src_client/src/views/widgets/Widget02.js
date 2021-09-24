@@ -99,6 +99,7 @@ class Widget02 extends Component {
                 }}
               >
                 {header} {initializing ? " (initializing) " : ""}
+                {children}
               </p>
             ) : (
               <p
@@ -110,6 +111,7 @@ class Widget02 extends Component {
                 }}
               >
                 {header}
+                {children}
               </p>
             )}
           </div>

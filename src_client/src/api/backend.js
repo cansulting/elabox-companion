@@ -1,8 +1,8 @@
-import axios from "axios"
-const PUBLIC_URI = window.location.hostname + ":3001"
+import axios from "axios";
+const PUBLIC_URI = window.location.hostname + ":3001";
 class API {
   constructor() {
-    this.axios = axios.create({ baseURL: `http://${PUBLIC_URI}` })
+    this.axios = axios.create({ baseURL: `http://${PUBLIC_URI}` });
   }
 
   login = (pwd) => {
@@ -15,36 +15,40 @@ class API {
       body: JSON.stringify({
         pwd,
       }),
-    }).then((response) => response.json())
-  }
+    }).then((response) => response.json());
+  };
 
   fetchEla = async () => {
-    const response = await this.axios.get("/ela")
-    return response.data
-  }
+    const response = await this.axios.get("/ela");
+    return response.data;
+  };
 
   fetchEID = async () => {
-    const response = await this.axios.get("/eid")
+    const response = await this.axios.get("/eid");
     //console.log(response)
-    return response.data
-  }
+    return response.data;
+  };
 
   fetchESC = async () => {
-    const response = await this.axios.get("/esc")
+    const response = await this.axios.get("/esc");
     //console.log(response)
-    return response.data
-  }
+    return response.data;
+  };
 
   fetchCarrier = async () => {
-    const response = await this.axios.get("/carrier")
-    return response.data
-  }
+    const response = await this.axios.get("/carrier");
+    return response.data;
+  };
+  fetchFeeds = async () => {
+    const response = await this.axios.get("/feeds");
+    return response.data;
+  };
 
   checkInstallation = () => {
     return fetch(`http://${PUBLIC_URI}/checkInstallation`).then((response) =>
       response.json()
-    )
-  }
+    );
+  };
 
   createWallet = (pwd) => {
     return fetch(`http://${PUBLIC_URI}/createWallet`, {
@@ -56,14 +60,14 @@ class API {
       body: JSON.stringify({
         pwd,
       }),
-    }).then((response) => response.json())
-  }
+    }).then((response) => response.json());
+  };
 
   serviceStatus = () => {
     return fetch(`http://${PUBLIC_URI}/serviceStatus`).then((response) =>
       response.json()
-    )
-  }
+    );
+  };
 
   restartMainChain = (pwd) => {
     return fetch(`http://${PUBLIC_URI}/restartMainchain`, {
@@ -72,8 +76,8 @@ class API {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    }).then((response) => response.json())
-  }
+    }).then((response) => response.json());
+  };
 
   resyncMainchain = (pwd) => {
     return fetch(`http://${PUBLIC_URI}/resyncMainchain`, {
@@ -82,8 +86,8 @@ class API {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    }).then((response) => response.json())
-  }
+    }).then((response) => response.json());
+  };
 
   restartEID = () => {
     return fetch(`http://${PUBLIC_URI}/restartEID`, {
@@ -92,8 +96,8 @@ class API {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    }).then((response) => response.json())
-  }
+    }).then((response) => response.json());
+  };
 
   resyncEID = () => {
     return fetch(`http://${PUBLIC_URI}/resyncEID`, {
@@ -102,8 +106,8 @@ class API {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    }).then((response) => response.json())
-  }
+    }).then((response) => response.json());
+  };
 
   restartESC = () => {
     return fetch(`http://${PUBLIC_URI}/restartESC`, {
@@ -112,8 +116,8 @@ class API {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    }).then((response) => response.json())
-  }
+    }).then((response) => response.json());
+  };
 
   resyncESC = () => {
     return fetch(`http://${PUBLIC_URI}/resyncESC`, {
@@ -122,8 +126,8 @@ class API {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    }).then((response) => response.json())
-  }
+    }).then((response) => response.json());
+  };
 
   restartCarrier = () => {
     return fetch(`http://${PUBLIC_URI}/restartCarrier`, {
@@ -132,8 +136,8 @@ class API {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    }).then((response) => response.json())
-  }
+    }).then((response) => response.json());
+  };
 
   getBalance = (address) => {
     return fetch(`http://${PUBLIC_URI}/getBalance`, {
@@ -145,8 +149,8 @@ class API {
       body: JSON.stringify({
         address,
       }),
-    }).then((response) => response.json())
-  }
+    }).then((response) => response.json());
+  };
 
   sendTx = (recipient, amount, pwd) => {
     return fetch(`http://${PUBLIC_URI}/sendTx`, {
@@ -160,55 +164,55 @@ class API {
         amount: amount,
         pwd: pwd,
       }),
-    }).then((response) => response.json())
-  }
+    }).then((response) => response.json());
+  };
 
   txHistory = (address) => {
     console.log(
       "https://node1.elaphant.app/api/3/history/" +
         address +
         "?pageNum=1&pageSize=10&order=desc"
-    )
+    );
 
     return fetch(
       "https://node1.elaphant.app/api/3/history/" +
         address +
         "?pageNum=1&pageSize=10&order=desc"
-    ).then((response) => response.json())
-  }
+    ).then((response) => response.json());
+  };
 
   getOnion = () => {
-    return axios.get(`http://${PUBLIC_URI}/getOnion`)
-  }
+    return axios.get(`http://${PUBLIC_URI}/getOnion`);
+  };
 
   regenerateOnion = () => {
-    return axios.get(`http://${PUBLIC_URI}/regenerateOnion`)
-  }
+    return axios.get(`http://${PUBLIC_URI}/regenerateOnion`);
+  };
   checkUpdates = async () => {
-    const { data } = await axios.get(`http://${PUBLIC_URI}/check_new_updates`)
-    return data
-  }
+    const { data } = await axios.get(`http://${PUBLIC_URI}/check_new_updates`);
+    return data;
+  };
   processUpdate = async () => {
-    const { data } = await axios.get(`http://${PUBLIC_URI}/update_version`, {})
-    return data
-  }
+    const { data } = await axios.get(`http://${PUBLIC_URI}/update_version`, {});
+    return data;
+  };
   processDownloadPackage = async () => {
-    const { data } = await axios.get(`http://${PUBLIC_URI}/download_package`)
-    return data
-  }
+    const { data } = await axios.get(`http://${PUBLIC_URI}/download_package`);
+    return data;
+  };
   getVersionDetails = async (versionType) => {
     const { data } = await axios.post(`http://${PUBLIC_URI}/version_info`, {
       versionType,
-    })
-    return data
-  }
+    });
+    return data;
+  };
   downloadWallet = () => {
     const response = {
       file: `http://${PUBLIC_URI}/downloadWallet`,
     };
     // now, let's download:
     window.location.href = response.file;
-  }
+  };
 }
 
-export default new API()
+export default new API();
