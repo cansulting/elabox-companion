@@ -225,10 +225,18 @@ const Dashboard = ({ isMobile }) => {
             variant="1"
             children={
               feeds.isRunning && (
-                <Button style={{ marginLeft: "0.5em" }} color="success">
-                  <a target="_blank" href="http://elabox.local:10018/">
-                    Launch
-                  </a>
+                <Button
+                  as="achor"
+                  style={{
+                    marginLeft: "5em",
+                    marginTop: "0.5em",
+                    width: "17em",
+                  }}
+                  color="success"
+                  target="_blank"
+                  href="http://elabox.local:10018/"
+                >
+                  Launch
                 </Button>
               )
             }
