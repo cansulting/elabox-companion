@@ -184,7 +184,18 @@ const feeds = types
         console.error(fetchData);
       }
     });
-    return { fetchData };
+    const restart = flow(function* () {
+      try {
+        self.restarting = true;
+        const response = yield API.restartFeeds();
+        console.log(response);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        self.restarting = false;
+      }
+    });
+    return { fetchData, restart };
   });
 const BlockChainStore = types.model({
   ela: Ela,

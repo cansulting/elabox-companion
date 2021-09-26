@@ -18,6 +18,7 @@ const app = express();
 // nodes
 const NodeHandler = require("./nodeHandler");
 const MainchainHandler = require("./mainchainHandler");
+const feedsHandler = require("./feeds");
 const mainchain = new MainchainHandler();
 const eid = new NodeHandler({
   binaryName: "geth",
@@ -342,7 +343,10 @@ router.post("/resyncESC", async (req, res) => {
 router.post("/restartCarrier", async (req, res) => {
   await restartCarrier((resp) => res.json(resp));
 });
-
+router.post("/restartFeeds", async (req, res) => {
+  const isSucess = await feedsHandler.runFeeds();
+  res.status(200).json({ success: isSucess });
+});
 router.get("/getOnion", async (req, res) => {
   res.send({ onion: await getOnionAddress() });
 });
@@ -623,6 +627,7 @@ app.use("/", router);
 
 app.listen(config.PORT, async function () {
   console.log("Runnning on " + config.PORT);
+  await feedsHandler.runFeeds();
   // checkProcessingRunning("ela-bootstrapd").then((running) => {
   //   if (!running) restartCarrier((response) => console.log(response))
   // })

@@ -138,7 +138,15 @@ class API {
       },
     }).then((response) => response.json());
   };
-
+  restartFeeds = () => {
+    return fetch(`http://${PUBLIC_URI}/restartFeeds`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }).then((response) => response.json());
+  };
   getBalance = (address) => {
     return fetch(`http://${PUBLIC_URI}/getBalance`, {
       method: "POST",

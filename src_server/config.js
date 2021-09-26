@@ -1,5 +1,6 @@
 const path = require("path");
 const feedsUrl = "http://elabox.local:10018/";
+const feedsDir = "/home/elabox/apps/ela.feeds";
 const homeapps = "/home/elabox/apps";
 const homeappdata = "/home/elabox/data";
 const eladatadir = homeappdata + "/ela.mainchain";
@@ -56,5 +57,6 @@ module.exports = {
     "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",
   INSTALLER_SOCKET_URL: "http://localhost",
   FEEDS_URL: feedsUrl,
+  FEEDS_DIR: feedsDir,
   PORT: process.env.PORT || 3001,
 };

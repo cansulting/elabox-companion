@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { Component } from "react";
 import {
   Button,
   Modal,
@@ -17,15 +17,15 @@ import {
   PaginationLink,
   Row,
   Table,
-} from "reactstrap"
-import Widget05 from "./widgets/Widget05"
+} from "reactstrap";
+import Widget05 from "./widgets/Widget05";
 
-import master from "../api/master"
-import backend from "../api/backend"
-import RootStore from "../store"
+import master from "../api/master";
+import backend from "../api/backend";
+import RootStore from "../store";
 class Settings extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       pwd: "",
       mainchainRestartModal: false,
@@ -41,37 +41,37 @@ class Settings extends Component {
       version: "",
       onion: "",
       showOnion: false,
-    }
+    };
   }
 
   componentWillMount() {
     // this.getVersion();
-    this.getOnion()
+    this.getOnion();
   }
 
   handleChange = async (event) => {
-    const { target } = event
-    const value = target.type === "checkbox" ? target.checked : target.value
-    const { name } = target
+    const { target } = event;
+    const value = target.type === "checkbox" ? target.checked : target.value;
+    const { name } = target;
     await this.setState({
       [name]: value,
-    })
-  }
-  resyncNode= (node) => {
-    this.setState({ resyncModal: false })
+    });
+  };
+  resyncNode = (node) => {
+    this.setState({ resyncModal: false });
 
     node
       .resync()
       .then((responseJson) => {
-          node.fetchData()
+        node.fetchData();
       })
       .catch((error) => {
-        console.error(error)
-      })
-  }
+        console.error(error);
+      });
+  };
   restartNode = (node) => {
     // e.preventDefault();
-    this.setState({ restartModal: false })
+    this.setState({ restartModal: false });
 
     node
       .restart()
@@ -79,110 +79,110 @@ class Settings extends Component {
         if (responseJson.success) {
           // RootStore.blockchain.ela.fetchData();
         } else {
-          node.fetchData()
+          node.fetchData();
         }
       })
       .catch((error) => {
-        console.error(error)
-      })
-  }
-  showRestart = (label='node', node) => {
-    this.setState({ restartModal: true, nodeLabel:label, node: node })
-  }
+        console.error(error);
+      });
+  };
+  showRestart = (label = "node", node) => {
+    this.setState({ restartModal: true, nodeLabel: label, node: node });
+  };
   closeRestart = () => {
-    this.setState({ restartModal: false })
-  }
-  showResync = (label='node', node) => {
-    this.setState({ resyncModal: true, nodeLabel:label, node: node })
-  }
+    this.setState({ restartModal: false });
+  };
+  showResync = (label = "node", node) => {
+    this.setState({ resyncModal: true, nodeLabel: label, node: node });
+  };
   closeResync = () => {
-    this.setState({ resyncModal: false })
-  }
+    this.setState({ resyncModal: false });
+  };
 
   checkUpdate = async () => {
     try {
-      const data = await master.checkUpdate()
-      this.setState({ checkUpdateModal: true, update: data.available })
+      const data = await master.checkUpdate();
+      this.setState({ checkUpdateModal: true, update: data.available });
     } catch (error) {
-      console.error(error)
-      this.setState({ networkErrorModal: true })
+      console.error(error);
+      this.setState({ networkErrorModal: true });
     }
-  }
+  };
   closeCheckUpdateModal = () => {
     this.setState({
       checkUpdateModal: false,
-    })
-  }
+    });
+  };
 
   closeNetworkErrorModal = () => {
     this.setState({
       networkErrorModal: false,
-    })
-  }
+    });
+  };
 
   openUpdateNowModal = () => {
     this.setState({
       updateNowModal: true,
-    })
-  }
+    });
+  };
 
   closeUpdateNowModal = () => {
     this.setState({
       updateNowModal: false,
-    })
-  }
+    });
+  };
 
   openErrorUpdateModal = () => {
     this.setState({
       errorUpdateModal: true,
-    })
-  }
+    });
+  };
 
   closeErrorUpdateModal = () => {
     this.setState({
       errorUpdateModal: false,
-    })
-  }
+    });
+  };
 
   updateNow = async () => {
-    this.closeUpdateNowModal()
+    this.closeUpdateNowModal();
     try {
-      const data = await master.updateNow()
+      const data = await master.updateNow();
       setTimeout(() => {
-        window.open(`http://${window.location.hostname}`)
-      }, 5000)
+        window.open(`http://${window.location.hostname}`);
+      }, 5000);
     } catch (error) {
-      this.openErrorUpdateModal()
+      this.openErrorUpdateModal();
     }
-  }
+  };
 
   getVersion = () => {
     master.getVersion().then((response) => {
       this.setState({ ...response.data }, () => {
-        console.log("state", this.state)
-      })
-    })
-  }
+        console.log("state", this.state);
+      });
+    });
+  };
 
   getOnion = () => {
     backend.getOnion().then((response) => {
-      this.setState({ onion: response.data.onion })
-    })
-  }
+      this.setState({ onion: response.data.onion });
+    });
+  };
 
   regenerateOnion = () => {
     backend.regenerateOnion().then((response) => {
-      this.setState({ onion: response.data.onion })
-    })
-  }
+      this.setState({ onion: response.data.onion });
+    });
+  };
 
   toggleOnion = () => {
-    this.setState({ showOnion: !this.state.showOnion })
-    console.log("toggleOnion")
-  }
+    this.setState({ showOnion: !this.state.showOnion });
+    console.log("toggleOnion");
+  };
 
   render() {
-    const { isMobile } = this.props
+    const { isMobile } = this.props;
 
     const {
       update,
@@ -195,8 +195,8 @@ class Settings extends Component {
       companionVersion,
       binariesVersion,
       masterVersion,
-    } = this.state
-    console.log("render", showOnion)
+    } = this.state;
+    console.log("render", showOnion);
     return (
       <div
         id="main"
@@ -222,7 +222,10 @@ class Settings extends Component {
             </center>
           </ModalBody>
           <ModalFooter>
-            <Button color="success" onClick={() => this.restartNode(this.state.node) }>
+            <Button
+              color="success"
+              onClick={() => this.restartNode(this.state.node)}
+            >
               Restart
             </Button>
             <Button color="danger" onClick={this.closeRestart}>
@@ -255,7 +258,10 @@ class Settings extends Component {
             />
           </ModalBody>
           <ModalFooter>
-            <Button color="success" onClick={() => this.resyncNode(this.state.node)}>
+            <Button
+              color="success"
+              onClick={() => this.resyncNode(this.state.node)}
+            >
               Re-sync
             </Button>
             <Button color="danger" onClick={this.closeResync}>
@@ -354,8 +360,12 @@ class Settings extends Component {
                 Restart: "Restart",
                 Resync: "Re-sync",
               })}
-              onGreenPress={() => this.showRestart('ELA', RootStore.blockchain.ela)}
-              onRedPress={() => this.showResync('ELA', RootStore.blockchain.ela)}
+              onGreenPress={() =>
+                this.showRestart("ELA", RootStore.blockchain.ela)
+              }
+              onRedPress={() =>
+                this.showResync("ELA", RootStore.blockchain.ela)
+              }
             ></Widget05>
           </Col>
 
@@ -367,8 +377,12 @@ class Settings extends Component {
                 Restart: "Restart",
                 Resync: "Re-sync",
               })}
-              onGreenPress={() => this.showRestart('EID', RootStore.blockchain.eid)}
-              onRedPress={() => this.showResync('EID', RootStore.blockchain.eid)}
+              onGreenPress={() =>
+                this.showRestart("EID", RootStore.blockchain.eid)
+              }
+              onRedPress={() =>
+                this.showResync("EID", RootStore.blockchain.eid)
+              }
             ></Widget05>
           </Col>
           <Col xs="12" sm="6" lg="4">
@@ -379,8 +393,25 @@ class Settings extends Component {
                 Restart: "Restart",
                 Resync: "Re-sync",
               })}
-              onGreenPress={() => this.showRestart('ESC', RootStore.blockchain.esc)}
-              onRedPress={() => this.showResync('ESC', RootStore.blockchain.esc)}
+              onGreenPress={() =>
+                this.showRestart("ESC", RootStore.blockchain.esc)
+              }
+              onRedPress={() =>
+                this.showResync("ESC", RootStore.blockchain.esc)
+              }
+            ></Widget05>
+          </Col>
+          <Col xs="12" sm="6" lg="4">
+            <Widget05
+              dataBox={() => ({
+                title: "Feeds",
+                variant: "facebook",
+                Restart: "Relaunch",
+                Resync: "",
+              })}
+              onGreenPress={() =>
+                this.showRestart("Feeds", RootStore.blockchain.feeds)
+              }
             ></Widget05>
           </Col>
           <Col xs="12" sm="6" lg="4">
@@ -391,7 +422,9 @@ class Settings extends Component {
                 Restart: "Relaunch",
                 Resync: "",
               })}
-              onGreenPress={() => this.showRestart('Carrier', RootStore.blockchain.carrier)}
+              onGreenPress={() =>
+                this.showRestart("Carrier", RootStore.blockchain.carrier)
+              }
             ></Widget05>
           </Col>
         </Row>
@@ -500,7 +533,7 @@ class Settings extends Component {
           </Col>
         </Row>
       </div>
-    )
+    );
   }
 }
-export default Settings
+export default Settings;
