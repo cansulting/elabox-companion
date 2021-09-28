@@ -12,8 +12,10 @@ const elaInstallerPath = "/usr/ela/system/ela.installer/"
 const elaSystemInstallerPath = path.join(elaInstallerPath, "main")
 const elaTmpPath = "/tmp/ela"
 const elaInstaller = path.join(elaTmpPath, "/main")
-const buildMode = process.env.ELABUILD || "DEBUG"
+const buildMode = process.env.ELAENV || "DEBUG"
+const elaboxVersion = process.env.ELAVERSION
 console.log(buildMode + " MODE")
+console.log("Version " + elaboxVersion)
 console.log("Binaries are on", homeapps)
 
 module.exports = {
@@ -45,6 +47,7 @@ module.exports = {
   INSTALLER_PK_ID: "ela.installer",
   ELA_SYSTEM_BROADCAST_ID_INSTALLER: "ela.installer.PROGRESS",
   BUILD_MODE: buildMode,
+  ELABOX_VERSION: elaboxVersion,                                  // current version of elabox
   PACKAGES_URL: buildMode === "RELEASE" ? 
     "https://storage.googleapis.com/elabox/packages" : (
     buildMode === "DEBUG" ?

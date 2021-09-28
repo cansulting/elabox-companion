@@ -23,6 +23,7 @@ import Widget05 from "./widgets/Widget05"
 import master from "../api/master"
 import backend from "../api/backend"
 import RootStore from "../store"
+
 class Settings extends Component {
   constructor(props) {
     super(props)
@@ -40,12 +41,13 @@ class Settings extends Component {
       errorUpdateModal: false,
       version: "",
       onion: "",
+      env: "",
       showOnion: false,
     }
   }
 
   componentWillMount() {
-    // this.getVersion();
+    this.getVersion()
     this.getOnion()
   }
 
@@ -157,8 +159,9 @@ class Settings extends Component {
   }
 
   getVersion = () => {
-    master.getVersion().then((response) => {
-      this.setState({ ...response.data }, () => {
+    backend.getVersionDetails().then((response) => {
+      console.log(response)
+      this.setState({ elaboxVersion: response.version, env: response.env }, () => {
         console.log("state", this.state)
       })
     })
@@ -192,9 +195,8 @@ class Settings extends Component {
       errorUpdateModal,
       onion,
       showOnion,
-      companionVersion,
-      binariesVersion,
-      masterVersion,
+      elaboxVersion,
+      env,
     } = this.state
     console.log("render", showOnion)
     return (
@@ -445,20 +447,9 @@ class Settings extends Component {
                 marginTop: "40px",
               }}
             >
-              <CardHeader>Check for updates</CardHeader>
+              <CardHeader>Elabox Version</CardHeader>
               <CardBody>
-                You are currently running: <br />
-                <ul style={{ listStyleType: "none" }}>
-                  <li>
-                    Elabox <b>v {masterVersion}</b>
-                  </li>
-                  <li>
-                    Elabox App <b>v {companionVersion}</b>
-                  </li>
-                  <li>
-                    Elastos Node <b>v {binariesVersion}</b>
-                  </li>
-                </ul>
+                <b>Elabox {elaboxVersion} {env}</b> 
               </CardBody>
             </Card>
           </Col>

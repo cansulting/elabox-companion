@@ -356,7 +356,9 @@ router.post("/sendSupportEmail", async (req, res) => {
 })
 //ota routes
 router.get("/update_version", processUpdateVersion)
-router.post("/version_info", processVersionCheck)
+router.post("/version_info", (req, res) => {
+  res.send({ version: config.ELABOX_VERSION, env: config.BUILD_MODE })
+})
 router.get("/check_new_updates", processCheckNewUpdates)
 router.get("/download_package", processDownloadPackage)
 router.get("/latest_eid", async (req, res) => {
@@ -506,25 +508,7 @@ async function processUpdateVersion(req, res) {
     res.status(500).send("Update error.")
   }
 }
-async function processVersionCheck(req, res) {
-  try {
-    const { versionType } = req.body
-    let path = config.ELA_SYSTEM_PATH
-    let version = await getCurrentVersion()
-    if (versionType === "latest") {
-      path = config.TMP_PATH
-      await fsExtra.emptyDir(path)
-      version = await getLatestVersion()
-      await downloadElaFile(path, version, "json")
-      res.send(JSON.stringify(await getVersionInfo(version, path)))
-      return
-    }
-    res.send(await getVersionInfo("info", path))
-  } catch (error) {
-    console.log(error)
-    res.status(500).send("Cannot get version info.")
-  }
-}
+
 async function processCheckNewUpdates(req, res) {
   try {
     const checkVersionResponse = await checkVersion()
