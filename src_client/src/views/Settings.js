@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from "react"
 import {
   Button,
   Modal,
@@ -17,15 +17,16 @@ import {
   PaginationLink,
   Row,
   Table,
-} from "reactstrap";
-import Widget05 from "./widgets/Widget05";
+} from "reactstrap"
+import Widget05 from "./widgets/Widget05"
 
-import master from "../api/master";
-import backend from "../api/backend";
-import RootStore from "../store";
+import master from "../api/master"
+import backend from "../api/backend"
+import RootStore from "../store"
+
 class Settings extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       pwd: "",
       mainchainRestartModal: false,
@@ -40,38 +41,39 @@ class Settings extends Component {
       errorUpdateModal: false,
       version: "",
       onion: "",
+      env: "",
       showOnion: false,
-    };
+    }
   }
 
   componentWillMount() {
-    // this.getVersion();
-    this.getOnion();
+    this.getVersion()
+    this.getOnion()
   }
 
   handleChange = async (event) => {
-    const { target } = event;
-    const value = target.type === "checkbox" ? target.checked : target.value;
-    const { name } = target;
+    const { target } = event
+    const value = target.type === "checkbox" ? target.checked : target.value
+    const { name } = target
     await this.setState({
       [name]: value,
-    });
-  };
+    })
+  }
   resyncNode = (node) => {
-    this.setState({ resyncModal: false });
+    this.setState({ resyncModal: false })
 
     node
       .resync()
       .then((responseJson) => {
-        node.fetchData();
+        node.fetchData()
       })
       .catch((error) => {
-        console.error(error);
-      });
-  };
+        console.error(error)
+      })
+  }
   restartNode = (node) => {
     // e.preventDefault();
-    this.setState({ restartModal: false });
+    this.setState({ restartModal: false })
 
     node
       .restart()
@@ -79,110 +81,114 @@ class Settings extends Component {
         if (responseJson.success) {
           // RootStore.blockchain.ela.fetchData();
         } else {
-          node.fetchData();
+          node.fetchData()
         }
       })
       .catch((error) => {
-        console.error(error);
-      });
-  };
+        console.error(error)
+      })
+  }
   showRestart = (label = "node", node) => {
-    this.setState({ restartModal: true, nodeLabel: label, node: node });
-  };
+    this.setState({ restartModal: true, nodeLabel: label, node: node })
+  }
   closeRestart = () => {
-    this.setState({ restartModal: false });
-  };
+    this.setState({ restartModal: false })
+  }
   showResync = (label = "node", node) => {
-    this.setState({ resyncModal: true, nodeLabel: label, node: node });
-  };
+    this.setState({ resyncModal: true, nodeLabel: label, node: node })
+  }
   closeResync = () => {
-    this.setState({ resyncModal: false });
-  };
+    this.setState({ resyncModal: false })
+  }
 
   checkUpdate = async () => {
     try {
-      const data = await master.checkUpdate();
-      this.setState({ checkUpdateModal: true, update: data.available });
+      const data = await master.checkUpdate()
+      this.setState({ checkUpdateModal: true, update: data.available })
     } catch (error) {
-      console.error(error);
-      this.setState({ networkErrorModal: true });
+      console.error(error)
+      this.setState({ networkErrorModal: true })
     }
-  };
+  }
   closeCheckUpdateModal = () => {
     this.setState({
       checkUpdateModal: false,
-    });
-  };
+    })
+  }
 
   closeNetworkErrorModal = () => {
     this.setState({
       networkErrorModal: false,
-    });
-  };
+    })
+  }
 
   openUpdateNowModal = () => {
     this.setState({
       updateNowModal: true,
-    });
-  };
+    })
+  }
 
   closeUpdateNowModal = () => {
     this.setState({
       updateNowModal: false,
-    });
-  };
+    })
+  }
 
   openErrorUpdateModal = () => {
     this.setState({
       errorUpdateModal: true,
-    });
-  };
+    })
+  }
 
   closeErrorUpdateModal = () => {
     this.setState({
       errorUpdateModal: false,
-    });
-  };
+    })
+  }
 
   updateNow = async () => {
-    this.closeUpdateNowModal();
+    this.closeUpdateNowModal()
     try {
-      const data = await master.updateNow();
+      const data = await master.updateNow()
       setTimeout(() => {
-        window.open(`http://${window.location.hostname}`);
-      }, 5000);
+        window.open(`http://${window.location.hostname}`)
+      }, 5000)
     } catch (error) {
-      this.openErrorUpdateModal();
+      this.openErrorUpdateModal()
     }
-  };
+  }
 
   getVersion = () => {
-    master.getVersion().then((response) => {
-      this.setState({ ...response.data }, () => {
-        console.log("state", this.state);
-      });
-    });
-  };
+    backend.getVersionDetails().then((response) => {
+      //console.log(response)
+      this.setState(
+        { elaboxVersion: response.version, env: response.env },
+        () => {
+          //console.log("state", this.state)
+        }
+      )
+    })
+  }
 
   getOnion = () => {
     backend.getOnion().then((response) => {
-      this.setState({ onion: response.data.onion });
-    });
-  };
+      this.setState({ onion: response.data.onion })
+    })
+  }
 
   regenerateOnion = () => {
     backend.regenerateOnion().then((response) => {
-      this.setState({ onion: response.data.onion });
-    });
-  };
+      this.setState({ onion: response.data.onion })
+    })
+  }
 
   toggleOnion = () => {
-    this.setState({ showOnion: !this.state.showOnion });
-    console.log("toggleOnion");
-  };
+    this.setState({ showOnion: !this.state.showOnion })
+    console.log("toggleOnion")
+  }
 
   render() {
-    const { isMobile } = this.props;
+    const { isMobile } = this.props
 
     const {
       update,
@@ -192,11 +198,10 @@ class Settings extends Component {
       errorUpdateModal,
       onion,
       showOnion,
-      companionVersion,
-      binariesVersion,
-      masterVersion,
-    } = this.state;
-    console.log("render", showOnion);
+      elaboxVersion,
+      env,
+    } = this.state
+    console.log("render", showOnion)
     return (
       <div
         id="main"
@@ -478,20 +483,11 @@ class Settings extends Component {
                 marginTop: "40px",
               }}
             >
-              <CardHeader>Check for updates</CardHeader>
+              <CardHeader>Elabox Version</CardHeader>
               <CardBody>
-                You are currently running: <br />
-                <ul style={{ listStyleType: "none" }}>
-                  <li>
-                    Elabox <b>v {masterVersion}</b>
-                  </li>
-                  <li>
-                    Elabox App <b>v {companionVersion}</b>
-                  </li>
-                  <li>
-                    Elastos Node <b>v {binariesVersion}</b>
-                  </li>
-                </ul>
+                <b>
+                  Elabox {elaboxVersion} {env}
+                </b>
               </CardBody>
             </Card>
           </Col>
@@ -533,7 +529,7 @@ class Settings extends Component {
           </Col>
         </Row>
       </div>
-    );
+    )
   }
 }
-export default Settings;
+export default Settings
