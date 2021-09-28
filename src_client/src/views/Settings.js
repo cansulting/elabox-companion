@@ -160,9 +160,9 @@ class Settings extends Component {
 
   getVersion = () => {
     backend.getVersionDetails().then((response) => {
-      console.log(response)
+      //console.log(response)
       this.setState({ elaboxVersion: response.version, env: response.env }, () => {
-        console.log("state", this.state)
+        //console.log("state", this.state)
       })
     })
   }
