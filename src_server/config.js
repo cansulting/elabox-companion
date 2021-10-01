@@ -1,4 +1,5 @@
 const path = require("path")
+
 const feedsUrl = "http://elabox.local:10018/"
 const feedsDir = "/home/elabox/apps/ela.feeds"
 const homeapps = "/home/elabox/apps"
@@ -18,12 +19,13 @@ const buildMode = process.env.ELABUILD || "DEBUG"
 const elaboxVersion = process.env.ELAVERSION
 console.log(buildMode + " MODE")
 console.log("Version " + elaboxVersion)
-console.log("Binaries are on", homeapps)
+console.log("Binaries @" + homeapps)
 
 module.exports = {
+  COMPANION_PKID: "ela.companion",                    // current companion package id
   SUPERNODE: homeapps,
-  ESC_DIR: homeapps + "/ela.esc",
-  EID_DIR: homeapps + "/ela.eid",
+  ESC_DIR: homeapps + "/ela.esc",                     // esc bin path
+  EID_DIR: homeapps + "/ela.eid",                     // eid bin path
   ELA_DIR: elaPath,                                   // ela mainchain bin path
   ELADATA_DIR: eladatadir,                            // where keystore will be saved
   ELABLOCKS_DIR: eladatadir + "/elastos",             // mainchain blocks will be save
@@ -61,5 +63,6 @@ module.exports = {
   INSTALLER_SOCKET_URL: "http://localhost",
   FEEDS_URL: feedsUrl,
   FEEDS_DIR: feedsDir,
-  PORT: process.env.PORT || 3001,
+  PORT: process.env.PORT || 3001,                     // where companion server port will listen to
+  LOG_FILE: "/var/log/elabox.log"                     // the log file
 }

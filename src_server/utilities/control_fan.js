@@ -1,6 +1,7 @@
 const { exec } = require('child_process');
 const fs = require('fs');
 const tempFile = "/sys/class/thermal/thermal_zone0/temp"
+const syslog = require("../logger")
 let fanOut = null
 const pin = '14'
 
@@ -15,7 +16,7 @@ const toggleFan = (toggle = 1) => {
         const { Gpio } = require('onoff');
         fanOut = new Gpio(pin, 'out');
     }
-    console.log("Fan Toggled", toggle)
+    syslog.write(syslog.create().debug(`Fan toggled ${toggle}`))
     fanOut.writeSync(toggle)
 }
 
@@ -33,9 +34,9 @@ const fanControl = (defaultValue = null) => {
                 return
             }
             exec('cat ' + tempFile, { maxBuffer: 1024 * 500 }, (err, stdout, stderr) => {
-                console.log(stdout)
+
                 if (err) {
-                    console.log("FAN ERROR", err)
+                    syslog.write(syslog.create().error(`Fan error`, err).addCaller())
                     reject(err)
                 }
                 if (stdout > 60000) {
@@ -48,6 +49,7 @@ const fanControl = (defaultValue = null) => {
                 }
             });
         }catch(err) {
+            syslog.write(syslog.create().error(`Fan control error`, err).addCaller())
             reject(err)
         }
      })
