@@ -1,22 +1,22 @@
-const path = require("path")
-const homeapps = "/home/elabox/apps"
-const homeappdata = "/home/elabox/data"
-const eladatadir = homeappdata + "/ela.mainchain"
-let elaPath = homeapps + "/ela.mainchain"
-const cwd = path.join(__dirname, ".")
-const storagePath = path.join(cwd, "/storage")
-const tmpPath = path.join(storagePath, "tmp")
-const elaSystemPath = "/usr/ela/system/ela.system/"
-const elaSystemInfoPath = path.join(elaSystemPath, "info.json")
-const elaInstallerPath = "/usr/ela/system/ela.installer/"
-const elaSystemInstallerPath = path.join(elaInstallerPath, "main")
-const elaTmpPath = "/tmp/ela"
-const elaInstaller = path.join(elaTmpPath, "/main")
-const buildMode = process.env.ELAENV || "DEBUG"
-const elaboxVersion = process.env.ELAVERSION
-console.log(buildMode + " MODE")
-console.log("Version " + elaboxVersion)
-console.log("Binaries are on", homeapps)
+const path = require("path");
+const homeapps = "/home/elabox/apps";
+const homeappdata = "/home/elabox/data";
+const eladatadir = homeappdata + "/ela.mainchain";
+let elaPath = homeapps + "/ela.mainchain";
+const cwd = path.join(__dirname, ".");
+const storagePath = path.join(cwd, "/storage");
+const tmpPath = path.join(storagePath, "tmp");
+const elaSystemPath = "/usr/ela/system/ela.system/";
+const elaSystemInfoPath = path.join(elaSystemPath, "info.json");
+const elaInstallerPath = "/usr/ela/system/ela.installer/";
+const elaSystemInstallerPath = path.join(elaInstallerPath, "main");
+const elaTmpPath = "/tmp/ela";
+const elaInstaller = path.join(elaTmpPath, "/main");
+const buildMode = process.env.ELAENV || "DEBUG";
+const elaboxVersion = process.env.ELAVERSION;
+console.log(buildMode + " MODE");
+console.log("Version " + elaboxVersion);
+console.log("Binaries are on", homeapps);
 
 module.exports = {
   SUPERNODE: homeapps,
@@ -54,8 +54,8 @@ module.exports = {
       : buildMode === "DEBUG"
       ? "https://storage.googleapis.com/elabox-debug/packages"
       : "https://storage.googleapis.com/elabox-staging/packages", // path where we download the packages
-  SENDGRID_API:
-    "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",
+  POSTMARK_SERVER_TOKEN: "6a7b4fdc-717a-4981-a361-8ca17172df0a",
+  POSTMARK_FROM_EMAIL: "info@elabox.com",
   INSTALLER_SOCKET_URL: "http://localhost",
   PORT: process.env.PORT || 3001,
-}
+};
