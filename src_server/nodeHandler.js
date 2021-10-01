@@ -7,6 +7,7 @@ const isPortReachable = require("is-port-reachable");
 //const GETHWS_RECON = 5000;
 const maxBufferSize = 10000;
 
+// class that manages nodes( ESC, EID and other related nodes) 
 class NodeHandler {
   // @binaryName: name of binary to be executed
   // @cwd: path where binary is saved
@@ -116,13 +117,6 @@ class NodeHandler {
       let servicesRunning = await isPortReachable(this.options.wsport, {
         host: "localhost",
       });
-      // if (servicesRunning) {
-      //     try {
-      //         servicesRunning = !await isSyncing()
-      //     }catch( e) {
-      //         servicesRunning = false
-      //     }
-      // }
       //console.log(await isSyncing())
       if (!isRunning || !servicesRunning) {
         return { isRunning, servicesRunning };
@@ -165,6 +159,7 @@ class NodeHandler {
       throw err;
     }
   }
+  // set callback when node initialize successfully
   async setOnComplete(callback = () => {}) {
     if (this.web3 != null) {
       if (!(await this.isSyncing())) {
