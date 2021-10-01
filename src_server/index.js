@@ -1,7 +1,7 @@
 const express = require("express")
 const eventhandler = require("./helper/eventHandler")
-const Downloader = require('nodejs-file-downloader');
-const urlExist=require("url-exist")
+const Downloader = require("nodejs-file-downloader")
+const urlExist = require("url-exist")
 // to allow cross-origin request
 const cors = require("cors")
 const bodyParser = require("body-parser")
@@ -18,6 +18,7 @@ const app = express()
 // nodes
 const NodeHandler = require("./nodeHandler")
 const MainchainHandler = require("./mainchainHandler")
+const feedsHandler = require("./feeds")
 const mainchain = new MainchainHandler()
 const eid = new NodeHandler({
   binaryName: "geth",
@@ -34,7 +35,12 @@ const esc = new NodeHandler({
 
 // define port number
 const { exec, spawn } = require("child_process")
-const { execShell, checkProcessingRunning, killProcess, requestSpawn } = require("./helper")
+const {
+  execShell,
+  checkProcessingRunning,
+  killProcess,
+  requestSpawn,
+} = require("./helper")
 const delay = require("delay")
 
 // initializes log watchers
@@ -51,7 +57,7 @@ const maxBufferSize = 10000
 const router = express.Router()
 
 // for mailing
-const sgMail = require("@sendgrid/mail");
+const sgMail = require("@sendgrid/mail")
 sgMail.setApiKey(config.SENDGRID_API)
 
 let elaPath = config.ELA_DIR
@@ -91,7 +97,7 @@ router.get("/ela", async (req, res) => {
 
 router.get("/eid", async (req, res) => {
   try {
-    eid.getStatus().then( (data) => res.status(200).json(data))
+    eid.getStatus().then((data) => res.status(200).json(data))
   } catch (err) {
     res.status(500).send({ error: err })
   }
@@ -99,7 +105,7 @@ router.get("/eid", async (req, res) => {
 
 router.get("/esc", async (req, res) => {
   try {
-    esc.getStatus().then( (data) => res.status(200).json(data))
+    esc.getStatus().then((data) => res.status(200).json(data))
   } catch (err) {
     res.status(500).send({ error: err })
   }
@@ -119,7 +125,15 @@ router.get("/carrier", async (req, res) => {
     res.status(500).send({ error: err })
   }
 })
-
+router.get("/feeds", async (req, res) => {
+  try {
+    const isRunning = await urlExist(config.FEEDS_URL)
+    return res.status(200).json({ isRunning: isRunning })
+  } catch (err) {
+    console.log(err)
+    res.status(500).send({ error: err })
+  }
+})
 router.post("/sendTx", (req, res) => {
   let amount = req.body.amount
   let recipient = req.body.recipient
@@ -130,7 +144,8 @@ router.post("/sendTx", (req, res) => {
   exec(
     elaPath +
       "/ela-cli wallet buildtx -w " +
-      config.KEYSTORE_PATH + " --to " +
+      config.KEYSTORE_PATH +
+      " --to " +
       recipient +
       " --amount " +
       amount +
@@ -143,7 +158,8 @@ router.post("/sendTx", (req, res) => {
         exec(
           elaPath +
             "/ela-cli wallet signtx -w " +
-            config.KEYSTORE_PATH + " -f to_be_signed.txn -p " +
+            config.KEYSTORE_PATH +
+            " -f to_be_signed.txn -p " +
             pwd,
           { maxBuffer: 1024 * maxBufferSize },
           async (err, stdout) => {
@@ -179,7 +195,8 @@ router.post("/login", (req, res) => {
   exec(
     elaPath +
       "/ela-cli wallet a -w " +
-      config.KEYSTORE_PATH + " -p " +
+      config.KEYSTORE_PATH +
+      " -p " +
       pwd +
       "",
     { maxBuffer: 1024 * maxBufferSize },
@@ -205,19 +222,24 @@ router.post("/createWallet", (req, res) => {
     { maxBuffer: 1024 * maxBufferSize },
     async (err, stdout, stderr) => {
       console.log("Changing Pi Password... ")
-      if(!stdout){
+      if (!stdout) {
         console.log("Password setting succeeds")
         console.log(stdout)
       }
-      if (stderr){
-        console.log("System password setup failed: ", stderr);
+      if (stderr) {
+        console.log("System password setup failed: ", stderr)
       }
     }
   )
 
-
   exec(
-    "cd " + config.ELADATA_DIR + "; " + config.ELA_DIR + "/ela-cli wallet create -p " + pwd + "",
+    "cd " +
+      config.ELADATA_DIR +
+      "; " +
+      config.ELA_DIR +
+      "/ela-cli wallet create -p " +
+      pwd +
+      "",
     { maxBuffer: 1024 * maxBufferSize },
     async (err, stdout, stderr) => {
       console.log(stdout)
@@ -225,7 +247,6 @@ router.post("/createWallet", (req, res) => {
       res.json({ ok: "ok" })
     }
   )
-
 
   // console.log(pwd)
 })
@@ -242,8 +263,8 @@ router.post("/getBalance", (req, res) => {
     { maxBuffer: 1024 * maxBufferSize },
     async (err, stdout, stderr) => {
       console.log("getBalance", stdout)
-      let balance = '...'
-      if (stdout !== '') {
+      let balance = "..."
+      if (stdout !== "") {
         let balanceInfo = JSON.parse(stdout)
         balance = balanceInfo.Result
       }
@@ -322,7 +343,10 @@ router.post("/resyncESC", async (req, res) => {
 router.post("/restartCarrier", async (req, res) => {
   await restartCarrier((resp) => res.json(resp))
 })
-
+router.post("/restartFeeds", async (req, res) => {
+  const isSucess = await feedsHandler.runFeeds()
+  res.status(200).json({ success: isSucess })
+})
 router.get("/getOnion", async (req, res) => {
   res.send({ onion: await getOnionAddress() })
 })
@@ -430,13 +454,13 @@ async function getVersionInfo(version, path) {
   return info
 }
 async function getLatestVersion() {
-  let version=1;
-  while(version){
-    version+=1;        
-    const isExist=await urlExist(`${config.PACKAGES_URL}/${version}.json`)
-    if(!isExist){
-      version-=1      
-      break;
+  let version = 1
+  while (version) {
+    version += 1
+    const isExist = await urlExist(`${config.PACKAGES_URL}/${version}.json`)
+    if (!isExist) {
+      version -= 1
+      break
     }
   }
   return version
@@ -487,10 +511,10 @@ async function downloadElaFile(destinationPath, version, extension = "box") {
     destinationPath,
     `/${version}.${extension}`
   )
-console.log(`${config.PACKAGES_URL}/${version}.${extension}`)
-  const downloader=new Downloader({
-    url:`${config.PACKAGES_URL}/${version}.${extension}`,
-    directory:destinationPath
+  console.log(`${config.PACKAGES_URL}/${version}.${extension}`)
+  const downloader = new Downloader({
+    url: `${config.PACKAGES_URL}/${version}.${extension}`,
+    directory: destinationPath,
   })
   await downloader.download()
 }
@@ -508,7 +532,6 @@ async function processUpdateVersion(req, res) {
     res.status(500).send("Update error.")
   }
 }
-
 async function processCheckNewUpdates(req, res) {
   try {
     const checkVersionResponse = await checkVersion()
@@ -522,36 +545,60 @@ async function processDownloadPackage(req, res) {
   try {
     const path = config.TMP_PATH
     const version = await getLatestVersion()
-    eventhandler.broadcast(config.INSTALLER_PK_ID, config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
-      status: "downloading file",
-      percent: 20,
-    })
+    eventhandler.broadcast(
+      config.INSTALLER_PK_ID,
+      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
+      {
+        status: "downloading file",
+        percent: 20,
+      }
+    )
     await delay(1000)
-    eventhandler.broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
-      status: "downloading file",
-      percent: 40,
-    })
+    eventhandler.broadcast(
+      config.INSTALLER_PK_ID,
+      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
+      {
+        status: "downloading file",
+        percent: 40,
+      }
+    )
     await delay(1000)
-    eventhandler.broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
-      status: "downloading file",
-      percent: 60,
-    })
+    eventhandler.broadcast(
+      config.INSTALLER_PK_ID,
+      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
+      {
+        status: "downloading file",
+        percent: 60,
+      }
+    )
     await delay(1000)
-    eventhandler.broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
-      status: "downloading file",
-      percent: 80,
-    })
+    eventhandler.broadcast(
+      config.INSTALLER_PK_ID,
+      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
+      {
+        status: "downloading file",
+        percent: 80,
+      }
+    )
     await downloadElaFile(path, version, "box")
-    eventhandler.broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
-      status: "downloading file",
-      percent: 100,
-    })
+    eventhandler.broadcast(
+      config.INSTALLER_PK_ID,
+      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
+      {
+        status: "downloading file",
+        percent: 100,
+      }
+    )
     await delay(1000)
     //revert back
-    eventhandler.broadcast(config.INSTALLER_PK_ID,config.ELA_SYSTEM_BROADCAST_ID_INSTALLER, {
-      status: "download complete",
-      percent: 0,
-    })
+    eventhandler.broadcast(
+      config.INSTALLER_PK_ID,
+      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
+      {
+        status: "download complete",
+        percent: 0,
+      }
+    )
     res.send(true)
   } catch (error) {
     res.status(500).send("Download error.")
@@ -563,11 +610,12 @@ app.use("/", router)
 
 app.listen(config.PORT, async function () {
   console.log("Runnning on " + config.PORT)
+  await feedsHandler.runFeeds()
   checkProcessingRunning("ela-bootstrapd").then((running) => {
     if (!running) restartCarrier((response) => console.log(response))
   })
   await mainchain.init()
-  mainchain.setOnComplete( async () => {
+  mainchain.setOnComplete(async () => {
     await eid.init()
     await eid.setOnComplete(() => esc.init())
   })

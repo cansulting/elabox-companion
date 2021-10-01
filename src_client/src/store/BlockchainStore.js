@@ -136,8 +136,8 @@ export const esc = types
         self.restarting = false;
       }
     });
-  return { fetchData, restart, resync };
-});
+    return { fetchData, restart, resync };
+  });
 
 export const Carrier = types
   .model({
@@ -169,11 +169,39 @@ export const Carrier = types
 
     return { fetchData, restart };
   });
-
+const feeds = types
+  .model({
+    isRunning: types.maybeNull(types.boolean, false),
+    servicesRunning: types.optional(types.boolean, false),
+    restarting: false,
+  })
+  .actions((self) => {
+    const fetchData = flow(function* () {
+      try {
+        const response = yield API.fetchFeeds();
+        applySnapshot(self, response);
+      } catch (err) {
+        console.error(fetchData);
+      }
+    });
+    const restart = flow(function* () {
+      try {
+        self.restarting = true;
+        const response = yield API.restartFeeds();
+        console.log(response);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        self.restarting = false;
+      }
+    });
+    return { fetchData, restart };
+  });
 const BlockChainStore = types.model({
   ela: Ela,
   eid: eid,
   esc: esc,
+  feeds: feeds,
   carrier: Carrier,
 });
 
