@@ -6,6 +6,7 @@ const config = require("./config")
 const isPortReachable = require("is-port-reachable")
 const maxBufferSize = 10000
 
+// contains procedures that manages the mainchain process 
 class MainchainHandler {
     async init() {
         await this.start((response) => {

@@ -8,7 +8,7 @@ import {
 
 import backend from "./api/backend";
 import RootStore from "./store";
-import Socket from "./Socket"
+import Socket from "./Socket";
 const loading = () => (
   <div className="animated fadeIn pt-3 text-center">Loading...</div>
 );
@@ -23,6 +23,7 @@ class App extends React.Component {
       RootStore.blockchain.eid.fetchData();
       RootStore.blockchain.esc.fetchData();
       RootStore.blockchain.carrier.fetchData();
+      RootStore.blockchain.feeds.fetchData();
       backend.checkInstallation().then((responseJson) => {
         localStorage.setItem("isconfiged", responseJson.configed.trim());
         this.setState({ loading: false });

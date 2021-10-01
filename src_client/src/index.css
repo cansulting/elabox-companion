@@ -59,3 +59,7 @@ body {
   color:white;
   border:none;
 }
+a:hover{
+  text-decoration: none !important;
+  color:white !important;
+}

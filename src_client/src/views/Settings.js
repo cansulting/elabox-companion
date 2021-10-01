@@ -59,13 +59,13 @@ class Settings extends Component {
       [name]: value,
     })
   }
-  resyncNode= (node) => {
+  resyncNode = (node) => {
     this.setState({ resyncModal: false })
 
     node
       .resync()
       .then((responseJson) => {
-          node.fetchData()
+        node.fetchData()
       })
       .catch((error) => {
         console.error(error)
@@ -88,14 +88,14 @@ class Settings extends Component {
         console.error(error)
       })
   }
-  showRestart = (label='node', node) => {
-    this.setState({ restartModal: true, nodeLabel:label, node: node })
+  showRestart = (label = "node", node) => {
+    this.setState({ restartModal: true, nodeLabel: label, node: node })
   }
   closeRestart = () => {
     this.setState({ restartModal: false })
   }
-  showResync = (label='node', node) => {
-    this.setState({ resyncModal: true, nodeLabel:label, node: node })
+  showResync = (label = "node", node) => {
+    this.setState({ resyncModal: true, nodeLabel: label, node: node })
   }
   closeResync = () => {
     this.setState({ resyncModal: false })
@@ -161,9 +161,12 @@ class Settings extends Component {
   getVersion = () => {
     backend.getVersionDetails().then((response) => {
       //console.log(response)
-      this.setState({ elaboxVersion: response.version, env: response.env }, () => {
-        //console.log("state", this.state)
-      })
+      this.setState(
+        { elaboxVersion: response.version, env: response.env },
+        () => {
+          //console.log("state", this.state)
+        }
+      )
     })
   }
 
@@ -224,7 +227,10 @@ class Settings extends Component {
             </center>
           </ModalBody>
           <ModalFooter>
-            <Button color="success" onClick={() => this.restartNode(this.state.node) }>
+            <Button
+              color="success"
+              onClick={() => this.restartNode(this.state.node)}
+            >
               Restart
             </Button>
             <Button color="danger" onClick={this.closeRestart}>
@@ -257,7 +263,10 @@ class Settings extends Component {
             />
           </ModalBody>
           <ModalFooter>
-            <Button color="success" onClick={() => this.resyncNode(this.state.node)}>
+            <Button
+              color="success"
+              onClick={() => this.resyncNode(this.state.node)}
+            >
               Re-sync
             </Button>
             <Button color="danger" onClick={this.closeResync}>
@@ -356,8 +365,12 @@ class Settings extends Component {
                 Restart: "Restart",
                 Resync: "Re-sync",
               })}
-              onGreenPress={() => this.showRestart('ELA', RootStore.blockchain.ela)}
-              onRedPress={() => this.showResync('ELA', RootStore.blockchain.ela)}
+              onGreenPress={() =>
+                this.showRestart("ELA", RootStore.blockchain.ela)
+              }
+              onRedPress={() =>
+                this.showResync("ELA", RootStore.blockchain.ela)
+              }
             ></Widget05>
           </Col>
 
@@ -369,8 +382,12 @@ class Settings extends Component {
                 Restart: "Restart",
                 Resync: "Re-sync",
               })}
-              onGreenPress={() => this.showRestart('EID', RootStore.blockchain.eid)}
-              onRedPress={() => this.showResync('EID', RootStore.blockchain.eid)}
+              onGreenPress={() =>
+                this.showRestart("EID", RootStore.blockchain.eid)
+              }
+              onRedPress={() =>
+                this.showResync("EID", RootStore.blockchain.eid)
+              }
             ></Widget05>
           </Col>
           <Col xs="12" sm="6" lg="4">
@@ -381,8 +398,25 @@ class Settings extends Component {
                 Restart: "Restart",
                 Resync: "Re-sync",
               })}
-              onGreenPress={() => this.showRestart('ESC', RootStore.blockchain.esc)}
-              onRedPress={() => this.showResync('ESC', RootStore.blockchain.esc)}
+              onGreenPress={() =>
+                this.showRestart("ESC", RootStore.blockchain.esc)
+              }
+              onRedPress={() =>
+                this.showResync("ESC", RootStore.blockchain.esc)
+              }
+            ></Widget05>
+          </Col>
+          <Col xs="12" sm="6" lg="4">
+            <Widget05
+              dataBox={() => ({
+                title: "Feeds",
+                variant: "facebook",
+                Restart: "Relaunch",
+                Resync: "",
+              })}
+              onGreenPress={() =>
+                this.showRestart("Feeds", RootStore.blockchain.feeds)
+              }
             ></Widget05>
           </Col>
           <Col xs="12" sm="6" lg="4">
@@ -393,7 +427,9 @@ class Settings extends Component {
                 Restart: "Relaunch",
                 Resync: "",
               })}
-              onGreenPress={() => this.showRestart('Carrier', RootStore.blockchain.carrier)}
+              onGreenPress={() =>
+                this.showRestart("Carrier", RootStore.blockchain.carrier)
+              }
             ></Widget05>
           </Col>
         </Row>
@@ -449,7 +485,9 @@ class Settings extends Component {
             >
               <CardHeader>Elabox Version</CardHeader>
               <CardBody>
-                <b>Elabox {elaboxVersion} {env}</b> 
+                <b>
+                  Elabox {elaboxVersion} {env}
+                </b>
               </CardBody>
             </Card>
           </Col>
