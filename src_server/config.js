@@ -34,7 +34,7 @@ module.exports = {
   ELA_PORT: 20336,
   CARRIER_DIR: homeapps + "/ela.carrier", // carrier app directory
   KEYSTORE_PATH: eladatadir + "/keystore.dat", // keystore data path
-  SUPPORT_EMAIL: "purujit.bansal9@gmail.com",
+  SUPPORT_EMAIL: "contact@elabox.com",
   STORAGE_PATH: storagePath,
   TMP_PATH: tmpPath, // where files will be temporary save. specifically use for installer
   ELA_SYSTEM_PATH: elaSystemPath, // dir where the system apps installed
@@ -56,8 +56,8 @@ module.exports = {
       : buildMode === "DEBUG"
       ? "https://storage.googleapis.com/elabox-debug/packages"
       : "https://storage.googleapis.com/elabox-staging/packages", // path where we download the packages
-  SENDGRID_API:
-    "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",
+  POSTMARK_SERVER_TOKEN: "6a7b4fdc-717a-4981-a361-8ca17172df0a",
+  POSTMARK_FROM_EMAIL: "info@elabox.com",
   INSTALLER_SOCKET_URL: "http://localhost",
   FEEDS_URL: feedsUrl,
   FEEDS_DIR: feedsDir,
