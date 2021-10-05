@@ -1,129 +1,95 @@
 import React from "react"
 import { render, fireEvent, screen } from "@testing-library/react"
-import { rest } from "msw"
-import { setupServer } from "msw/node"
+import { server, rest, BASE_URL } from "../setupTests"
 import App from "../App"
-const server = setupServer(
-  rest.get("http://localhost:3001/check_new_updates", (req, res, ctx) => {
-    return res(
-      ctx.json({
-        current: 3,
-        latest: 3,
-        new_update: false,
-        count: 1,
-      })
-    )
-  }),
-  rest.get("http://localhost:3001/feeds", (req, res, ctx) => {
-    return res(
-      ctx.json({
-        isRunning: true,
-      })
-    )
-  }),
-  rest.get("http://localhost:3001/carrier", (req, res, ctx) => {
-    return res(
-      ctx.json({
-        isRunning: true,
-        carrierIP: "203.189.118.100",
-      })
-    )
-  }),
-  rest.get("http://localhost:3001/esc", (req, res, ctx) => {
-    return res(
-      ctx.json({
-        blockCount: 446493,
-        blockSizes: [
-          1596, 1597, 1552, 1749, 1653, 1652, 1653, 1620, 1526, 1565,
-        ],
-        nbOfTxs: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        isRunning: true,
-        servicesRunning: true,
-        latestblock: {
-          blockTime: 1609931043,
-          blockHash:
-            "e572fbf42eb6d0c94d876813bda1ddd751f35f584e7d65c4d14d68586f7dacfb",
-          miner: 12,
-        },
-      })
-    )
-  }),
-  rest.get("http://localhost:3001/ela", (req, res, ctx) => {
-    return res(
-      ctx.json({
-        blockCount: 446493,
-        blockSizes: [
-          1596, 1597, 1552, 1749, 1653, 1652, 1653, 1620, 1526, 1565,
-        ],
-        nbOfTxs: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        isRunning: true,
-        servicesRunning: true,
-        latestblock: {
-          blockTime: 1609931043,
-          blockHash:
-            "e572fbf42eb6d0c94d876813bda1ddd751f35f584e7d65c4d14d68586f7dacfb",
-          miner: 12,
-        },
-      })
-    )
-  }),
-  rest.get("http://localhost:3001/eid", (req, res, ctx) => {
-    return res(
-      ctx.json({
-        blockCount: 446493,
-        blockSizes: [
-          1596, 1597, 1552, 1749, 1653, 1652, 1653, 1620, 1526, 1565,
-        ],
-        nbOfTxs: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        isRunning: true,
-        servicesRunning: true,
-        latestblock: {
-          blockTime: 1609931043,
-          blockHash:
-            "e572fbf42eb6d0c94d876813bda1ddd751f35f584e7d65c4d14d68586f7dacfb",
-          miner: 12,
-        },
-      })
-    )
-  })
-)
-const checkServiceIfRunning = async (serviceName) => {
+const checkService = async (serviceName, status) => {
   await screen.findByText(serviceName)
   const elaParagraph = screen.getByText(serviceName)
-  expect(elaParagraph.style.color).toBe("lightgreen")
+  if (status === "isRunning") {
+    expect(elaParagraph.style.color).toBe("lightgreen")
+  } else {
+    expect(elaParagraph.style.color).not.toBe("lightgreen")
+  }
 }
 beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 describe("Test Dashboard Component", () => {
+  beforeAll(async () => {
+    render(<App />)
+    await screen.findByText("Sign In")
+    const passwordInput = screen.getByTestId("password")
+    const loginForm = screen.getByTestId("login-form")
+    fireEvent.change(passwordInput, { target: { value: "Tester" } })
+    fireEvent.submit(loginForm)
+  })
   describe("services is running", () => {
-    beforeAll(async () => {
+    test("ELA", async () => {
       render(<App />)
-      await screen.findByText("Sign In")
-      const passwordInput = screen.getByTestId("password")
-      const loginForm = screen.getByTestId("login-form")
-      fireEvent.change(passwordInput, { target: { value: "Blackhat06" } })
-      fireEvent.submit(loginForm)
+      await checkService("ELA", "isRunning")
     })
-    test("Ela is running", async () => {
+    test("EID", async () => {
       render(<App />)
-      await checkServiceIfRunning("ELA")
+      await checkService("EID", "isRunning")
     })
-    test("Eid is running", async () => {
+    test("ESC", async () => {
       render(<App />)
-      await checkServiceIfRunning("ELA")
+      await checkService("ESC", "isRunning")
     })
-    test("ESC is running", async () => {
+    test("Feeds", async () => {
       render(<App />)
-      await checkServiceIfRunning("ESC")
+      await checkService("Feeds", "isRunning")
     })
-    test("Feeds is running", async () => {
+    test("Carrier", async () => {
       render(<App />)
-      await checkServiceIfRunning("Feeds")
+      await checkService("Carrier", "isRunning")
     })
-    test("Carrier is running", async () => {
+  })
+  describe("services is not running", () => {
+    test("ELA", async () => {
+      server.use(
+        rest.get(`${BASE_URL}/ela`, (req, res, ctx) => {
+          return res(ctx.json({ isRunning: false, servicesRunning: false }))
+        })
+      )
       render(<App />)
-      await checkServiceIfRunning("Carrier")
+      await checkService("ELA", "notRunning")
+    })
+    test("EID", async () => {
+      server.use(
+        rest.get(`${BASE_URL}/eid`, (req, res, ctx) => {
+          return res(ctx.json({ isRunning: false, servicesRunning: false }))
+        })
+      )
+      render(<App />)
+      await checkService("EID", "notRunning")
+    })
+    test("ESC", async () => {
+      server.use(
+        rest.get(`${BASE_URL}/esc`, (req, res, ctx) => {
+          return res(ctx.json({ isRunning: false, servicesRunning: false }))
+        })
+      )
+      render(<App />)
+      await checkService("ESC", "notRunning")
+    })
+    test("Feeds", async () => {
+      server.use(
+        rest.get(`${BASE_URL}/feeds`, (req, res, ctx) => {
+          return res(ctx.json({ isRunning: false }))
+        })
+      )
+      render(<App />)
+      await checkService("Feeds", "notRunning")
+    })
+    test("Carrier", async () => {
+      server.use(
+        rest.get(`${BASE_URL}/carrier`, (req, res, ctx) => {
+          return res(ctx.json({ isRunning: false }))
+        })
+      )
+      render(<App />)
+      await checkService("Carrier", "notRunning")
     })
   })
 })
