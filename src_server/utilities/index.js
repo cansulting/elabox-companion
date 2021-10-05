@@ -1,9 +1,8 @@
 const fan = require("./control_fan")
-const reward = require("./reward")
 const carrier = require("./carrier")
 
 function init() {
-  console.log("Initializing carrier, rewards and fan.")
+  console.log("Initializing carrier and fan.")
   carrier.init()
   fan(1)
 
@@ -13,7 +12,6 @@ function init() {
     console.log(new Date(Date.now()))
     // run check_fan 
     try {
-      await reward()
       await fan() 
     }
     catch (err) {

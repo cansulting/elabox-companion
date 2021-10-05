@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Bar, Line } from "react-chartjs-2";
-import EID from "./components/EID";
+import { Button } from "reactstrap";
+import NodePreview from "./components/NodePreviewer";
 import { ButtonGroup, CardBody, Col, Row, Card, CardGroup } from "reactstrap";
 import Widget02 from "./widgets/Widget02";
 import Widget04 from "./widgets/Widget04";
 import mainchainLogo from "./images/mainchain_white.png";
 import carrierLogo from "./images/carrier_white.png";
+import feedsLogo from "./images/feeds-logo.png";
 import RootStore from "../store";
 import { observer } from "mobx-react";
 import { formatTime } from "../utils/time";
 import { shortifyHash } from "../utils/string";
 
 const Dashboard = ({ isMobile }) => {
-  const { ela, eid, carrier } = RootStore.blockchain;
-
+  const { ela, eid, carrier, esc, feeds } = RootStore.blockchain;
   useEffect(() => {}, []);
 
   var cardChartData1 = {
@@ -121,8 +122,6 @@ const Dashboard = ({ isMobile }) => {
     },
   };
 
-  
-
   return (
     <div
       id="main"
@@ -215,9 +214,36 @@ const Dashboard = ({ isMobile }) => {
           </Card>
         </Col>
       </Row>
-
-      <EID eid={eid}/>
-
+      <NodePreview blockdata={eid} label="EID" />
+      <NodePreview blockdata={esc} label="ESC" />
+      <Row style={{ paddingTop: "50px" }}>
+        <Col xs="12" sm="4" lg="4">
+          <Widget02
+            header="Feeds"
+            mainText={`${feeds.isRunning ? "Running" : "Stopped"}`}
+            icon={feedsLogo}
+            color={`${feeds.isRunning ? "success" : "danger"}`}
+            variant="1"
+            children={
+              feeds.isRunning && (
+                <Button
+                  as="achor"
+                  style={{
+                    marginLeft: "5em",
+                    marginTop: "0.5em",
+                    width: "20em",
+                  }}
+                  color="success"
+                  target="_blank"
+                  href="http://elabox.local:10018/"
+                >
+                  Launch
+                </Button>
+              )
+            }
+          />
+        </Col>
+      </Row>
       <Row style={{ paddingTop: "50px" }}>
         <Col xs="12" sm="4" lg="4">
           {carrier.isRunning ? (

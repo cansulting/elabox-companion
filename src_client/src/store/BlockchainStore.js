@@ -37,8 +37,18 @@ export const Ela = types
         self.restarting = false;
       }
     });
+    const resync = flow(function* () {
+      try {
+        self.restarting = true;
+        const response = yield API.resyncMainchain();
+      } catch (err) {
+        console.log(err);
+      } finally {
+        self.restarting = false;
+      }
+    });
 
-    return { fetchData, restart };
+    return { fetchData, restart, resync };
   });
 
 export const eid = types
@@ -65,6 +75,16 @@ export const eid = types
       try {
         self.restarting = true;
         const response = yield API.restartEID();
+      } catch (err) {
+        console.log(err);
+      } finally {
+        self.restarting = false;
+      }
+    });
+    const resync = flow(function* () {
+      try {
+        self.restarting = true;
+        const response = yield API.resyncEID();
         console.log(response);
       } catch (err) {
         console.log(err);
@@ -72,8 +92,51 @@ export const eid = types
         self.restarting = false;
       }
     });
+    return { fetchData, restart, resync };
+  });
 
-    return { fetchData, restart };
+export const esc = types
+  .model({
+    servicesRunning: types.optional(types.boolean, false),
+    restarting: types.optional(types.boolean, false),
+    isRunning: types.maybeNull(types.boolean),
+    blockCount: types.optional(types.number, 0),
+    blockSizes: types.optional(types.array(types.number), []),
+    nbOfTxs: types.optional(types.array(types.number), []),
+    latestBlock: types.optional(LatestBlock, {}),
+  })
+  .actions((self) => {
+    const fetchData = flow(function* () {
+      try {
+        const response = yield API.fetchESC();
+        applySnapshot(self, response);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    const restart = flow(function* () {
+      try {
+        self.restarting = true;
+        const response = yield API.restartESC();
+      } catch (err) {
+        console.log(err);
+      } finally {
+        self.restarting = false;
+      }
+    });
+    const resync = flow(function* () {
+      try {
+        self.restarting = true;
+        const response = yield API.resyncESC();
+        console.log(response);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        self.restarting = false;
+      }
+    });
+    return { fetchData, restart, resync };
   });
 
 export const Carrier = types
@@ -106,10 +169,39 @@ export const Carrier = types
 
     return { fetchData, restart };
   });
-
+const feeds = types
+  .model({
+    isRunning: types.maybeNull(types.boolean, false),
+    servicesRunning: types.optional(types.boolean, false),
+    restarting: false,
+  })
+  .actions((self) => {
+    const fetchData = flow(function* () {
+      try {
+        const response = yield API.fetchFeeds();
+        applySnapshot(self, response);
+      } catch (err) {
+        console.error(fetchData);
+      }
+    });
+    const restart = flow(function* () {
+      try {
+        self.restarting = true;
+        const response = yield API.restartFeeds();
+        console.log(response);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        self.restarting = false;
+      }
+    });
+    return { fetchData, restart };
+  });
 const BlockChainStore = types.model({
   ela: Ela,
   eid: eid,
+  esc: esc,
+  feeds: feeds,
   carrier: Carrier,
 });
 

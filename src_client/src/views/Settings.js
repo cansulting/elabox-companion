@@ -23,6 +23,7 @@ import Widget05 from "./widgets/Widget05"
 import master from "../api/master"
 import backend from "../api/backend"
 import RootStore from "../store"
+
 class Settings extends Component {
   constructor(props) {
     super(props)
@@ -40,12 +41,13 @@ class Settings extends Component {
       errorUpdateModal: false,
       version: "",
       onion: "",
+      env: "",
       showOnion: false,
     }
   }
 
   componentWillMount() {
-    // this.getVersion();
+    this.getVersion()
     this.getOnion()
   }
 
@@ -57,126 +59,47 @@ class Settings extends Component {
       [name]: value,
     })
   }
-  resyncMainchain = () => {
-    this.setState({ mainchainResyncModal: false })
+  resyncNode = (node) => {
+    this.setState({ resyncModal: false })
 
-    backend
-      .resyncMainchain()
+    node
+      .resync()
       .then((responseJson) => {
-          RootStore.blockchain.ela.fetchData()
+        node.fetchData()
       })
       .catch((error) => {
         console.error(error)
       })
   }
-  restartMainchain = () => {
+  restartNode = (node) => {
     // e.preventDefault();
-    this.setState({ mainchainRestartModal: false })
+    this.setState({ restartModal: false })
 
-    backend
-      .restartMainChain()
+    node
+      .restart()
       .then((responseJson) => {
         if (responseJson.success) {
           // RootStore.blockchain.ela.fetchData();
         } else {
-          RootStore.blockchain.ela.fetchData()
+          node.fetchData()
         }
       })
       .catch((error) => {
         console.error(error)
       })
   }
-
-  restartEid = () => {
-    // e.preventDefault();
-    this.setState({ eidRestartModal: false })
-
-    backend
-      .restartEID()
-      .then((responseJson) => {
-        if (responseJson.success) {
-          RootStore.blockchain.eid.fetchData()
-        } else {
-          // TODO : notify error with some modal
-        }
-      })
-      .catch((error) => {
-        console.error(error)
-      })
+  showRestart = (label = "node", node) => {
+    this.setState({ restartModal: true, nodeLabel: label, node: node })
   }
-
-  resyncEID = () => {
-    // e.preventDefault();
-    this.setState({ eidResyncModal: false })
-
-    backend
-      .resyncEID()
-      .then((responseJson) => {
-        console.log(responseJson)
-        if (responseJson.ok == "ok") {
-          this.setState({ sentmodal: true })
-        } else {
-          this.setState({ errormodal: true })
-        }
-      })
-      .catch((error) => {
-        console.error(error)
-      })
+  closeRestart = () => {
+    this.setState({ restartModal: false })
   }
-
-  restartCarrier = () => {
-    // e.preventDefault();
-    this.setState({ carrierRestartModal: false })
-
-    backend
-      .restartCarrier()
-      .then((responseJson) => {
-        console.log(responseJson)
-        if (responseJson.ok == "ok") {
-          this.setState({ sentmodal: true })
-        } else {
-          this.setState({ errormodal: true })
-        }
-      })
-      .catch((error) => {
-        console.error(error)
-      })
+  showResync = (label = "node", node) => {
+    this.setState({ resyncModal: true, nodeLabel: label, node: node })
   }
-
-  showRestartMain = () => {
-    this.setState({ mainchainRestartModal: true })
+  closeResync = () => {
+    this.setState({ resyncModal: false })
   }
-  closeRestartMain = () => {
-    this.setState({ mainchainRestartModal: false })
-  }
-  showResyncMain = () => {
-    this.setState({ mainchainResyncModal: true })
-  }
-  closeResyncMain = () => {
-    this.setState({ mainchainResyncModal: false })
-  }
-  showRestartEID = () => {
-    this.setState({ eidRestartModal: true })
-  }
-  closeRestartEid = () => {
-    this.setState({ eidRestartModal: false })
-  }
-  showResyncEID = () => {
-    this.setState({ eidResyncModal: true })
-  }
-  closeResyncEID = () => {
-    this.setState({ eidResyncModal: false })
-  }
-  showRestartCarrier = () => {
-    this.setState({ carrierRestartModal: true })
-  }
-  closeRestartCarrier = () => {
-    this.setState({ carrierRestartModal: false })
-  }
-
-  // checkUpdate = async () => {
-  //   const data = await master.checkUpdate();
-  // };
 
   checkUpdate = async () => {
     try {
@@ -236,10 +159,14 @@ class Settings extends Component {
   }
 
   getVersion = () => {
-    master.getVersion().then((response) => {
-      this.setState({ ...response.data }, () => {
-        console.log("state", this.state)
-      })
+    backend.getVersionDetails().then((response) => {
+      //console.log(response)
+      this.setState(
+        { elaboxVersion: response.version, env: response.env },
+        () => {
+          //console.log("state", this.state)
+        }
+      )
     })
   }
 
@@ -271,9 +198,8 @@ class Settings extends Component {
       errorUpdateModal,
       onion,
       showOnion,
-      companionVersion,
-      binariesVersion,
-      masterVersion,
+      elaboxVersion,
+      env,
     } = this.state
     console.log("render", showOnion)
     return (
@@ -289,11 +215,11 @@ class Settings extends Component {
         }}
         className="animated fadeIn w3-container"
       >
-        <Modal isOpen={this.state.mainchainRestartModal}>
-          <ModalHeader>Restart Mainchain</ModalHeader>
+        <Modal isOpen={this.state.restartModal}>
+          <ModalHeader>Restart {this.state.nodeLabel}</ModalHeader>
           <ModalBody>
             <center>
-              You are about to restart the Mainchain
+              You are about to restart the {this.state.nodeLabel}
               <br />
               This process will take a few hours
               <br />
@@ -301,27 +227,30 @@ class Settings extends Component {
             </center>
           </ModalBody>
           <ModalFooter>
-            <Button color="success" onClick={this.restartMainchain}>
+            <Button
+              color="success"
+              onClick={() => this.restartNode(this.state.node)}
+            >
               Restart
             </Button>
-            <Button color="danger" onClick={this.closeRestartMain}>
+            <Button color="danger" onClick={this.closeRestart}>
               Cancel
             </Button>
           </ModalFooter>
         </Modal>
 
-        <Modal isOpen={this.state.mainchainResyncModal}>
-          <ModalHeader>Resync Mainchain</ModalHeader>
+        <Modal isOpen={this.state.resyncModal}>
+          <ModalHeader>Resync {this.state.nodeLabel}</ModalHeader>
           <ModalBody>
             <center>
               <b>PLEASE READ CAREFULY</b>
               <br />
-              Resycing the whole mainchain will take a few days.
+              Resycing the will take a few days.
               <br />
               You should try to restart the node first!
               <br />
               <br />
-              Enter your wallet password to re-sync the mainchain
+              Enter your wallet password to re-sync the {this.state.nodeLabel}
               <br />
             </center>
             <Input
@@ -334,10 +263,13 @@ class Settings extends Component {
             />
           </ModalBody>
           <ModalFooter>
-            <Button color="success" onClick={this.resyncMainchain}>
+            <Button
+              color="success"
+              onClick={() => this.resyncNode(this.state.node)}
+            >
               Re-sync
             </Button>
-            <Button color="danger" onClick={this.closeResyncMain}>
+            <Button color="danger" onClick={this.closeResync}>
               Cancel
             </Button>
           </ModalFooter>
@@ -409,74 +341,6 @@ class Settings extends Component {
             </Button>
           </ModalFooter>
         </Modal>
-
-        <Modal isOpen={this.state.eidRestartModal}>
-          <ModalHeader>Restart EID sidechain</ModalHeader>
-          <ModalBody>
-            <center>
-              You are about to restart the EID sidechain
-              <br />
-              This process will take a few minutes
-              <br />
-              <br />
-            </center>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="success" onClick={this.restartEid}>
-              Restart
-            </Button>
-            <Button color="danger" onClick={this.closeRestartEid}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </Modal>
-
-        <Modal isOpen={this.state.eidResyncModal}>
-          <ModalHeader>Resync EID sidechain</ModalHeader>
-          <ModalBody>
-            <center>
-              <b>PLEASE READ CAREFULY</b>
-              <br />
-              Resycing the EID sidechain will take a few days.
-              <br />
-              You should try to restart the node first!
-              <br />
-              <br />
-              Click Re-sync to re-sync the EID sidechain
-              <br />
-            </center>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="success" onClick={this.resyncEID}>
-              Re-sync
-            </Button>
-            <Button color="danger" onClick={this.closeResyncEID}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </Modal>
-
-        <Modal isOpen={this.state.carrierRestartModal}>
-          <ModalHeader>Restart Carrier</ModalHeader>
-          <ModalBody>
-            <center>
-              You are about to restart your Carrier node
-              <br />
-              This process will take a few minutes
-              <br />
-              <br />
-            </center>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="success" onClick={this.restartCarrier}>
-              Restart
-            </Button>
-            <Button color="danger" onClick={this.closeRestartCarrier}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </Modal>
-
         <Row>
           <Col>
             <Card
@@ -501,8 +365,12 @@ class Settings extends Component {
                 Restart: "Restart",
                 Resync: "Re-sync",
               })}
-              onGreenPress={this.showRestartMain}
-              onRedPress={this.showResyncMain}
+              onGreenPress={() =>
+                this.showRestart("ELA", RootStore.blockchain.ela)
+              }
+              onRedPress={() =>
+                this.showResync("ELA", RootStore.blockchain.ela)
+              }
             ></Widget05>
           </Col>
 
@@ -514,11 +382,43 @@ class Settings extends Component {
                 Restart: "Restart",
                 Resync: "Re-sync",
               })}
-              onGreenPress={this.showRestartEID}
-              onRedPress={this.showResyncEID}
+              onGreenPress={() =>
+                this.showRestart("EID", RootStore.blockchain.eid)
+              }
+              onRedPress={() =>
+                this.showResync("EID", RootStore.blockchain.eid)
+              }
             ></Widget05>
           </Col>
-
+          <Col xs="12" sm="6" lg="4">
+            <Widget05
+              dataBox={() => ({
+                title: "ESC",
+                variant: "facebook",
+                Restart: "Restart",
+                Resync: "Re-sync",
+              })}
+              onGreenPress={() =>
+                this.showRestart("ESC", RootStore.blockchain.esc)
+              }
+              onRedPress={() =>
+                this.showResync("ESC", RootStore.blockchain.esc)
+              }
+            ></Widget05>
+          </Col>
+          <Col xs="12" sm="6" lg="4">
+            <Widget05
+              dataBox={() => ({
+                title: "Feeds",
+                variant: "facebook",
+                Restart: "Relaunch",
+                Resync: "",
+              })}
+              onGreenPress={() =>
+                this.showRestart("Feeds", RootStore.blockchain.feeds)
+              }
+            ></Widget05>
+          </Col>
           <Col xs="12" sm="6" lg="4">
             <Widget05
               dataBox={() => ({
@@ -527,7 +427,9 @@ class Settings extends Component {
                 Restart: "Relaunch",
                 Resync: "",
               })}
-              onGreenPress={this.showRestartCarrier}
+              onGreenPress={() =>
+                this.showRestart("Carrier", RootStore.blockchain.carrier)
+              }
             ></Widget05>
           </Col>
         </Row>
@@ -581,20 +483,11 @@ class Settings extends Component {
                 marginTop: "40px",
               }}
             >
-              <CardHeader>Check for updates</CardHeader>
+              <CardHeader>Elabox Version</CardHeader>
               <CardBody>
-                You are currently running: <br />
-                <ul style={{ listStyleType: "none" }}>
-                  <li>
-                    Elabox <b>v {masterVersion}</b>
-                  </li>
-                  <li>
-                    Elabox App <b>v {companionVersion}</b>
-                  </li>
-                  <li>
-                    Elastos Node <b>v {binariesVersion}</b>
-                  </li>
-                </ul>
+                <b>
+                  Elabox {elaboxVersion} {env}
+                </b>
               </CardBody>
             </Card>
           </Col>

@@ -90,16 +90,20 @@ class Widget02 extends Component {
               style={{ widht: "60px", height: "60px", paddingRight: "20px" }}
             ></img>
             {color == "success" ? (
-              <p
-                style={{
-                  display: "inline",
-                  color: "lightgreen",
-                  fontSize: "4",
-                  fontWeight: "bold",
-                }}
-              >
-                {header} {initializing ? " (initializing) " : ""}
-              </p>
+              <>
+                <p
+                  style={{
+                    display: "inline",
+                    color: "lightgreen",
+                    fontSize: "4",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {header} {initializing ? " (initializing) " : ""}
+                </p>
+                <br />
+                {children}
+              </>
             ) : (
               <p
                 style={{
@@ -110,6 +114,7 @@ class Widget02 extends Component {
                 }}
               >
                 {header}
+                {children}
               </p>
             )}
           </div>
