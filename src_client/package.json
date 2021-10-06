@@ -28,14 +28,18 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jest-environment-jsdom-sixteen",
+    "test": "react-scripts test --env=jest-environment-jsdom-sixteen --maxWorkers=4",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
@@ -47,6 +51,7 @@
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^7.1.2",
     "husky": "^4.2.5",
+    "jest-canvas-mock": "^2.3.1",
     "jest-environment-jsdom-sixteen": "^2.0.0",
     "msw": "^0.35.0"
   }
