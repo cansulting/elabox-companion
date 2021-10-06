@@ -1,5 +1,5 @@
 const path = require("path")
-const feedsUrl = "http://elabox.local:10018/"
+const feedsUrl = "http://localhost:10018/"
 const feedsDir = "/home/elabox/apps/ela.feeds"
 const homeapps = "/home/elabox/apps"
 const homeappdata = "/home/elabox/data"
