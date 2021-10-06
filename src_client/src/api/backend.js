@@ -160,6 +160,20 @@ class API {
     }).then((response) => response.json());
   };
 
+  sendElaPassswordVerification = (pwd) => {
+    return fetch(`http://${PUBLIC_URI}/sendElaPassswordVerification`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        pwd: pwd,
+      }),
+    }).then((response) => response.json());
+  };
+
+
   sendTx = (recipient, amount, pwd) => {
     return fetch(`http://${PUBLIC_URI}/sendTx`, {
       method: "POST",
