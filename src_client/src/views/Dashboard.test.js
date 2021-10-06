@@ -1,5 +1,5 @@
 import React from "react"
-import { render, fireEvent, screen } from "@testing-library/react"
+import { render, fireEvent, screen, act } from "@testing-library/react"
 import { server, rest, BASE_URL } from "../setupTests"
 import App from "../App"
 const checkService = async (serviceName, status) => {
@@ -25,71 +25,91 @@ describe("Test Dashboard Component", () => {
   })
   describe("services is running", () => {
     test("ELA", async () => {
-      render(<App />)
-      await checkService("ELA", "isRunning")
+      await act(async () => {
+        render(<App />)
+        await checkService("ELA", "isRunning")
+      })
     })
     test("EID", async () => {
-      render(<App />)
-      await checkService("EID", "isRunning")
+      await act(async () => {
+        render(<App />)
+        await checkService("EID", "isRunning")
+      })
     })
     test("ESC", async () => {
-      render(<App />)
-      await checkService("ESC", "isRunning")
+      await act(async () => {
+        render(<App />)
+        await checkService("ESC", "isRunning")
+      })
     })
     test("Feeds", async () => {
-      render(<App />)
-      await checkService("Feeds", "isRunning")
+      await act(async () => {
+        render(<App />)
+        await checkService("Feeds", "isRunning")
+      })
     })
     test("Carrier", async () => {
-      render(<App />)
-      await checkService("Carrier", "isRunning")
+      await act(async () => {
+        render(<App />)
+        await checkService("Carrier", "isRunning")
+      })
     })
   })
   describe("services is not running", () => {
     test("ELA", async () => {
-      server.use(
-        rest.get(`${BASE_URL}/ela`, (req, res, ctx) => {
-          return res(ctx.json({ isRunning: false, servicesRunning: false }))
-        })
-      )
-      render(<App />)
-      await checkService("ELA", "notRunning")
+      await act(async () => {
+        server.use(
+          rest.get(`${BASE_URL}/ela`, (req, res, ctx) => {
+            return res(ctx.json({ isRunning: false, servicesRunning: false }))
+          })
+        )
+        render(<App />)
+        await checkService("ELA", "notRunning")
+      })
     })
     test("EID", async () => {
-      server.use(
-        rest.get(`${BASE_URL}/eid`, (req, res, ctx) => {
-          return res(ctx.json({ isRunning: false, servicesRunning: false }))
-        })
-      )
-      render(<App />)
-      await checkService("EID", "notRunning")
+      await act(async () => {
+        server.use(
+          rest.get(`${BASE_URL}/eid`, (req, res, ctx) => {
+            return res(ctx.json({ isRunning: false, servicesRunning: false }))
+          })
+        )
+        render(<App />)
+        await checkService("EID", "notRunning")
+      })
     })
     test("ESC", async () => {
-      server.use(
-        rest.get(`${BASE_URL}/esc`, (req, res, ctx) => {
-          return res(ctx.json({ isRunning: false, servicesRunning: false }))
-        })
-      )
-      render(<App />)
-      await checkService("ESC", "notRunning")
+      await act(async () => {
+        server.use(
+          rest.get(`${BASE_URL}/esc`, (req, res, ctx) => {
+            return res(ctx.json({ isRunning: false, servicesRunning: false }))
+          })
+        )
+        render(<App />)
+        await checkService("ESC", "notRunning")
+      })
     })
     test("Feeds", async () => {
-      server.use(
-        rest.get(`${BASE_URL}/feeds`, (req, res, ctx) => {
-          return res(ctx.json({ isRunning: false }))
-        })
-      )
-      render(<App />)
-      await checkService("Feeds", "notRunning")
+      await act(async () => {
+        server.use(
+          rest.get(`${BASE_URL}/feeds`, (req, res, ctx) => {
+            return res(ctx.json({ isRunning: false }))
+          })
+        )
+        render(<App />)
+        await checkService("Feeds", "notRunning")
+      })
     })
     test("Carrier", async () => {
-      server.use(
-        rest.get(`${BASE_URL}/carrier`, (req, res, ctx) => {
-          return res(ctx.json({ isRunning: false }))
-        })
-      )
-      render(<App />)
-      await checkService("Carrier", "notRunning")
+      await act(async () => {
+        server.use(
+          rest.get(`${BASE_URL}/carrier`, (req, res, ctx) => {
+            return res(ctx.json({ isRunning: false }))
+          })
+        )
+        render(<App />)
+        await checkService("Carrier", "notRunning")
+      })
     })
   })
 })
