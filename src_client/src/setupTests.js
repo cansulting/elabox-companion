@@ -7,6 +7,9 @@ import { rest } from "msw"
 import { setupServer } from "msw/node"
 const BASE_URL = "http://" + window.location.hostname + ":3001"
 const handlers = [
+  rest.get(`${BASE_URL}/download_package`, (req, res, ctx) => {
+    return res(ctx.text(true))
+  }),
   rest.post(`${BASE_URL}/version_info`, (req, res, ctx) => {
     return res(
       ctx.json({
@@ -29,9 +32,9 @@ const handlers = [
     return res(
       ctx.json({
         current: 3,
-        latest: 3,
-        new_update: false,
-        count: 0,
+        latest: 1,
+        new_update: true,
+        count: 1,
       })
     )
   }),
@@ -110,4 +113,4 @@ const handlers = [
 ]
 const server = setupServer(...handlers)
 
-export { server, rest, BASE_URL, handlers }
+export { server, rest, BASE_URL }
