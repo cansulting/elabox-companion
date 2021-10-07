@@ -189,6 +189,34 @@ router.post("/sendTx", (req, res) => {
   )
 })
 
+
+
+router.post("/resyncNodeVerification", (req, res) => {
+  let pwd = req.body.pwd
+  console.log("PASSWORD RECEIVED", pwd, req.body)
+  exec(
+    elaPath +
+      "/ela-cli wallet a -w " +
+      config.KEYSTORE_PATH +
+      " -p " +
+      pwd +
+      "",
+    { maxBuffer: 1024 * maxBufferSize },
+    async (err, stdout, stderr) => {
+      console.log("err", err)
+      console.log("stdout", stdout)
+      if (err) {
+        res.json({ ok: false })
+      } else {
+        res.json({ ok: true, address: stdout.split("\n")[2].split(" ")[0] })
+      }
+    }
+  )
+
+})
+
+
+
 router.post("/login", (req, res) => {
   let pwd = req.body.pwd
   console.log("PASSWORD RECEIVED", pwd, req.body)
