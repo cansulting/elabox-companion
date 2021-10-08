@@ -22,9 +22,8 @@ const Dashboard = ({ isMobile }) => {
 
 
   const dialogtoggle = () => {
-    this.setState({ dialog : true })
+    setDialogmodal(true)
   }
-
 
   var cardChartData1 = {
     labels: ["       ", " ", " ", " ", " ", " ", " ", " ", " ", "       "],
@@ -225,8 +224,8 @@ const Dashboard = ({ isMobile }) => {
         </Col>
       </Row>
     
-      <NodePreview blockdata={eid} label="EID" dialog={Dialogmodal}/>
-      <NodePreview blockdata={esc} label="ESC"  dialog={Dialogmodal}/>
+      <NodePreview blockdata={eid} label="EID" dialog={dialogtoggle}/>
+      <NodePreview blockdata={esc} label="ESC"  dialog={dialogtoggle}/>
 
       <Row style={{ paddingTop: "50px" }}>
         <Col xs="12" sm="4" lg="4">
@@ -292,13 +291,13 @@ const Dashboard = ({ isMobile }) => {
           <ModalBody>
             <center>
               <br />
-              This process will take a few hours
+              Node not running.
               <br />
               <br />
             </center>
           </ModalBody>
           <ModalFooter>
-            <Button color="success" >Resync</Button>
+            <Button color="success" href="/settings" >Resync</Button>
             <Button color="danger" onClick=
             {() => {
               setDialogmodal(false)

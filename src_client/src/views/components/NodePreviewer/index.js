@@ -114,7 +114,7 @@ const cardChartOpts4 = (blockdata) => ({
 });
 
 const Previewer = (props) => {
-  const { blockdata, label = 'Node' } = props;
+  const { blockdata, label = 'Node', dialog } = props;
 
 
   // useEffect(() => {
@@ -149,7 +149,7 @@ const Previewer = (props) => {
               color="danger"
               variant="1"
               status="Node not running"
-              dialog="test"
+              dialog={dialog}
             />
           )}
         </Col>
@@ -212,22 +212,7 @@ const Previewer = (props) => {
           </Col>
         </Row>
 
-        <Modal isOpen={props.dialog}>
-          <ModalHeader>Dialog 1: </ModalHeader>
-          <ModalBody>
-            <center>
-              <br />
-              This process will take a few hours
-              <br />
-              <br />
-            </center>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="success" >Resync</Button>
-            <Button color="danger"
-            >Cancel</Button>
-          </ModalFooter>
-        </Modal>
+
 
       </div>
       }
