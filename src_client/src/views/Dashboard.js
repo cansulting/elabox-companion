@@ -28,7 +28,7 @@ const Dashboard = ({ isMobile }) => {
   var cardChartData1 = {
     labels: ["       ", " ", " ", " ", " ", " ", " ", " ", " ", "       "],
     datasets: [{ data: RootStore.blockchain.ela.blockSizes.slice().reverse() }],
-  };
+  }
 
   var cardChartOpts1 = {
     tooltips: {
@@ -75,13 +75,13 @@ const Dashboard = ({ isMobile }) => {
         hoverRadius: 6,
       },
     },
-  };
+  }
 
   // Card Chart 2
   const cardChartData2 = {
     labels: ["       ", " ", " ", " ", " ", " ", " ", " ", " ", "       "],
     datasets: [{ data: RootStore.blockchain.ela.nbOfTxs.slice().reverse() }],
-  };
+  }
 
   const cardChartOpts2 = {
     tooltips: {
@@ -128,7 +128,7 @@ const Dashboard = ({ isMobile }) => {
         hoverRadius: 6,
       },
     },
-  };
+  }
 
   return (
     <div
@@ -243,7 +243,7 @@ const Dashboard = ({ isMobile }) => {
                   style={{
                     marginLeft: "5em",
                     marginTop: "0.5em",
-                    width: "20em",
+                    width: "17em",
                   }}
                   color="success"
                   target="_blank"
@@ -309,7 +309,7 @@ const Dashboard = ({ isMobile }) => {
 
 
     </div>
-  );
-};
+  )
+}
 
-export default observer(Dashboard);
+export default observer(Dashboard)
