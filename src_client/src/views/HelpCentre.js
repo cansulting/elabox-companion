@@ -11,10 +11,10 @@ import * as Yup from 'yup';
 
 const Schema = Yup.object().shape({
   name: Yup.string()
-    .required('Name is required'),
+    .required('Required'),
   email: Yup.string()
     .email("Invalid Email")
-    .required('Email is required'),
+    .required('Required'),
   problem: Yup.string()
     .required('Required'),
 
