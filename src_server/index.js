@@ -57,8 +57,8 @@ const maxBufferSize = 10000
 const router = express.Router()
 
 // for mailing
-const sgMail = require("@sendgrid/mail")
-sgMail.setApiKey(config.SENDGRID_API)
+const postmark = require("postmark")
+const postMarkMail = new postmark.ServerClient(config.POSTMARK_SERVER_TOKEN)
 
 let elaPath = config.ELA_DIR
 let keyStorePath = config.KEYSTORE_PATH
@@ -188,6 +188,34 @@ router.post("/sendTx", (req, res) => {
     }
   )
 })
+
+
+
+router.post("/resyncNodeVerification", (req, res) => {
+  let pwd = req.body.pwd
+  console.log("PASSWORD RECEIVED", pwd, req.body)
+  exec(
+    elaPath +
+      "/ela-cli wallet a -w " +
+      config.KEYSTORE_PATH +
+      " -p " +
+      pwd +
+      "",
+    { maxBuffer: 1024 * maxBufferSize },
+    async (err, stdout, stderr) => {
+      console.log("err", err)
+      console.log("stdout", stdout)
+      if (err) {
+        res.json({ ok: false })
+      } else {
+        res.json({ ok: true, address: stdout.split("\n")[2].split(" ")[0] })
+      }
+    }
+  )
+
+})
+
+
 
 router.post("/login", (req, res) => {
   let pwd = req.body.pwd
@@ -358,25 +386,25 @@ router.get("/regenerateOnion", async (req, res) => {
 
 // support mail
 router.post("/sendSupportEmail", async (req, res) => {
-  const msg = {
-    to: config.SUPPORT_EMAIL,
-    from: req.body.email.trim(),
-    subject: "Elabox Support Needed " + req.body.name,
-    text:
-      "Elabox Support is needed to\n Name: " +
-      req.body.name +
-      "\nEmail: " +
-      req.body.email +
-      "\nProblem: " +
-      req.body.problem,
-  }
-  sgMail.send(msg, (err, result) => {
-    if (err) {
-      res.status(500)
-    } else {
-      res.send({ ok: true })
+  try {
+    const msg = {
+      to: config.SUPPORT_EMAIL,
+      from: config.POSTMARK_FROM_EMAIL,
+      subject: "Elabox Support Needed " + req.body.name,
+      htmlBody:
+        "Elabox Support is needed to\n Name: " +
+        req.body.name +
+        "\nEmail: " +
+        req.body.email +
+        "\nProblem: " +
+        req.body.problem,
     }
-  })
+    await postMarkMail.sendEmail(msg)
+    res.send({ ok: true })
+  } catch (error) {
+    console.log(error)
+    res.status(500)
+  }
 })
 //ota routes
 router.get("/update_version", processUpdateVersion)
