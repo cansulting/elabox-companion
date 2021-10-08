@@ -12,16 +12,16 @@ const checkService = async (serviceName, status) => {
 beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
+beforeEach(async () => {
+  clearLocalStorage()
+  renderApp()
+  await screen.findByText("Sign In")
+  const passwordInput = screen.getByTestId("password")
+  const signInBtn = screen.getByTestId("sign-in-btn")
+  fireEvent.change(passwordInput, { target: { value: "Tester" } })
+  fireEvent.click(signInBtn)
+})
 describe("Dashboard", () => {
-  beforeEach(async () => {
-    clearLocalStorage()
-    renderApp()
-    await screen.findByText("Sign In")
-    const passwordInput = screen.getByTestId("password")
-    const loginForm = screen.getByTestId("login-form")
-    fireEvent.change(passwordInput, { target: { value: "Tester" } })
-    fireEvent.submit(loginForm)
-  })
   describe("services is running", () => {
     test("ELA", async () => {
       await act(async () => {
