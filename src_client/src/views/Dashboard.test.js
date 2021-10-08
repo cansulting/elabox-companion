@@ -1,7 +1,5 @@
-import React from "react"
-import { render, fireEvent, screen, act } from "@testing-library/react"
-import { server, rest, BASE_URL } from "../setupTests"
-import App from "../App"
+import { fireEvent, screen, act } from "@testing-library/react"
+import { server, rest, BASE_URL, renderApp,clearLocalStorage } from "../setupTests"
 const checkService = async (serviceName, status) => {
   await screen.findByText(serviceName)
   const elaParagraph = screen.getByText(serviceName)
@@ -14,9 +12,10 @@ const checkService = async (serviceName, status) => {
 beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
-describe("Test Dashboard Component", () => {
-  beforeAll(async () => {
-    render(<App />)
+describe("Dashboard", () => {
+  beforeEach(async () => {
+    clearLocalStorage()
+    renderApp()
     await screen.findByText("Sign In")
     const passwordInput = screen.getByTestId("password")
     const loginForm = screen.getByTestId("login-form")
@@ -26,31 +25,31 @@ describe("Test Dashboard Component", () => {
   describe("services is running", () => {
     test("ELA", async () => {
       await act(async () => {
-        render(<App />)
+        renderApp()
         await checkService("ELA", "isRunning")
       })
     })
     test("EID", async () => {
       await act(async () => {
-        render(<App />)
+        renderApp()
         await checkService("EID", "isRunning")
       })
     })
     test("ESC", async () => {
       await act(async () => {
-        render(<App />)
+        renderApp()
         await checkService("ESC", "isRunning")
       })
     })
     test("Feeds", async () => {
       await act(async () => {
-        render(<App />)
+        renderApp()
         await checkService("Feeds", "isRunning")
       })
     })
     test("Carrier", async () => {
       await act(async () => {
-        render(<App />)
+        renderApp()
         await checkService("Carrier", "isRunning")
       })
     })
@@ -63,7 +62,7 @@ describe("Test Dashboard Component", () => {
             return res(ctx.json({ isRunning: false, servicesRunning: false }))
           })
         )
-        render(<App />)
+        renderApp()
         await checkService("ELA", "notRunning")
       })
     })
@@ -74,7 +73,7 @@ describe("Test Dashboard Component", () => {
             return res(ctx.json({ isRunning: false, servicesRunning: false }))
           })
         )
-        render(<App />)
+        renderApp()
         await checkService("EID", "notRunning")
       })
     })
@@ -85,7 +84,7 @@ describe("Test Dashboard Component", () => {
             return res(ctx.json({ isRunning: false, servicesRunning: false }))
           })
         )
-        render(<App />)
+        renderApp()
         await checkService("ESC", "notRunning")
       })
     })
@@ -96,7 +95,7 @@ describe("Test Dashboard Component", () => {
             return res(ctx.json({ isRunning: false }))
           })
         )
-        render(<App />)
+        renderApp()
         await checkService("Feeds", "notRunning")
       })
     })
@@ -107,7 +106,7 @@ describe("Test Dashboard Component", () => {
             return res(ctx.json({ isRunning: false }))
           })
         )
-        render(<App />)
+        renderApp()
         await checkService("Carrier", "notRunning")
       })
     })
