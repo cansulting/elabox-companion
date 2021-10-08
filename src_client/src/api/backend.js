@@ -173,6 +173,18 @@ class API {
     }).then((response) => response.json());
   };
 
+  resyncNodeVerification = (pwd) => {
+    return fetch(`http://${PUBLIC_URI}/resyncNodeVerification`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        pwd: pwd,
+      }),
+    }).then((response) => response.json());
+  };
 
   sendTx = (recipient, amount, pwd) => {
     return fetch(`http://${PUBLIC_URI}/sendTx`, {
@@ -188,6 +200,7 @@ class API {
       }),
     }).then((response) => response.json());
   };
+
 
   txHistory = (address) => {
     console.log(

@@ -112,12 +112,19 @@ class Wallet extends Component {
           this.setState({ error2modal: true })
         }
         else {
-          if (amount.toString().split(".")[1].length > 8) {
-            this.setState({ error3modal: true })
-          }
-          else {
+          if (amount.indexOf('.') > -1){
+
+            if (amount.toString().split(".")[1].length > 8) {
+              this.setState({ error3modal: true })
+            }
+            else {
+              this.setState({ pwdmodal: true })
+            }
+          }else{
             this.setState({ pwdmodal: true })
+
           }
+
         }
       }
     }
