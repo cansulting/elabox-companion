@@ -55,7 +55,6 @@ function Login() {
         />
         <div style={{ paddingTop: "20px" }}>
           <form
-            data-testid="login-form"
             onSubmit={(e) => {
               e.preventDefault()
               login()
@@ -71,7 +70,7 @@ function Login() {
               onChange={(e) => handleChange(e)}
               autoFocus
             />
-            <Button type="submit" style={{ marginTop: "20px" }}>
+            <Button data-testid="sign-in-btn" type="submit" style={{ marginTop: "20px" }}>
               Sign In
             </Button>
           </form>
