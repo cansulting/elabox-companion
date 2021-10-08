@@ -1,22 +1,19 @@
-import { fireEvent, screen, act } from "@testing-library/react"
+import { fireEvent, screen, act,waitFor } from "@testing-library/react"
 import { server, rest, BASE_URL, renderApp,clearLocalStorage } from "../setupTests"
 
 beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
-
 describe("Login",()=>{
-    beforeEach(()=>{
-        clearLocalStorage()
-    })
+    beforeEach(() =>  clearLocalStorage())    
     test("Able to login",async ()=>{
         await act(async ()=>{
             renderApp()
             await screen.findByText("Sign In")
             const passwordInput = screen.getByTestId("password")
-            const loginForm = screen.getByTestId("login-form")
+            const signInBtn = screen.getByTestId("sign-in-btn")
             fireEvent.change(passwordInput, { target: { value: "Tester" } })
-            fireEvent.submit(loginForm)
+            fireEvent.click(signInBtn)
             const dashboardElement = await screen.findByText("Dashboard")
             expect(dashboardElement).toBeInTheDocument()                    
         })
@@ -30,14 +27,16 @@ describe("Login",()=>{
                   })
                 )
             }))
+            jest.spyOn(window, 'alert').mockImplementation(() => {});
             renderApp()
             await screen.findByText("Sign In")
             const passwordInput = screen.getByTestId("password")
-            const loginForm = screen.getByTestId("login-form")
+            const signInBtn = screen.getByTestId("sign-in-btn")
             fireEvent.change(passwordInput, { target: { value: "Tester" } })
-            fireEvent.submit(loginForm)
-            const SignInElement = await screen.findByText("Sign In")
-            expect(SignInElement).toBeInTheDocument()                    
-        })     
+            fireEvent.click(signInBtn)     
+            await waitFor(()=> expect(window.alert).toHaveBeenCalledWith("Wrong password"))
+            expect(window.alert).toHaveBeenCalled()
+
+        })
     })        
 })
