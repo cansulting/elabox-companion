@@ -1,10 +1,15 @@
 import { fireEvent, screen,waitFor } from "@testing-library/react"
-import { server, rest, BASE_URL, renderApp,clearLocalStorage } from "../testing/utils"
-
+import { server, rest, BASE_URL, renderApp,clearLocalStorage,renderAsFragment } from "../testing/utils"
+import Login from "./Login"
 beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 describe("Login",()=>{
+    test("renders correctly",()=>{
+        const asFragment=renderAsFragment(Login)
+        const html=asFragment()
+        expect(html).toMatchSnapshot()
+    })
     test("Able to login",async ()=>{
         clearLocalStorage()
         renderApp()

@@ -1,5 +1,6 @@
 import { fireEvent, screen } from "@testing-library/react"
-import { server, rest, BASE_URL, renderApp,clearLocalStorage } from "../testing/utils"
+import { server, rest, BASE_URL, renderApp,clearLocalStorage,renderAsFragment } from "../testing/utils"
+import Dashboard from "./Dashboard"
 const checkService = async (serviceName, status) => {
   await screen.findByText(serviceName)
   const elaParagraph = screen.getByText(serviceName)
@@ -13,6 +14,11 @@ beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 describe("Dashboard", () => {
+  test("renders correctly",()=>{
+    const asFragment=renderAsFragment(Dashboard)
+    const html=asFragment()
+    expect(html).toMatchSnapshot()
+  })  
   describe("services is running", () => {
     test("ELA", async () => {
       clearLocalStorage()

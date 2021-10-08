@@ -118,9 +118,13 @@ const renderApp = () => {
   window.HTMLCanvasElement.prototype.getContext = () => {}  
   return render(<App />)
 }
+const renderAsFragment=(component)=>{
+  const {asFragment}=render(<component/>)
+  return asFragment
+}
 const clearLocalStorage= () =>{
   window.localStorage.removeItem("address")        
   window.localStorage.removeItem("logedin")        
   window.localStorage.removeItem("islogein")                
 }
-export { server, rest, BASE_URL, renderApp,clearLocalStorage }
+export { server, rest, BASE_URL, renderApp,clearLocalStorage,renderAsFragment }

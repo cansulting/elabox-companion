@@ -1,11 +1,16 @@
 
 import { fireEvent, screen,waitFor } from "@testing-library/react"
-import { server, rest, BASE_URL, renderApp,clearLocalStorage } from "../testing/utils"
-
+import { server, rest, BASE_URL, renderApp,clearLocalStorage,renderAsFragment } from "../testing/utils"
+import HelpCenter from "./HelpCentre"
 beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 describe("Help Center", ()=>{
+    test("renders correctly",()=>{
+        const asFragment=renderAsFragment(HelpCenter)
+        const html=asFragment()
+        expect(html).toMatchSnapshot()
+    })      
     describe("Email",()=>{
         test("Able to send Email",async()=>{
             clearLocalStorage()
