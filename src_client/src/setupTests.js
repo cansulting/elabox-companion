@@ -2,9 +2,13 @@
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
+import React from "react"
 import "@testing-library/jest-dom/extend-expect"
+import { render } from "@testing-library/react"
 import { rest } from "msw"
 import { setupServer } from "msw/node"
+import App from "./App"
+
 const BASE_URL = "http://" + window.location.hostname + ":3001"
 const handlers = [
   rest.get(`${BASE_URL}/download_package`, (req, res, ctx) => {
@@ -112,5 +116,13 @@ const handlers = [
   }),
 ]
 const server = setupServer(...handlers)
-
-export { server, rest, BASE_URL }
+const renderApp = () => {
+  window.HTMLCanvasElement.prototype.getContext = () => {}  
+  return render(<App />)
+}
+const clearLocalStorage= () =>{
+  window.localStorage.removeItem("address")        
+  window.localStorage.removeItem("logedin")        
+  window.localStorage.removeItem("islogein")                
+}
+export { server, rest, BASE_URL, renderApp,clearLocalStorage }
