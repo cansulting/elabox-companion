@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Bar, Line } from "react-chartjs-2";
 import { Button } from "reactstrap";
 import NodePreview from "./components/NodePreviewer";
-import { ButtonGroup, CardBody, Col, Row, Card, CardGroup } from "reactstrap";
+import { ButtonGroup, CardBody, Col, Row, Card, CardGroup,  Modal, ModalHeader, ModalFooter, ModalBody  } from "reactstrap";
 import Widget02 from "./widgets/Widget02";
 import Widget04 from "./widgets/Widget04";
 import mainchainLogo from "./images/mainchain_white.png";
@@ -13,9 +13,18 @@ import { observer } from "mobx-react";
 import { formatTime } from "../utils/time";
 import { shortifyHash } from "../utils/string";
 
+
+
 const Dashboard = ({ isMobile }) => {
   const { ela, eid, carrier, esc, feeds } = RootStore.blockchain;
   useEffect(() => {}, []);
+  const [Dialogmodal, setDialogmodal] = useState(false)
+
+
+  const dialogtoggle = () => {
+    this.setState({ dialog : true })
+  }
+
 
   var cardChartData1 = {
     labels: ["       ", " ", " ", " ", " ", " ", " ", " ", " ", "       "],
@@ -153,6 +162,7 @@ const Dashboard = ({ isMobile }) => {
               icon={mainchainLogo}
               color="danger"
               variant="1"
+              dialog={dialogtoggle}
             />
           )}
         </Col>
@@ -214,8 +224,10 @@ const Dashboard = ({ isMobile }) => {
           </Card>
         </Col>
       </Row>
-      <NodePreview blockdata={eid} label="EID" />
-      <NodePreview blockdata={esc} label="ESC" />
+    
+      <NodePreview blockdata={eid} label="EID" dialog={Dialogmodal}/>
+      <NodePreview blockdata={esc} label="ESC"  dialog={Dialogmodal}/>
+
       <Row style={{ paddingTop: "50px" }}>
         <Col xs="12" sm="4" lg="4">
           <Widget02
@@ -224,6 +236,7 @@ const Dashboard = ({ isMobile }) => {
             icon={feedsLogo}
             color={`${feeds.isRunning ? "success" : "danger"}`}
             variant="1"
+            status="Node not running"
             children={
               feeds.isRunning && (
                 <Button
@@ -261,6 +274,8 @@ const Dashboard = ({ isMobile }) => {
               icon={carrierLogo}
               color="danger"
               variant="1"
+              status="Node not running"
+
             />
           )}
         </Col>
@@ -271,6 +286,29 @@ const Dashboard = ({ isMobile }) => {
           Carrier IP Address
         </Widget04>
       </CardGroup>
+
+      <Modal isOpen={Dialogmodal}>
+          <ModalHeader>Dialog: </ModalHeader>
+          <ModalBody>
+            <center>
+              <br />
+              This process will take a few hours
+              <br />
+              <br />
+            </center>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="success" >Resync</Button>
+            <Button color="danger" onClick=
+            {() => {
+              setDialogmodal(false)
+            }}
+            >Cancel</Button>
+          </ModalFooter>
+        </Modal>
+
+
+
     </div>
   );
 };

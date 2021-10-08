@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from 'react'
 import {  Line } from "react-chartjs-2";
-import { ButtonGroup, CardBody, Col, Row, Card, CardGroup } from "reactstrap";
+import { Button, ButtonGroup, CardBody, Col, Row, Card, CardGroup, Modal, ModalHeader, ModalFooter, ModalBody  } from "reactstrap";
 import Widget02 from "../../widgets/Widget02";
 import Widget04 from "../../widgets/Widget04";
 //import { event_server } from '../../../Socket'
@@ -115,6 +115,8 @@ const cardChartOpts4 = (blockdata) => ({
 
 const Previewer = (props) => {
   const { blockdata, label = 'Node' } = props;
+
+
   // useEffect(() => {
   //   if (setup) 
   //     return;
@@ -146,6 +148,8 @@ const Previewer = (props) => {
               icon={didLogo}
               color="danger"
               variant="1"
+              status="Node not running"
+              dialog="test"
             />
           )}
         </Col>
@@ -207,6 +211,24 @@ const Previewer = (props) => {
             </Card>
           </Col>
         </Row>
+
+        <Modal isOpen={props.dialog}>
+          <ModalHeader>Dialog 1: </ModalHeader>
+          <ModalBody>
+            <center>
+              <br />
+              This process will take a few hours
+              <br />
+              <br />
+            </center>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="success" >Resync</Button>
+            <Button color="danger"
+            >Cancel</Button>
+          </ModalFooter>
+        </Modal>
+
       </div>
       }
      

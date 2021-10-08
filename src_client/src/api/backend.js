@@ -25,13 +25,11 @@ class API {
 
   fetchEID = async () => {
     const response = await this.axios.get("/eid");
-    //console.log(response)
     return response.data;
   };
 
   fetchESC = async () => {
     const response = await this.axios.get("/esc");
-    //console.log(response)
     return response.data;
   };
 

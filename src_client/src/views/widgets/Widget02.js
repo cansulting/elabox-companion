@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Card, CardBody, CardFooter } from "reactstrap";
+import { Card, CardBody, CardFooter, Button, CardGroup } from "reactstrap";
 import classNames from "classnames";
 import { mapToCssModules } from "reactstrap/lib/utils";
 
@@ -31,8 +31,12 @@ class Widget02 extends Component {
       children,
       variant,
       initializing,
+      status,
+      dialog,
       ...attributes
     } = this.props;
+
+
 
     //demo purposes only
     const padding =
@@ -89,6 +93,7 @@ class Widget02 extends Component {
               src={card.icon}
               style={{ widht: "60px", height: "60px", paddingRight: "20px" }}
             ></img>
+
             {color == "success" ? (
               <>
                 <p
@@ -115,7 +120,25 @@ class Widget02 extends Component {
               >
                 {header}
                 {children}
+                <br />
+
+                <CardGroup>
+                <br />
+                <br />
+
+                <Button  color="primary" size="sm" 
+                 onClick=
+                 {() => {
+                  this.props.dialog()
+                }}
+                
+                >STOPPED. SEE ERROR LOG</Button>
+ 
+
+                  </CardGroup>
+
               </p>
+
             )}
           </div>
         </CardBody>
