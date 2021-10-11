@@ -60,6 +60,7 @@ export default function Updates({ isMobile, ota }) {
   } else if (isProcessingData) {
     body = (
       <Progress
+        data-testid="update-progress"
         style={{ height: "50px" }}
         animated
         color="rgb(44, 113, 246)"
@@ -146,6 +147,7 @@ export default function Updates({ isMobile, ota }) {
                       xs="2"
                     >
                       <Button
+                        data-testid="download-btn"
                         color="success"
                         disabled={disabledButton}
                         onClick={() => {
