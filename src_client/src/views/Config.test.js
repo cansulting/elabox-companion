@@ -18,7 +18,6 @@ describe("Config",()=>{
                     return res(ctx.json({ configed: "false" }))
               }))
               jest.spyOn(window,'fetch')                            
-              clearLocalStorage()
               renderApp()
               await screen.findByText("Welcome to Elabox")              
               const passwordInput=screen.getByTestId("password-input")
@@ -35,7 +34,6 @@ describe("Config",()=>{
                 return res(ctx.json({ configed: "false" }))
           }))
           jest.spyOn(window, 'alert').mockImplementation(() => {});              
-          clearLocalStorage()
           renderApp()
           await screen.findByText("Welcome to Elabox")              
           const passwordInput=screen.getByTestId("password-input")

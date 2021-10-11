@@ -151,6 +151,7 @@ const handlers = [
 const server = setupServer(...handlers)
 const renderApp = () => {
   window.HTMLCanvasElement.prototype.getContext = () => {}  
+  clearLocalStorage()  
   return render(<App />)
 }
 const renderAsFragment=(component)=>{

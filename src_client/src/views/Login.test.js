@@ -11,7 +11,6 @@ describe("Login",()=>{
         expect(html).toMatchSnapshot()
     })
     test("Able to login",async ()=>{
-        clearLocalStorage()
         renderApp()
         await screen.findByText("Sign In")
         const passwordInput = screen.getByTestId("password")
@@ -29,7 +28,6 @@ describe("Login",()=>{
               })
             )
         }))
-        clearLocalStorage()
         jest.spyOn(window, 'alert').mockImplementation(() => {});    
         renderApp()
         await screen.findByText("Sign In")

@@ -21,7 +21,6 @@ describe("Dashboard", () => {
   })  
   describe("services is running", () => {
     test("ELA", async () => {
-      clearLocalStorage()
       renderApp()
       await screen.findByText("Sign In")
       const passwordInput = screen.getByTestId("password")
@@ -31,7 +30,6 @@ describe("Dashboard", () => {
       await checkService("ELA", "isRunning")
     })
     test("EID", async () => {
-      clearLocalStorage()
       renderApp()
       await screen.findByText("Sign In")
       const passwordInput = screen.getByTestId("password")
@@ -41,7 +39,6 @@ describe("Dashboard", () => {
       await checkService("EID", "isRunning")
     })
     test("ESC", async () => {
-      clearLocalStorage()
       renderApp()
       await screen.findByText("Sign In")
       const passwordInput = screen.getByTestId("password")
@@ -51,7 +48,6 @@ describe("Dashboard", () => {
       await checkService("ESC", "isRunning")
     })
     test("Feeds", async () => {
-      clearLocalStorage()
       renderApp()
       await screen.findByText("Sign In")
       const passwordInput = screen.getByTestId("password")
@@ -61,7 +57,6 @@ describe("Dashboard", () => {
       await checkService("Feeds", "isRunning")
     })
     test("Carrier", async () => {
-      clearLocalStorage()
       renderApp()
       await screen.findByText("Sign In")
       const passwordInput = screen.getByTestId("password")
@@ -78,7 +73,6 @@ describe("Dashboard", () => {
           return res(ctx.json({ isRunning: false, servicesRunning: false }))
         })
       )
-      clearLocalStorage()
       renderApp()
       await screen.findByText("Sign In")
       const passwordInput = screen.getByTestId("password")
@@ -93,7 +87,6 @@ describe("Dashboard", () => {
           return res(ctx.json({ isRunning: false, servicesRunning: false }))
         })
       )
-      clearLocalStorage()
       renderApp()
       await screen.findByText("Sign In")
       const passwordInput = screen.getByTestId("password")
@@ -108,7 +101,6 @@ describe("Dashboard", () => {
           return res(ctx.json({ isRunning: false, servicesRunning: false }))
         })
       )
-      clearLocalStorage()
       renderApp()
       await screen.findByText("Sign In")
       const passwordInput = screen.getByTestId("password")
@@ -123,7 +115,6 @@ describe("Dashboard", () => {
           return res(ctx.json({ isRunning: false }))
         })
       )
-      clearLocalStorage()
       renderApp()
       await screen.findByText("Sign In")
       const passwordInput = screen.getByTestId("password")
@@ -138,7 +129,6 @@ describe("Dashboard", () => {
           return res(ctx.json({ isRunning: false }))
         })
       )
-      clearLocalStorage()
       renderApp()
       await screen.findByText("Sign In")
       const passwordInput = screen.getByTestId("password")

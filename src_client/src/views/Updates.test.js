@@ -13,7 +13,6 @@ describe("Updates",()=>{
     })    
     describe("Download",()=>{
         test("Able to download",async ()=>{
-            clearLocalStorage()
             renderApp()
             await screen.findByText("Sign In")
             const passwordInput = screen.getByTestId("password")

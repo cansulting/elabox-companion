@@ -13,7 +13,6 @@ describe("Help Center", ()=>{
     })      
     describe("Email",()=>{
         test("Able to send Email",async()=>{
-            clearLocalStorage()
             renderApp()
             await screen.findByText("Sign In")
             const passwordInput = screen.getByTestId("password")
@@ -39,7 +38,6 @@ describe("Help Center", ()=>{
             server.use(  rest.post(`${BASE_URL}/sendSupportEmail`,(req,res,ctx)=>{
                 return res(ctx.status(500))
             }))
-            clearLocalStorage()
             renderApp()
             await screen.findByText("Sign In")
             const passwordInput = screen.getByTestId("password")
@@ -65,7 +63,6 @@ describe("Help Center", ()=>{
     describe("fields",()=>{
         describe("valid",()=>{
             test("no empty",async()=>{
-                clearLocalStorage()
                 renderApp()
                 await screen.findByText("Sign In")
                 const passwordInput = screen.getByTestId("password")
@@ -90,7 +87,6 @@ describe("Help Center", ()=>{
         })
         describe("invalid",()=>{
             test("Email is Invalid",async()=>{
-                clearLocalStorage()
                 renderApp()
                 await screen.findByText("Sign In")
                 const passwordInput = screen.getByTestId("password")
@@ -114,7 +110,7 @@ describe("Help Center", ()=>{
                 expect(invalidEmailElement).toBeInTheDocument()                                                 
             })
             test("empty all fields",async()=>{
-                clearLocalStorage()
+
                 renderApp()
                 await screen.findByText("Sign In")
                 const passwordInput = screen.getByTestId("password")
@@ -132,7 +128,6 @@ describe("Help Center", ()=>{
                 expect(errors.length).toBe(3)                                         
             })
             test("Name field is empty",async ()=>{
-                clearLocalStorage()
                 renderApp()
                 await screen.findByText("Sign In")
                 const passwordInput = screen.getByTestId("password")
@@ -155,7 +150,6 @@ describe("Help Center", ()=>{
                 expect(nameElement).toHaveClass("is-invalid")                                                      
             })
             test("Email field is empty",async ()=>{
-                clearLocalStorage()
                 renderApp()
                 await screen.findByText("Sign In")
                 const passwordInput = screen.getByTestId("password")
@@ -177,7 +171,6 @@ describe("Help Center", ()=>{
                 expect(emailElement).toHaveClass("is-invalid")                          
             })   
             test("Problem field is empty",async ()=>{
-                clearLocalStorage()
                 renderApp()
                 await screen.findByText("Sign In")
                 const passwordInput = screen.getByTestId("password")
