@@ -22,7 +22,9 @@ class Wallet extends Component {
       'error3modal': false,
       'pwdmodal': false,
       'sentmodal': false,
-      'errormodal': false
+      'errormodal': false,
+      'elasendingsuccess': false,
+      'pwderrormodal': false
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -68,7 +70,26 @@ class Wallet extends Component {
           this.setState({ sentmodal: true })
         }
         else {
+          setTimeout(function(){},2000);
           this.setState({ errormodal: true })
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
+  // Verifies password before calling submitForm which calls /sendTx
+  verifyPwd = () => {
+    backend.sendElaPassswordVerification(this.state.pwd)
+      .then(responseJson => {
+        if (responseJson.ok) {
+          this.setState({ elasendingsuccess: true })
+          this.submitForm()
+        }
+        else {
+          this.setState({ pwderrormodal: true })
+
         }
       })
       .catch(error => {
@@ -128,6 +149,15 @@ class Wallet extends Component {
     this.setState({ pwdmodal: false })
   }
 
+  pwderrormodaltoggle = () => {
+    this.setState({ pwderrormodal: false })
+  }
+
+  elasendingsuccesstoggle = () => {
+    this.setState({ elasendingsuccess: false })
+  }
+
+  
   render() {
     const { isMobile } = this.props;
 
@@ -157,7 +187,7 @@ class Wallet extends Component {
             <Input type="password" id="pwd" name="pwd" placeholder="Enter ELA wallet password" required onChange={(e) => this.handleChange(e)} />
           </ModalBody>
           <ModalFooter>
-            <Button color="success" onClick={this.submitForm} >Send</Button>
+            <Button color="success" onClick={this.verifyPwd} >Send</Button>
             <Button color="danger" onClick={this.pwdmodaltoggle} >Cancel</Button>
           </ModalFooter>
         </Modal>
@@ -186,6 +216,36 @@ class Wallet extends Component {
             <Button color="primary" onClick={this.errortoggle} >Close</Button>
           </ModalFooter>
         </Modal>
+
+
+        <Modal isOpen={this.state.pwderrormodal}>
+          <ModalHeader>Error</ModalHeader>
+          <ModalBody>
+            <center>
+              Invalid password, please try again<br /><br />
+              <img src={errorLogo} style={{ width: '50px', height: '50px' }} />
+            </center>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={this.pwderrormodaltoggle} >Close</Button>
+          </ModalFooter>
+        </Modal>
+
+
+        <Modal isOpen={this.state.elasendingsuccess}>
+          <ModalHeader>Success</ModalHeader>
+          <ModalBody>
+            <center>
+              Verified! Now sending ELA... <br /><br />
+              <img src={checkLogo} style={{ width: '50px', height: '50px' }} />
+            </center>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={this.elasendingsuccesstoggle} >Close</Button>
+          </ModalFooter>
+        </Modal>
+
+
 
         <Modal isOpen={this.state.error1modal}>
           <ModalHeader>Error ELA address</ModalHeader>
@@ -233,7 +293,7 @@ class Wallet extends Component {
             </CardBody>
           </Card>
           <Card style={{ backgroundColor: '#272A3D', color: 'white' }}>
-            <Form className="form" onSubmit={(e) => this.submitForm(e)}>
+          <Form className="form" onSubmit={this.verifyPwd}>
               <CardHeader>
                 <strong>Send ELA</strong>
               </CardHeader>
