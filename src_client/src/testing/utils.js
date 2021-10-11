@@ -11,6 +11,9 @@ const handlers = [
       "onion": "2puhles2lyireofz66k3jg47eiul2yoozckg7kljcmqzuoru3w6u4lyd.onion"
     }))
   }),
+  rest.post(`${BASE_URL}/resyncNodeVerification`,(req,res,ctx)=>{
+    return res(ctx.json({ok:true}))
+  }),
   rest.post( `${BASE_URL}/resyncMainchain`,(req,res,ctx)=>{
     return res(ctx.json({success:true}))
   }),
