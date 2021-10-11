@@ -62,6 +62,9 @@ const handlers = [
   rest.get(`${BASE_URL}/checkInstallation`, (req, res, ctx) => {
     return res(ctx.json({ configed: "true" }))
   }),
+  rest.post(`${BASE_URL}/createWallet`,(req,res,ctx)=>{
+    return res(ctx.json({ok:true}))
+  }),
   rest.get(`${BASE_URL}/check_new_updates`, (req, res, ctx) => {
     return res(
       ctx.json({
