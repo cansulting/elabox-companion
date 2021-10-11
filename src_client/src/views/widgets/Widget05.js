@@ -14,6 +14,7 @@ const propTypes = {
 const defaultProps = {
   dataBox: () => ({ variant: "facebook", friends: "-", feeds: "-" }),
   disabledButton: false,
+  testId:""
 };
 
 class Widget05 extends Component {
@@ -23,7 +24,7 @@ class Widget05 extends Component {
 
   render() {
     // eslint-disable-next-line
-    const { children, className, cssModule, dataBox, ...attributes } =
+    const { children,testid, className, cssModule, dataBox, ...attributes } =
       this.props;
 
     // demo purposes only
@@ -68,12 +69,12 @@ class Widget05 extends Component {
           {vals[3] != "" ? (
             <Row>
               <Col xs="6" style={{ justifyContent: "center", display: "flex" }}>
-                <Button onClick={this.props.onGreenPress} color="success">
+                <Button data-testid={`green-${testid}`} onClick={this.props.onGreenPress} color="success">
                   {vals[2]}
                 </Button>
               </Col>
               <Col xs="6" style={{ justifyContent: "center", display: "flex" }}>
-                <Button onClick={this.props.onRedPress} color="danger">
+                <Button data-testid={`red-${testid}`} onClick={this.props.onRedPress} color="danger">
                   {vals[3]}
                 </Button>
               </Col>
@@ -85,6 +86,7 @@ class Widget05 extends Component {
                 style={{ justifyContent: "center", display: "flex" }}
               >
                 <Button
+                  data-testid={`green-${testid}`}
                   disabled={this.props.disabledButton}
                   onClick={this.props.onGreenPress}
                   color="success"
