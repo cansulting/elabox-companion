@@ -337,6 +337,7 @@ class Settings extends Component {
           </ModalBody>
           <ModalFooter>
             <Button
+              data-testid="resync-btn"
               color="success"
               onClick={this.verifyPassword}
             >
@@ -540,6 +541,7 @@ class Settings extends Component {
         <Row style={{ marginTop: "20px" }}>
           <Col xs="12" sm="6" lg="4">
             <Widget05
+              testid="download-wallet-btn"
               dataBox={() => ({
                 title: "Backup wallet file",
                 variant: "facebook",

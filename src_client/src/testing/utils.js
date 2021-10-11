@@ -11,6 +11,15 @@ const handlers = [
       "onion": "2puhles2lyireofz66k3jg47eiul2yoozckg7kljcmqzuoru3w6u4lyd.onion"
     }))
   }),
+  rest.post( `${BASE_URL}/resyncMainchain`,(req,res,ctx)=>{
+    return res(ctx.json({success:true}))
+  }),
+  rest.post( `${BASE_URL}/resyncEID`,(req,res,ctx)=>{
+    return res(ctx.json({success:true}))
+  }),  
+  rest.post( `${BASE_URL}/resyncESC`,(req,res,ctx)=>{
+    return res(ctx.json({success:true}))
+  }),    
   rest.post(`${BASE_URL}/restartMainchain`,(req,res,ctx)=>{
     return res(ctx.json({success:true}))
   }),
