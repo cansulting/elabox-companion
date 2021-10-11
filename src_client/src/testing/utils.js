@@ -6,6 +6,26 @@ import App from "../App"
 
 const BASE_URL = "http://" + window.location.hostname + ":3001"
 const handlers = [
+  rest.get(`${BASE_URL}/getOnion`,(req,res,ctx)=>{
+    return res(ctx.json({
+      "onion": "2puhles2lyireofz66k3jg47eiul2yoozckg7kljcmqzuoru3w6u4lyd.onion"
+    }))
+  }),
+  rest.post(`${BASE_URL}/restartMainchain`,(req,res,ctx)=>{
+    return res(ctx.json({success:true}))
+  }),
+  rest.post(`${BASE_URL}/restartEID`,(req,res,ctx)=>{
+    return res(ctx.json({success:true}))
+  }),
+  rest.post(`${BASE_URL}/restartESC`,(req,res,ctx)=>{
+    return res(ctx.json({success:true}))
+  }),  
+  rest.post(`${BASE_URL}/restartCarrier`,(req,res,ctx)=>{
+    return res(ctx.json({success:true}))
+  }),
+  rest.post(`${BASE_URL}/restartFeeds`,(req, res,ctx) => {
+    return res(ctx.status(200),ctx.json({success:true}))
+  }),
   rest.post(`${BASE_URL}/sendSupportEmail`,(req,res,ctx)=>{
     return res(ctx.json({ok:true}))
   }),
