@@ -589,7 +589,7 @@ class Settings extends Component {
                 <b>Never share your onion address with anyone.</b>
                 <br />
                 <br />
-                {showOnion && onion}
+                {showOnion && <p data-testid="onion-p">{onion}</p>}
               </CardBody>
             </Card>
           </Col>
@@ -597,6 +597,7 @@ class Settings extends Component {
         <Row style={{ marginTop: "20px" }}>
           <Col xs="12" sm="6" lg="4">
             <Widget05
+              testid="show-onion-btn"
               dataBox={() => ({
                 title: "Onion Address",
                 variant: "facebook",
