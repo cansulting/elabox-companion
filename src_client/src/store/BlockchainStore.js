@@ -11,6 +11,7 @@ export const Ela = types
   .model({
     servicesRunning: types.optional(types.boolean, false),
     isRunning: types.maybeNull(types.boolean),
+    nodestatus: types.maybeNull(types.string),
     blockCount: types.optional(types.number, 0),
     blockSizes: types.optional(types.array(types.number), []),
     nbOfTxs: types.optional(types.array(types.number), []),
@@ -55,6 +56,7 @@ export const eid = types
   .model({
     servicesRunning: types.optional(types.boolean, false),
     restarting: types.optional(types.boolean, false),
+    nodestatus: types.maybeNull(types.string),
     isRunning: types.maybeNull(types.boolean),
     blockCount: types.optional(types.number, 0),
     blockSizes: types.optional(types.array(types.number), []),
@@ -99,6 +101,7 @@ export const esc = types
   .model({
     servicesRunning: types.optional(types.boolean, false),
     restarting: types.optional(types.boolean, false),
+    nodestatus: types.maybeNull(types.string),
     isRunning: types.maybeNull(types.boolean),
     blockCount: types.optional(types.number, 0),
     blockSizes: types.optional(types.array(types.number), []),
@@ -143,6 +146,7 @@ export const Carrier = types
   .model({
     isRunning: types.maybeNull(types.boolean),
     carrierIP: "",
+    nodestatus: types.maybeNull(types.string),
     restarting: false,
   })
   .actions((self) => {
@@ -172,6 +176,7 @@ export const Carrier = types
 const feeds = types
   .model({
     isRunning: types.maybeNull(types.boolean, false),
+    nodestatus: types.maybeNull(types.string),
     servicesRunning: types.optional(types.boolean, false),
     restarting: false,
   })

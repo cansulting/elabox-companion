@@ -81,10 +81,23 @@ class MainchainHandler {
         fs.rmdirSync(config.ELABLOCKS_DIR, { maxRetries: 3, force: true, recursive: true} )
         await this.start(callback)
     }
+
+  
+
+
     // get the current status of eid. this returns the state and blocks
     async getStatus() {
         const isRunning = await processhelper.checkProcessingRunning('ela')
         const servicesRunning = await isPortReachable(config.ELA_PORT, { host: "localhost" })
+        
+        
+        const nodestatus = await processhelper.execShell(
+          `curl -X POST http://User:Password@localhost:${config.ELA_PORT} -H "Content-Type: application/json" -d \'{"method": "getnodestate"}\' `,
+          { maxBuffer: 1024 * maxBufferSize }
+        )
+  
+  
+        const nodestatusError = JSON.parse(nodestatus).error
 
         //console.log(await isSyncing())
         if (!isRunning || !servicesRunning ) {
@@ -118,6 +131,7 @@ class MainchainHandler {
                 nbOfTxs: nbOfTxList,
                 isRunning: isRunning,
                 servicesRunning,
+                nodestatus: nodestatusError,
                 latestBlock: {
                     blockTime: latestBlock.time,
                     blockHash: latestBlock.hash,

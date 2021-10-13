@@ -89,6 +89,8 @@ router.get("/synced", (req, res) => {
 
 router.get("/ela", async (req, res) => {
   try {
+    console.log("GETTING ELA STATUS...")
+    statusMain =  res.json(await mainchain.getStatus())
     return res.json(await mainchain.getStatus())
   } catch (err) {
     return res.status(500).json({ error: err })
@@ -100,6 +102,7 @@ router.get("/eid", async (req, res) => {
     eid.getStatus().then((data) => res.status(200).json(data))
   } catch (err) {
     res.status(500).send({ error: err })
+
   }
 })
 
@@ -119,7 +122,19 @@ router.get("/carrier", async (req, res) => {
       maxBuffer: 1024 * 500,
     })
 
-    return res.status(200).json({ isRunning, carrierIP: carrierIP.trim() })
+    var nodestatus = ""
+
+    if (!isRunning && carrierIP == null) {
+      nodestatus = "Connection refused to Carrier IP and ela-bootstrapped not found"
+    }else if (carrierIP==null) {
+      nodestatus = "Connection refused to Carrier IP"
+    }else if (!isRunning) {
+      nodestatus = "ela-bootstrapped not found"
+    }else{
+      nodestatus = ""
+    }
+
+    return res.status(200).json({ isRunning, carrierIP: carrierIP.trim(), nodestatus })
   } catch (err) {
     console.log(err)
     res.status(500).send({ error: err })
@@ -128,7 +143,17 @@ router.get("/carrier", async (req, res) => {
 router.get("/feeds", async (req, res) => {
   try {
     const isRunning = await urlExist(config.FEEDS_URL)
-    return res.status(200).json({ isRunning: isRunning })
+
+
+    var nodestatus = ""
+
+    if (!isRunning) {
+      nodestatus = "Feeds binary fle not found"
+    }else{
+      nodestatus = ""
+    }
+
+    return res.status(200).json({ isRunning: isRunning, nodestatus })
   } catch (err) {
     console.log(err)
     res.status(500).send({ error: err })

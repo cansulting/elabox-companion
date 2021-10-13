@@ -131,7 +131,7 @@ class Widget02 extends Component {
                  onClick=
                  {() => {
                   this.props.dialog();
-                  this.props.errorsetting({node});
+                  this.props.errorsetting(node);
                 }}
                 
                 >STOPPED. SEE ERROR LOG</Button>

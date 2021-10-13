@@ -114,12 +114,17 @@ class NodeHandler {
       const isRunning = await processhelper.checkProcessingRunning(
         this.options.binaryName
       );
-      let servicesRunning = await isPortReachable(this.options.wsport, {
+
+      const port = this.options.wsport
+
+      let servicesRunning = await isPortReachable(port, {
         host: "localhost",
       });
+
+
       //console.log(await isSyncing())
       if (!isRunning || !servicesRunning) {
-        return { isRunning, servicesRunning };
+        return { isRunning, servicesRunning};
       }
       this._initWeb3();
 
@@ -143,9 +148,11 @@ class NodeHandler {
         nbOfTxList.push(txcount);
       }
 
+
       return {
         isRunning: isRunning,
         servicesRunning,
+        nodestatus: nodestatusError,
         blockCount: bestBlockN,
         blockSizes: blockSizeList,
         nbOfTxs: nbOfTxList,
@@ -156,7 +163,7 @@ class NodeHandler {
         },
       };
     } catch (err) {
-      throw err;
+      return err;
     }
   }
   // set callback when node initialize successfully

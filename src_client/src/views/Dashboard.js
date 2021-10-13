@@ -25,12 +25,44 @@ const Dashboard = ({ isMobile }) => {
     setDialogmodal(true)
   }
 
-
+  
   const errorlogsetting = (node) => {
-    console.log("NODE----------")
-    console.log(node.get("isRunning"))
-    setErrorLog("TESTING")
+
+    var nodestatus = ""
+    if (node == eid || node == esc) {
+
+
+      if  (!node.isRunning && !node.servicesRunning) {
+        nodestatus = `Process not found and Failed to connect to port: connection refused`
+      } 
+      else if (!node.servicesRunning) {
+        nodestatus = `Failed to connect to port: connection refused`
+      } 
+      else if (!node.isRunning){
+        nodestatus = `Process not found`
+
+      }
+      else{
+        nodestatus = node.nodestatus
+      }
+
+
+    }else{
+
+      console.log("TEST CARRIER")
+      console.log(node.isRunning)
+      console.log(node.carrierIP)
+      nodestatus = node.nodestatus
+
+    }
+
+    setErrorLog(nodestatus)
+
   }
+
+
+   
+  
 
 
   var cardChartData1 = {
@@ -247,7 +279,9 @@ const Dashboard = ({ isMobile }) => {
             icon={feedsLogo}
             color={`${feeds.isRunning ? "success" : "danger"}`}
             variant="1"
-            status="Node not running"
+            node={feeds}
+            errorsetting={errorlogsetting}
+            dialog={dialogtoggle}
             children={
               feeds.isRunning && (
                 <Button
@@ -283,6 +317,9 @@ const Dashboard = ({ isMobile }) => {
               header="Carrier"
               mainText="Stopped"
               icon={carrierLogo}
+              node={carrier}
+              errorsetting={errorlogsetting}
+              dialog={dialogtoggle}
               color="danger"
               variant="1"
               status="Node not running"
@@ -303,7 +340,7 @@ const Dashboard = ({ isMobile }) => {
           <ModalBody>
             <center>
               <br />
-              Node not running: {ErrorLog}
+              Error Log : {ErrorLog}
               <br />
             </center>
           </ModalBody>
