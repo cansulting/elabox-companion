@@ -31,8 +31,9 @@ class Widget02 extends Component {
       children,
       variant,
       initializing,
-      status,
       dialog,
+      node,
+      errorsetting,
       ...attributes
     } = this.props;
 
@@ -129,7 +130,8 @@ class Widget02 extends Component {
                 <Button  color="primary" size="sm" 
                  onClick=
                  {() => {
-                  this.props.dialog()
+                  this.props.dialog();
+                  this.props.errorsetting({node});
                 }}
                 
                 >STOPPED. SEE ERROR LOG</Button>

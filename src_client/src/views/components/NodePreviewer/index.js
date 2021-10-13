@@ -114,7 +114,7 @@ const cardChartOpts4 = (blockdata) => ({
 });
 
 const Previewer = (props) => {
-  const { blockdata, label = 'Node', dialog } = props;
+  const { blockdata, label = 'Node', dialog, errorsetting } = props;
 
 
   // useEffect(() => {
@@ -148,8 +148,10 @@ const Previewer = (props) => {
               icon={didLogo}
               color="danger"
               variant="1"
-              status="Node not running"
               dialog={dialog}
+              node={blockdata}
+              errorsetting={errorsetting}
+
             />
           )}
         </Col>

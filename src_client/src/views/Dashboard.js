@@ -19,11 +19,19 @@ const Dashboard = ({ isMobile }) => {
   const { ela, eid, carrier, esc, feeds } = RootStore.blockchain;
   useEffect(() => {}, []);
   const [Dialogmodal, setDialogmodal] = useState(false)
-
+  const [ErrorLog, setErrorLog] = useState("")
 
   const dialogtoggle = () => {
     setDialogmodal(true)
   }
+
+
+  const errorlogsetting = (node) => {
+    console.log("NODE----------")
+    console.log(node.get("isRunning"))
+    setErrorLog("TESTING")
+  }
+
 
   var cardChartData1 = {
     labels: ["       ", " ", " ", " ", " ", " ", " ", " ", " ", "       "],
@@ -162,6 +170,10 @@ const Dashboard = ({ isMobile }) => {
               color="danger"
               variant="1"
               dialog={dialogtoggle}
+              node={ela}
+              errorsetting={errorlogsetting}
+
+
             />
           )}
         </Col>
@@ -224,8 +236,8 @@ const Dashboard = ({ isMobile }) => {
         </Col>
       </Row>
     
-      <NodePreview blockdata={eid} label="EID" dialog={dialogtoggle}/>
-      <NodePreview blockdata={esc} label="ESC"  dialog={dialogtoggle}/>
+      <NodePreview blockdata={eid} label="EID" dialog={dialogtoggle} errorsetting={errorlogsetting}/>
+      <NodePreview blockdata={esc} label="ESC"  dialog={dialogtoggle} errorsetting={errorlogsetting}/>
 
       <Row style={{ paddingTop: "50px" }}>
         <Col xs="12" sm="4" lg="4">
@@ -291,8 +303,7 @@ const Dashboard = ({ isMobile }) => {
           <ModalBody>
             <center>
               <br />
-              Node not running.
-              <br />
+              Node not running: {ErrorLog}
               <br />
             </center>
           </ModalBody>
@@ -304,7 +315,7 @@ const Dashboard = ({ isMobile }) => {
             }}
             >Cancel</Button>
           </ModalFooter>
-        </Modal>
+      </Modal>
 
 
 
