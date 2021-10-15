@@ -45,6 +45,7 @@ const checkProcessingRunning = async (process) => {
     return processID ? true : false;
   } catch (err) {
     console.log(`process ${process} is not found`);
+    console.log("ELA ERROR: ", err)
     return false;
   }
 };

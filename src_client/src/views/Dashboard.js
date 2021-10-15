@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Bar, Line } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import { Button } from "reactstrap";
 import NodePreview from "./components/NodePreviewer";
 import { ButtonGroup, CardBody, Col, Row, Card, CardGroup,  Modal, ModalHeader, ModalFooter, ModalBody  } from "reactstrap";
@@ -29,7 +29,7 @@ const Dashboard = ({ isMobile }) => {
   const errorlogsetting = (node) => {
 
     var nodestatus = ""
-    if (node == eid || node == esc) {
+    if (node === eid || node === esc) {
 
 
       if  (!node.isRunning && !node.servicesRunning) {
@@ -49,9 +49,6 @@ const Dashboard = ({ isMobile }) => {
 
     }else{
 
-      console.log("TEST CARRIER")
-      console.log(node.isRunning)
-      console.log(node.carrierIP)
       nodestatus = node.nodestatus
 
     }

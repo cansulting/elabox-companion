@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { Button, Input, Spinner } from "reactstrap";
 import elaboxLogo from './images/logo-circle-transparent.png'
 import backend from "../api/backend";
@@ -15,7 +15,7 @@ function Config() {
     //console.log(pwd2)
     setCreating(true)
 
-    if (pwd1 == '' || pwd2 == '') {
+    if (pwd1 === '' || pwd2 === '') {
       alert("You need to provide a password")
       setCreating(false)
     }
@@ -25,7 +25,7 @@ function Config() {
         setCreating(false)
       }
       else {
-        if (pwd1 != pwd2) {
+        if (pwd1 !== pwd2) {
           alert("Your passwords do not match!")
           setCreating(false)
         }
@@ -60,7 +60,7 @@ function Config() {
   function handleChange(event) {
     const { target } = event;
     const value = target.type === 'checkbox' ? target.checked : target.value;
-    if (target.id == "pwd1") {
+    if (target.id === "pwd1") {
       setPwd1(value)
     }
     else {
@@ -72,7 +72,7 @@ function Config() {
   return (
     <div style={{ backgroundColor: '#272A3D', height: '100vh', width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
       <center>
-        <img src={elaboxLogo} style={{ width: '200px', height: '200px', paddingRight: '10px' }} />
+        <img src={elaboxLogo} style={{ width: '200px', height: '200px', paddingRight: '10px' }} alt="elabox-logo"/>
 
         {creating
           ?

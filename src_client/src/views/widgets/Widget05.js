@@ -1,15 +1,12 @@
 import React, { Component } from "react";
-import classNames from "classnames";
-import { mapToCssModules } from "reactstrap/lib/utils";
 import { Button, Row, Col, Card, CardBody } from "reactstrap";
-import PropTypes from "prop-types";
 
-const propTypes = {
-  children: PropTypes.node,
-  className: PropTypes.string,
-  cssModule: PropTypes.object,
-  dataBox: PropTypes.func,
-};
+// const propTypes = {
+//   children: PropTypes.node,
+//   className: PropTypes.string,
+//   cssModule: PropTypes.object,
+//   dataBox: PropTypes.func,
+// };
 
 const defaultProps = {
   dataBox: () => ({ variant: "facebook", friends: "-", feeds: "-" }),
@@ -29,7 +26,7 @@ class Widget05 extends Component {
     // demo purposes only
     const data = dataBox();
     const variant = data.variant;
-    const title = data.title;
+    // const title = data.title;
     if (
       !variant ||
       ["facebook", "twitter", "linkedin", "google-plus"].indexOf(variant) < 0
@@ -37,18 +34,18 @@ class Widget05 extends Component {
       return null;
     }
 
-    const back = "bg-" + variant;
-    const icon = "fa fa-" + variant;
-    const keys = Object.keys(data);
+    // const back = "bg-" + variant;
+    // const icon = "fa fa-" + variant;
+    // const keys = Object.keys(data);
     const vals = Object.values(data);
 
-    const classCard = "brand-card";
-    const classCardHeader = classNames(`${classCard}-header`, back);
-    const classCardBody = classNames(`${classCard}-body`);
-    const classes = mapToCssModules(
-      classNames(classCard, className),
-      cssModule
-    );
+    // const classCard = "brand-card";
+    // const classCardHeader = classNames(`${classCard}-header`, back);
+    // const classCardBody = classNames(`${classCard}-body`);
+    // const classes = mapToCssModules(
+    //   classNames(classCard, className),
+    //   cssModule
+    // );
 
     return (
       <Card
@@ -65,7 +62,7 @@ class Widget05 extends Component {
             </Col>
           </Row>
 
-          {vals[3] != "" ? (
+          {vals[3] !== "" ? (
             <Row>
               <Col xs="6" style={{ justifyContent: "center", display: "flex" }}>
                 <Button onClick={this.props.onGreenPress} color="success">

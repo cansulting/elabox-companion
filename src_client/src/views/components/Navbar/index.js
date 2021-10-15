@@ -1,6 +1,5 @@
 import React from "react";
 import { FiMenu, FiLogOut } from "react-icons/fi";
-import { GrLogout } from "react-icons/gr";
 import elaboxLogo from "../../images/logo-wht.png";
 import { useMediaQuery } from "react-responsive";
 

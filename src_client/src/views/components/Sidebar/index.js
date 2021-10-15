@@ -58,6 +58,7 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
                 {" "}
                 <img
                   src={dashboardLogo}
+                  alt="dashboard-logo"
                   style={{
                     widht: "30px",
                     height: "30px",
@@ -81,6 +82,7 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
                 {" "}
                 <img
                   src={walletLogo}
+                  alt="wallet-logo"
                   style={{
                     widht: "30px",
                     height: "30px",
@@ -104,6 +106,7 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
                 {" "}
                 <img
                   src={settingsLogo}
+                  alt="settings-logo"
                   style={{
                     widht: "30px",
                     height: "30px",

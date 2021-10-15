@@ -66,7 +66,7 @@ class Wallet extends Component {
     backend.sendTx(this.state.recipient, this.state.amount, this.state.pwd)
       .then(responseJson => {
         console.log(responseJson)
-        if (responseJson.ok == 'ok') {
+        if (responseJson.ok === 'ok') {
           this.setState({ sentmodal: true })
         }
         else {
@@ -100,11 +100,11 @@ class Wallet extends Component {
   checkForm = () => {
     let recipient = this.state.recipient
     let amount = this.state.amount
-    if (recipient.length != 34) {
+    if (recipient.length !== 34) {
       this.setState({ error1modal: true })
     }
     else {
-      if (amount.length == 0) {
+      if (amount.length === 0) {
         this.setState({ error2modal: true })
       }
       else {
@@ -196,7 +196,7 @@ class Wallet extends Component {
           <ModalHeader>Sent</ModalHeader>
           <ModalBody>
             <center>
-              <img src={checkLogo} style={{ width: '50px', height: '50px' }} />
+              <img src={checkLogo} alt="check-logo" style={{ width: '50px', height: '50px' }} />
             </center>
           </ModalBody>
           <ModalFooter>
@@ -209,7 +209,7 @@ class Wallet extends Component {
           <ModalBody>
             <center>
               Something went wrong, please try again<br /><br />
-              <img src={errorLogo} style={{ width: '50px', height: '50px' }} />
+              <img src={errorLogo} alt="check-logo" style={{ width: '50px', height: '50px' }} />
             </center>
           </ModalBody>
           <ModalFooter>
@@ -223,7 +223,7 @@ class Wallet extends Component {
           <ModalBody>
             <center>
               Invalid password, please try again<br /><br />
-              <img src={errorLogo} style={{ width: '50px', height: '50px' }} />
+              <img src={errorLogo} alt="check-logo" style={{ width: '50px', height: '50px' }} />
             </center>
           </ModalBody>
           <ModalFooter>
@@ -237,7 +237,7 @@ class Wallet extends Component {
           <ModalBody>
             <center>
               Verified! Now sending ELA... <br /><br />
-              <img src={checkLogo} style={{ width: '50px', height: '50px' }} />
+              <img src={checkLogo} alt="check-logo" style={{ width: '50px', height: '50px' }} />
             </center>
           </ModalBody>
           <ModalFooter>
@@ -368,7 +368,7 @@ class Wallet extends Component {
                       tx.map(tx => (
                         <tr key={tx.Txid}>
                           <td>
-                            {tx.Type == "income" ? <i className="fa fa-arrow-up" style={{ color: 'green' }}></i> : <i className="fa fa-arrow-down" style={{ color: 'red' }}></i>}
+                            {tx.Type === "income" ? <i className="fa fa-arrow-up" style={{ color: 'green' }}></i> : <i className="fa fa-arrow-down" style={{ color: 'red' }}></i>}
                           </td>
                           <td>{tx.Value / 100000000}</td>
                           <td>{tx.Memo.split("msg:")[1]}</td>

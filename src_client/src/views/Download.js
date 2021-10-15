@@ -1,14 +1,11 @@
 import React, { useState } from "react";
-import { Link, Redirect } from 'react-router-dom';
-import { Button, Input, Spinner } from "reactstrap";
+import { Link } from 'react-router-dom';
+import { Button } from "reactstrap";
 import elaboxLogo from './images/logo-circle-transparent.png'
 import API from '../api/backend';
 
 function Download() {
 
-  const [isConfiged, setConfiged] = useState(false);
-  const [pwd1, setPwd1] = useState('qweqweqwe');
-  const [pwd2, setPwd2] = useState('qweqweqwe');
   const [downloading, setDownloading] = useState(false)
   const [finished, setFinished] = useState(false)
 
@@ -21,14 +18,14 @@ function Download() {
     }, 3000)
   }
 
-  function toDb() {
-    return <Redirect to="/" />;
-  }
+  // function toDb() {
+  //   return <Redirect to="/" />;
+  // }
 
   return (
     <div style={{ backgroundColor: '#272A3D', height: '100vh', width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
       <center>
-        <img src={elaboxLogo} style={{ width: '200px', height: '200px', paddingRight: '10px' }} />
+        <img src={elaboxLogo} alt="elabox-logo" style={{ width: '200px', height: '200px', paddingRight: '10px' }} />
 
         {finished
           ?

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { event_server, SERVICE_ID } from "../../../Socket"
+import { event_server } from "../../../Socket"
 import API from "../../../api/backend"
 export default function Ota({ children }) {
   const [status, setStatus] = useState("idle")

@@ -89,11 +89,10 @@ router.get("/synced", (req, res) => {
 
 router.get("/ela", async (req, res) => {
   try {
-    console.log("GETTING ELA STATUS...")
     statusMain =  res.json(await mainchain.getStatus())
     return res.json(await mainchain.getStatus())
   } catch (err) {
-    return res.status(500).json({ error: err })
+    return res.status(500).send({ error: err })
   }
 })
 

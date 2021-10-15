@@ -6,17 +6,12 @@ import {
   ModalFooter,
   Input,
   ModalHeader,
-  Badge,
-  Line,
   Card,
   CardBody,
   CardHeader,
   Col,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
+
   Row,
-  Table,
 } from "reactstrap"
 import Widget05 from "./widgets/Widget05"
 
@@ -191,7 +186,7 @@ class Settings extends Component {
   updateNow = async () => {
     this.closeUpdateNowModal()
     try {
-      const data = await master.updateNow()
+      // const data = await master.updateNow()
       setTimeout(() => {
         window.open(`http://${window.location.hostname}`)
       }, 5000)

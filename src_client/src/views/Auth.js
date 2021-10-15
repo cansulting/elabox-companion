@@ -39,7 +39,7 @@ function PrivateRoute({ children, ...rest }) {
     <Route
       {...rest}
       render={({ location }) =>
-        isAuth == "true" ? (
+        isAuth === "true" ? (
           children
         ) : (
           <Redirect

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { Button, Input } from "reactstrap";
 import elaboxLogo from './images/logo-circle-transparent.png'
 
@@ -43,7 +43,7 @@ function Login() {
   return (
     <div style={{ backgroundColor: '#272A3D', height: '100vh', width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
       <center>
-        <img src={elaboxLogo} style={{ width: '200px', height: '200px', paddingRight: '10px' }} />
+        <img src={elaboxLogo} alt="elabox-logo" style={{ width: '200px', height: '200px', paddingRight: '10px' }} />
         <div style={{ paddingTop: '20px' }}>
           <form onSubmit={(e) => {
             e.preventDefault()

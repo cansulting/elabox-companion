@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Modal, ModalBody, ModalFooter, Input, ModalHeader, Badge, Line, Card, CardBody, CardHeader, Col, Pagination, PaginationItem, PaginationLink, Row, Table, Form, FormGroup, Label, FormText, FormFeedback, Alert } from 'reactstrap';
-import Widget05 from './widgets/Widget05';
-
+import { Button, Input, Card, CardBody, CardHeader, Col, Row, Form, FormGroup, Label, FormFeedback, Alert } from 'reactstrap';
 import master from "../api/master"
 import { Formik } from 'formik'
 import * as Yup from 'yup';

@@ -157,7 +157,6 @@ export default function Updates({ isMobile, ota }) {
                             } 
                           }
                         }}
-                        disabled={ota.disabledButton}
                       >
                         {btnLabel}
                       </Button>

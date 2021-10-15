@@ -1,6 +1,6 @@
-import React, { useState, useEffect} from 'react'
+import React from 'react'
 import {  Line } from "react-chartjs-2";
-import { Button, ButtonGroup, CardBody, Col, Row, Card, CardGroup, Modal, ModalHeader, ModalFooter, ModalBody  } from "reactstrap";
+import { ButtonGroup, CardBody, Col, Row, Card, CardGroup  } from "reactstrap";
 import Widget02 from "../../widgets/Widget02";
 import Widget04 from "../../widgets/Widget04";
 //import { event_server } from '../../../Socket'
