@@ -1,6 +1,6 @@
 import { fireEvent, screen } from "@testing-library/react"
-import { server, rest, BASE_URL, renderApp,clearLocalStorage,renderAsFragment } from "../testing/utils"
-import Dashboard from "./Dashboard"
+import { server, rest, BASE_URL, renderApp,clearLocalStorage,renderAsFragment } from "../utils/testing"
+import Dashboard from "../views/Dashboard"
 const checkService = async (serviceName, status) => {
   await screen.findByText(serviceName)
   const elaParagraph = screen.getByText(serviceName)

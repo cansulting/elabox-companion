@@ -1,6 +1,6 @@
 import { fireEvent, screen,waitFor } from "@testing-library/react"
-import { server, rest, BASE_URL, renderApp,clearLocalStorage,renderAsFragment } from "../testing/utils"
-import Updates from "./Updates"
+import { server, rest, BASE_URL, renderApp,clearLocalStorage,renderAsFragment } from "../utils/testing"
+import Updates from "../views/Updates"
 beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
