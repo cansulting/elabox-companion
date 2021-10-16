@@ -11,10 +11,10 @@ import * as Yup from 'yup';
 
 const Schema = Yup.object().shape({
   name: Yup.string()
-    .required('Name is required'),
+    .required('Required'),
   email: Yup.string()
     .email("Invalid Email")
-    .required('Email is required'),
+    .required('Required'),
   problem: Yup.string()
     .required('Required'),
 
@@ -101,7 +101,7 @@ class HelpCentre extends Component {
                         <Row><Col>
                           <FormGroup>
                             <Label for="name">Full Name</Label>
-                            <Input type="text" name="name" id="name" placeholder="John Doe" onChange={handleChange}
+                            <Input data-testid="name" type="text" name="name" id="name" placeholder="John Doe" onChange={handleChange}
                               onBlur={handleBlur}
                               value={values.name}
                               invalid={errors.name ? true : false}
@@ -114,7 +114,7 @@ class HelpCentre extends Component {
                           <Col>
                             <FormGroup>
                               <Label for="email">Email</Label>
-                              <Input type="email" name="email" id="email" placeholder="john@doe.com"
+                              <Input data-testid="email" type="email" name="email" id="email" placeholder="john@doe.com"
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 value={values.email}
@@ -130,7 +130,7 @@ class HelpCentre extends Component {
                         <Row><Col>
                           <FormGroup>
                             <Label for="problem">Problem</Label>
-                            <Input type="textarea" name="problem" id="problem" placeholder="Describe your problem"
+                            <Input data-testid="problem" type="textarea" name="problem" id="problem" placeholder="Describe your problem"
                               onChange={handleChange}
                               onBlur={handleBlur}
                               value={values.problem}
@@ -143,7 +143,7 @@ class HelpCentre extends Component {
                         </Col></Row>
                         <Row>
                           <Col>
-                            <Button color="primary" size="lg" type="submit" onClick={handleSubmit}>Submit</Button>
+                            <Button data-testid="submit-help-btn" color="primary" size="lg" type="submit" onClick={handleSubmit}>Submit</Button>
                           </Col>
 
                         </Row>
