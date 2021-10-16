@@ -45,7 +45,6 @@ const checkProcessingRunning = async (process) => {
     return processID ? true : false;
   } catch (err) {
     console.log(`process ${process} is not found`);
-    console.log("ELA ERROR: ", err)
     return false;
   }
 };
@@ -55,17 +54,22 @@ const requestSpawn = async (command, callback, options) => {
   try {
     await delay(1000)
 
+    var scripOutput = ""
     const spawn_instance = spawn(command, options)
     spawn_instance.unref()
 
     spawn_instance.stdout.on("data", (data) => {
-      console.log(`${data}`)
+      console.log(`${data}`);
+      scripOutput+=data.toString();
     })
+
     spawn_instance.stderr.on("data", (data) => {
       console.log(`ERROR ${data}`)
+      scripOutput+=data.toString();
     })
+
     spawn_instance.on("exit", (code, signal) => {
-      if (!code) callback({ sucess: true })
+      if (!code) callback({ sucess: true, data: scripOutput })
       else callback({ success: false, error: signal })
     })
   } catch (err) {

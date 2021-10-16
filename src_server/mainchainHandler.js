@@ -5,13 +5,16 @@ const fs = require('fs')
 const config = require("./config")
 const isPortReachable = require("is-port-reachable")
 const maxBufferSize = 10000
+var proccessResult = null
 
 // contains procedures that manages the mainchain process 
 class MainchainHandler {
     async init() {
         await this.start((response) => {
+            console.log("RESPONSE--------------")
             console.log(response)
         })
+        proccessResult = response.data
     }
     getBlockSize(height) {
         return new Promise(function (resolve, reject) {
@@ -56,12 +59,12 @@ class MainchainHandler {
     async start(callback = () => {}) {
         if ( !await processhelper.checkProcessingRunning('ela')) {
             console.log(`Starting ela...`)
-            await processhelper.requestSpawn(`nohup ./ela --datadir ${config.ELABLOCKS_DIR} > /dev/null 2>output &`, callback, {
-                maxBuffer: 1024 * maxBufferSize,
-                detached: true,
-                shell: true,
-                cwd: config.ELA_DIR,
-            })
+            await processhelper.requestSpawn(`./ela --datadir ${config.ELABLOCKS_DIR}`, callback, {
+              maxBuffer: 1024 * maxBufferSize,
+              detached: true,
+              shell: true,
+              cwd: config.ELA_DIR,
+          })
         } else {
             console.log("ELA Already started...")
         }
@@ -95,7 +98,8 @@ class MainchainHandler {
           `curl -X POST http://User:Password@localhost:${config.ELA_PORT} -H "Content-Type: application/json" -d \'{"method": "getnodestate"}\' `,
           { maxBuffer: 1024 * maxBufferSize }
         )
-  
+
+
   
         const nodestatusError = JSON.parse(nodestatus).error
 
