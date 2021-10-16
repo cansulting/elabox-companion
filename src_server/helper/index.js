@@ -70,7 +70,7 @@ const requestSpawn = async (command, callback, options) => {
 
     spawn_instance.on("exit", (code, signal) => {
       if (!code) callback({ sucess: true, data: scripOutput })
-      else callback({ success: false, error: signal })
+      else callback({ success: false, error: signal ,data:scripOutput})
     })
   } catch (err) {
     console.log("Spawn error", err)

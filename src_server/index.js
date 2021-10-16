@@ -399,8 +399,8 @@ const restartCarrier = async (callback) => {
 router.post("/restartMainchain", async (req, res) => {
   await mainchain.restart((resp) => 
   {
-  console.log(resp)
-  res.json(resp)
+    console.log(resp)
+    res.json(resp)
   }
   )
 })
@@ -694,16 +694,16 @@ async function processDownloadPackage(req, res) {
 app.use("/", router)
 
 app.listen(config.PORT, async function () {
-  console.log("Runnning on " + config.PORT)
-  await feedsHandler.runFeeds()
-  checkProcessingRunning("ela-bootstrapd").then((running) => {
-    if (!running) restartCarrier((response) => console.log(response))
-  })
-  await mainchain.init()
-  mainchain.setOnComplete(async () => {
-    await eid.init()
-    await eid.setOnComplete(() => esc.init())
-  })
+  // console.log("Runnning on " + config.PORT)
+  // await feedsHandler.runFeeds()
+  // checkProcessingRunning("ela-bootstrapd").then((running) => {
+  //   if (!running) restartCarrier((response) => console.log(response))
+  // })
+  // await mainchain.init()
+  // mainchain.setOnComplete(async () => {
+  //   await eid.init()
+  //   await eid.setOnComplete(() => esc.init())
+  // })
 })
 
 module.exports = app
