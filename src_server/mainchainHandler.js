@@ -98,13 +98,14 @@ class MainchainHandler {
           { maxBuffer: 1024 * maxBufferSize }
         )
 
-
-  
+        
+        // If there's an error within the node when it is online it is caught here
         const nodestatusError = JSON.parse(nodestatus).error
 
-        //console.log(await isSyncing())
+        // If there's an error within the node when it it quitted or corrupted it is caught 
+        // on spawn stored on  `processResult` and sent here
         if (!isRunning || !servicesRunning ) {
-            return { isRunning, servicesRunning }
+            return { isRunning, servicesRunning, nodestatus: proccessResult }
         }
 
         try {
