@@ -11,10 +11,9 @@ var proccessResult = null
 class MainchainHandler {
     async init() {
         await this.start((response) => {
-            console.log("RESPONSE--------------")
-            console.log(response)
-        })
-        proccessResult = response.data
+            console.log("RESPONSE: ", response)
+            proccessResult = response
+          })
     }
     getBlockSize(height) {
         return new Promise(function (resolve, reject) {

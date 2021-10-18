@@ -54,23 +54,25 @@ const requestSpawn = async (command, callback, options) => {
   try {
     await delay(1000)
 
-    var scripOutput = ""
+    var nodeOutput = ""
     const spawn_instance = spawn(command, options)
     spawn_instance.unref()
 
     spawn_instance.stdout.on("data", (data) => {
-      console.log(`${data}`);
-      scripOutput+=data.toString();
+      console.log(`stdout ${data}`);
+      nodeOutput+=data.toString();
     })
 
     spawn_instance.stderr.on("data", (data) => {
       console.log(`ERROR ${data}`)
-      scripOutput+=data.toString();
+      nodeOutput+=data.toString();
     })
 
+    // stdout and sterr are included to nodeOutput so even if there's
+    // an error, it can be traced on what was working till where it failed. 
     spawn_instance.on("exit", (code, signal) => {
-      if (!code) callback({ sucess: true, data: scripOutput })
-      else callback({ success: false, error: signal ,data:scripOutput})
+      if (!code) callback({ sucess: true, data: nodeOutput })
+      else callback({ success: false, error: signal, data:nodeOutput})
     })
   } catch (err) {
     console.log("Spawn error", err)

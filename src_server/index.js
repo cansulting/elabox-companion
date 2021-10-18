@@ -399,7 +399,7 @@ const restartCarrier = async (callback) => {
 router.post("/restartMainchain", async (req, res) => {
   await mainchain.restart((resp) => 
   {
-    console.log(resp)
+    console.log("RESPONSE ", res.json(resp).data)
     res.json(resp)
   }
   )
@@ -689,21 +689,20 @@ async function processDownloadPackage(req, res) {
     res.status(500).send("Download error.")
   }
 }
-//ota functions end
-// define the router to use
+
 app.use("/", router)
 
 app.listen(config.PORT, async function () {
-  // console.log("Runnning on " + config.PORT)
-  // await feedsHandler.runFeeds()
-  // checkProcessingRunning("ela-bootstrapd").then((running) => {
-  //   if (!running) restartCarrier((response) => console.log(response))
-  // })
-  // await mainchain.init()
-  // mainchain.setOnComplete(async () => {
-  //   await eid.init()
-  //   await eid.setOnComplete(() => esc.init())
-  // })
+  console.log("Runnning on " + config.PORT)
+  await feedsHandler.runFeeds()
+  checkProcessingRunning("ela-bootstrapd").then((running) => {
+    if (!running) restartCarrier((response) => console.log(response))
+  })
+  await mainchain.init()
+  mainchain.setOnComplete(async () => {
+    await eid.init()
+    await eid.setOnComplete(() => esc.init())
+  })
 })
 
 module.exports = app
