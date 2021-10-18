@@ -86,9 +86,9 @@ function Config() {
             <h1 style={{ color: 'white' }}>Welcome to Elabox</h1>
             <h5 style={{ color: 'white' }}>Choose a secure password to protect your Elabox and wallet</h5>
             <form onSubmit={createWallet}>
-              <Input type="password" id="pwd1" name="pwd1" placeholder="Password" required onChange={(e) => handleChange(e)} style={{ marginTop: '30px' }} />
-              <Input type="password" id="pwd2" name="pwd2" placeholder="Repeat password" required onChange={(e) => handleChange(e)} style={{ marginTop: '10px' }} />
-              <Button type="submit" style={{ marginTop: '20px' }}>Create Wallet</Button>
+              <Input data-testid="password-input" type="password" id="pwd1" name="pwd1" placeholder="Password" required onChange={(e) => handleChange(e)} style={{ marginTop: '30px' }} />
+              <Input data-testid="password-confirm-input" type="password" id="pwd2" name="pwd2" placeholder="Repeat password" required onChange={(e) => handleChange(e)} style={{ marginTop: '10px' }} />
+              <Button data-testid="create-wallet-submit-btn" type="submit" style={{ marginTop: '20px' }}>Create Wallet</Button>
             </form>
 
           </div>

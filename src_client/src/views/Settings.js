@@ -265,6 +265,7 @@ class Settings extends Component {
           </ModalBody>
           <ModalFooter>
             <Button
+              data-testid="restart-btn"
               color="success"
               onClick={() => this.restartNode(this.state.node)}
             >
@@ -331,6 +332,7 @@ class Settings extends Component {
           </ModalBody>
           <ModalFooter>
             <Button
+              data-testid="resync-btn"
               color="success"
               onClick={this.verifyPassword}
             >
@@ -426,6 +428,7 @@ class Settings extends Component {
         <Row>
           <Col xs="12" sm="6" lg="4">
             <Widget05
+              testid="ela-btn"            
               dataBox={() => ({
                 title: "MainChain",
                 variant: "facebook",
@@ -443,6 +446,7 @@ class Settings extends Component {
 
           <Col xs="12" sm="6" lg="4">
             <Widget05
+              testid="eid-btn"            
               dataBox={() => ({
                 title: "EID",
                 variant: "facebook",
@@ -459,6 +463,7 @@ class Settings extends Component {
           </Col>
           <Col xs="12" sm="6" lg="4">
             <Widget05
+              testid="esc-btn"            
               dataBox={() => ({
                 title: "ESC",
                 variant: "facebook",
@@ -475,6 +480,7 @@ class Settings extends Component {
           </Col>
           <Col xs="12" sm="6" lg="4">
             <Widget05
+              testid="feeds-btn"
               dataBox={() => ({
                 title: "Feeds",
                 variant: "facebook",
@@ -488,6 +494,7 @@ class Settings extends Component {
           </Col>
           <Col xs="12" sm="6" lg="4">
             <Widget05
+              testid="carrier-btn"
               dataBox={() => ({
                 title: "Carrier",
                 variant: "facebook",
@@ -529,6 +536,7 @@ class Settings extends Component {
         <Row style={{ marginTop: "20px" }}>
           <Col xs="12" sm="6" lg="4">
             <Widget05
+              testid="download-wallet-btn"
               dataBox={() => ({
                 title: "Backup wallet file",
                 variant: "facebook",
@@ -576,7 +584,7 @@ class Settings extends Component {
                 <b>Never share your onion address with anyone.</b>
                 <br />
                 <br />
-                {showOnion && onion}
+                {showOnion && <p data-testid="onion-p">{onion}</p>}
               </CardBody>
             </Card>
           </Col>
@@ -584,6 +592,7 @@ class Settings extends Component {
         <Row style={{ marginTop: "20px" }}>
           <Col xs="12" sm="6" lg="4">
             <Widget05
+              testid="show-onion-btn"
               dataBox={() => ({
                 title: "Onion Address",
                 variant: "facebook",
