@@ -20,6 +20,7 @@ export const Ela = types
   .actions((self) => {
     const fetchData = flow(function* () {
       try {
+        console.log("ELA Restarting... ")
         const response = yield API.fetchEla();
         applySnapshot(self, response);
       } catch (err) {
@@ -66,6 +67,7 @@ export const eid = types
   .actions((self) => {
     const fetchData = flow(function* () {
       try {
+        console.log("EID Restarting... ")
         const response = yield API.fetchEID();
         applySnapshot(self, response);
       } catch (err) {
@@ -111,6 +113,7 @@ export const esc = types
   .actions((self) => {
     const fetchData = flow(function* () {
       try {
+        console.log("ESC Restarting... ")
         const response = yield API.fetchESC();
         applySnapshot(self, response);
       } catch (err) {
@@ -152,6 +155,7 @@ export const Carrier = types
   .actions((self) => {
     const fetchData = flow(function* () {
       try {
+        console.log("CARRIER Restarting... ")
         const response = yield API.fetchCarrier();
         applySnapshot(self, response);
       } catch (err) {
@@ -183,6 +187,7 @@ const feeds = types
   .actions((self) => {
     const fetchData = flow(function* () {
       try {
+        console.log("Feeds Restarting... ")
         const response = yield API.fetchFeeds();
         applySnapshot(self, response);
       } catch (err) {
