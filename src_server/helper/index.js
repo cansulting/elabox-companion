@@ -49,18 +49,19 @@ const checkProcessingRunning = async (process) => {
   }
 };
 
+
+var nodeOutput = ""
+
 // spawn a command
 const requestSpawn = async (command, callback, options) => {
   try {
     await delay(1000)
 
-    var nodeOutput = ""
     const spawn_instance = spawn(command, options)
     spawn_instance.unref()
 
     spawn_instance.stdout.on("data", (data) => {
-      console.log(`stdout ${data}`);
-      nodeOutput+=data.toString();
+      // console.log(`${data}`);
     })
 
     spawn_instance.stderr.on("data", (data) => {
@@ -80,5 +81,12 @@ const requestSpawn = async (command, callback, options) => {
   }
 }
 
+const getErrorLog = async () => {
+  nodeReturn = nodeOutput
+  nodeOutput = ""
+  return nodeReturn
+}
 
-module.exports = { execShell, checkProcessingRunning, killProcess, requestSpawn };
+
+
+module.exports = { execShell, checkProcessingRunning, killProcess, requestSpawn, getErrorLog };

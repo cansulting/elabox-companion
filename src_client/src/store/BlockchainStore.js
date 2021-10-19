@@ -20,10 +20,15 @@ export const Ela = types
   .actions((self) => {
     const fetchData = flow(function* () {
       try {
-        console.log("ELA Restarting... ")
+        console.log("ELA Restarting... ");
         const response = yield API.fetchEla();
+        console.log("ELA RESTART LOG------")
+        console.log(response)
+        console.log("/ELA RESTART LOG------")
+
         applySnapshot(self, response);
       } catch (err) {
+        console.log("ELA had an issue while restarting");
         console.error(err);
       }
     });
@@ -32,7 +37,6 @@ export const Ela = types
       try {
         self.restarting = true;
         const response = yield API.restartMainChain();
-        console.log(response);
       } catch (err) {
         console.log(err);
       } finally {
@@ -43,6 +47,7 @@ export const Ela = types
       try {
         self.restarting = true;
         const response = yield API.resyncMainchain();
+        console.log(response);
       } catch (err) {
         console.log(err);
       } finally {

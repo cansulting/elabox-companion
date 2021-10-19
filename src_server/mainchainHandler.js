@@ -11,8 +11,9 @@ var proccessResult = null
 class MainchainHandler {
     async init() {
         await this.start((response) => {
-            console.log("RESPONSE: ", response)
-            proccessResult = response
+            // Get errors if it appeared upon initialization.
+            console.log("ERRORS COLLECTED: ", response)
+            proccessResult = response.data
           })
     }
     getBlockSize(height) {
@@ -63,7 +64,20 @@ class MainchainHandler {
               detached: true,
               shell: true,
               cwd: config.ELA_DIR,
-          })
+              },
+              // Get errors if it appeared during initialization.
+              async (err, stdout, stderr) => {
+                console.log("GETTING SPAWN LOG")
+                if (!stdout) {
+                  console.log("No stdout")
+                  console.log(stdout)
+                }
+                if (stderr) {
+                  console.log("Error encountered during spawn ", stderr)
+                  proccessResult = stderr
+                }
+              }
+          )
         } else {
             console.log("ELA Already started...")
         }
@@ -90,9 +104,14 @@ class MainchainHandler {
     // get the current status of eid. this returns the state and blocks
     async getStatus() {
         const isRunning = await processhelper.checkProcessingRunning('ela')
+        console.log("ISRUNNING", isRunning)
         const servicesRunning = await isPortReachable(config.ELA_PORT, { host: "localhost" })
-        
-        
+        console.log("SERVICESRUNNING", servicesRunning)
+        const errorLogs = await processhelper.getErrorLog()
+        if (errorLogs != ""){
+          proccessResult = errorLogs
+        }
+
         const nodestatus = await processhelper.execShell(
           `curl -X POST http://User:Password@localhost:${config.ELA_PORT} -H "Content-Type: application/json" -d \'{"method": "getnodestate"}\' `,
           { maxBuffer: 1024 * maxBufferSize }
@@ -101,8 +120,9 @@ class MainchainHandler {
         
         // If there's an error within the node when it is online it is caught here
         const nodestatusError = JSON.parse(nodestatus).error
+        proccessResult = nodestatusError
 
-        // If there's an error within the node when it it quitted or corrupted it is caught 
+        // If there's an error within the node when it quitted or got corrupted it is caught 
         // on spawn stored on  `processResult` and sent here
         if (!isRunning || !servicesRunning ) {
             return { isRunning, servicesRunning, nodestatus: proccessResult }
@@ -128,14 +148,18 @@ class MainchainHandler {
                 const nbOfTx = await this.getNbOfTx(blockCount - 1 - i)
                 nbOfTxList.push(nbOfTx)
             }
-        
+
+            console.log("====PROCESS RESULT====")
+            console.log(proccessResult)
+            console.log("====/PROCESS RESULT====")
+
             return {
                 blockCount: blockCount - 1,
                 blockSizes: blockSizeList,
                 nbOfTxs: nbOfTxList,
                 isRunning: isRunning,
                 servicesRunning,
-                nodestatus: nodestatusError,
+                nodestatus: proccessResult,
                 latestBlock: {
                     blockTime: latestBlock.time,
                     blockHash: latestBlock.hash,
