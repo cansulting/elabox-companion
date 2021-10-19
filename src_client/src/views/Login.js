@@ -51,6 +51,7 @@ function Login() {
       <center>
         <img
           src={elaboxLogo}
+          alt="elabox-logo"
           style={{ width: "200px", height: "200px", paddingRight: "10px" }}
         />
         <div style={{ paddingTop: "20px" }}>

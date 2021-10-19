@@ -37,6 +37,7 @@ export const Ela = types
       try {
         self.restarting = true;
         const response = yield API.restartMainChain();
+        console.log("Restart ELA Response: ", response)
       } catch (err) {
         console.log(err);
       } finally {
@@ -84,6 +85,7 @@ export const eid = types
       try {
         self.restarting = true;
         const response = yield API.restartEID();
+        console.log("Restart EID Response: ", response)
       } catch (err) {
         console.log(err);
       } finally {
@@ -130,6 +132,7 @@ export const esc = types
       try {
         self.restarting = true;
         const response = yield API.restartESC();
+        console.log("Restart ESC Response: ", response)
       } catch (err) {
         console.log(err);
       } finally {

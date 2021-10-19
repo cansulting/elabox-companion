@@ -280,7 +280,7 @@ class Settings extends Component {
           <ModalBody>
             <center>
               Invalid password, please try again<br /><br />
-              <img src={errorLogo} style={{ width: '50px', height: '50px' }} />
+              <img src={errorLogo} alt="error-logo" style={{ width: '50px', height: '50px' }} />
             </center>
           </ModalBody>
           <ModalFooter>
@@ -294,7 +294,7 @@ class Settings extends Component {
           <ModalBody>
             <center>
               Resyncing Node <br /><br />
-              <img src={checkLogo} style={{ width: '50px', height: '50px' }} />
+              <img src={checkLogo} alt="check-logo" style={{ width: '50px', height: '50px' }} />
             </center>
           </ModalBody>
           <ModalFooter>
