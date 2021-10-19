@@ -49,16 +49,6 @@ function Login() {
       }}
     >
       <center>
-<<<<<<< HEAD
-        <img src={elaboxLogo} alt="elabox-logo" style={{ width: '200px', height: '200px', paddingRight: '10px' }} />
-        <div style={{ paddingTop: '20px' }}>
-          <form onSubmit={(e) => {
-            e.preventDefault()
-            login()
-          }}>
-            <Input type="password" id="pwd" name="pwd" placeholder="********" required onChange={(e) => handleChange(e)} autoFocus />
-            <Button type="submit" style={{ marginTop: '20px' }}>Sign In</Button>
-=======
         <img
           src={elaboxLogo}
           style={{ width: "200px", height: "200px", paddingRight: "10px" }}
@@ -83,7 +73,6 @@ function Login() {
             <Button data-testid="sign-in-btn" type="submit" style={{ marginTop: "20px" }}>
               Sign In
             </Button>
->>>>>>> 5da1fd6e5e13d0c7ac19b3536e0c1ebba4e5d17a
           </form>
         </div>
       </center>
