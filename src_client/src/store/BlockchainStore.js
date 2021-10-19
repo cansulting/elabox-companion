@@ -41,6 +41,7 @@ export const Ela = types
     const resync = flow(function* () {
       try {
         self.restarting = true;
+        const response = yield API.resyncMainchain();
       } catch (err) {
         console.log(err);
       } finally {
@@ -75,6 +76,7 @@ export const eid = types
     const restart = flow(function* () {
       try {
         self.restarting = true;
+        const response = yield API.restartEID();
       } catch (err) {
         console.log(err);
       } finally {
@@ -119,6 +121,7 @@ export const esc = types
     const restart = flow(function* () {
       try {
         self.restarting = true;
+        const response = yield API.restartESC();
       } catch (err) {
         console.log(err);
       } finally {
