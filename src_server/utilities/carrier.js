@@ -1,9 +1,10 @@
 var shell = require('shelljs');
 const config = require("../config")
+const syslog = require("../logger")
 
 // check and update carrier IP if needed
 const runCarrier = () => {
-    console.log("Running Check Carrier Script")
+    syslog.write(syslog.create().debug("Running carrier script"))
     var prom = new Promise((resolve, reject) => {
       //shell.cd(config.BINARIES_PATH)
     
@@ -13,11 +14,12 @@ const runCarrier = () => {
     
           (err, stdout, stderr) => {
             if (err || stderr) {
-              console.log("Failed CP", err, stderr);
+              syslog.write(syslog.create().error(`Failed carrier script`, err).addCaller())
               reject (err)
     
             } else {
-              console.log("Success CP");
+              syslog.write(syslog.create().debug(stdout))
+              syslog.write(syslog.create().debug(`Success running carrier script.`))
               resolve(stdout.trim())
             }
           }
@@ -32,7 +34,7 @@ const init = async () =>{
     runCarrier().then((_) => {
       setInterval(runCarrier, 1000 * 60 * 60 * 4)
     }).catch( err => {
-      console.log("Error runCarrier()", err)
+      syslog.write(syslog.create().error(`Error runCarrier()`, err).addCaller())
     })
     
 }
