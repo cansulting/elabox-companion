@@ -186,15 +186,11 @@ class NodeHandler {
         },
       };
     } catch (err) {
-<<<<<<< HEAD
-      return err;
-=======
       syslog.write(
         syslog.create().error(`Found error while getting status of ${this.options.binaryName}`, err)
         .addStack()
         .addCategory(this.options.binaryName))
       throw err;
->>>>>>> 086755aca50e8e728cf7864f2d7432090006e1a5
     }
   }
   // set callback when node initialize successfully
