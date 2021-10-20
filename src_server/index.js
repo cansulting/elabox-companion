@@ -9,6 +9,7 @@ const logger = require("morgan")
 const fs = require("fs")
 const config = require("./config")
 const utils = require("./utilities")
+const syslog = require("./logger")
 var errorHandler = require("errorhandler")
 //ota
 const path = require("path")
@@ -78,11 +79,12 @@ router.get("/synced", (req, res) => {
     (err, stdout, stderr) => {
       if (err) {
         //some err occurred
-        console.error(err)
+        syslog.write(syslog.create().error("Error on /synced request", err).addStack())
       } else {
         // the *entire* stdout and stderr (buffered)
-        console.log(`stdout: ${stdout}`)
-        console.log(`stderr: ${stderr}`)
+        syslog.write(syslog.create().debug("Route /synced result " + stdout))
+        if (stderr)
+          syslog.write(syslog.create().error("Error on /synced request", stderr).addCaller())
       }
     }
   )
@@ -145,7 +147,7 @@ router.get("/carrier", async (req, res) => {
 
     return res.status(200).json({ isRunning, carrierIP: carrierIP.trim(), nodestatus })
   } catch (err) {
-    console.log(err)
+    syslog.write(syslog.create().error("Error on /carrier request ", err).addStack())
     res.status(500).send({ error: err })
   }
 })
@@ -165,7 +167,7 @@ router.get("/feeds", async (req, res) => {
 
     return res.status(200).json({ isRunning: isRunning, nodestatus:nodestatus })
   } catch (err) {
-    console.log(err)
+    syslog.write(syslog.create().error("Error on /feeds request ", err).addStack())
     res.status(500).send({ error: err })
   }
 })
@@ -199,7 +201,7 @@ router.post("/sendTx", (req, res) => {
   let amount = req.body.amount
   let recipient = req.body.recipient
   let pwd = req.body.pwd
-  console.log(amount, recipient, pwd)
+  syslog.write(syslog.create().debug(`Sending coint ammount=${amount} recipient=${recipient}`))
 
   // 1 - buildtx
   exec(
@@ -234,6 +236,7 @@ router.post("/sendTx", (req, res) => {
                   if (!err) {
                     res.json({ ok: "ok" })
                   } else {
+                    syslog.write(syslog.create().error(`Error while sending coin to ${recipient}`, err).addCaller())
                     res.json({ ok: "nope" })
                   }
                 }
@@ -280,7 +283,6 @@ router.post("/resyncNodeVerification", (req, res) => {
 
 router.post("/login", (req, res) => {
   let pwd = req.body.pwd
-  console.log("PASSWORD RECEIVED", pwd, req.body)
   exec(
     elaPath +
       "/ela-cli wallet a -w " +
@@ -290,10 +292,10 @@ router.post("/login", (req, res) => {
       "",
     { maxBuffer: 1024 * maxBufferSize },
     async (err, stdout, stderr) => {
-      console.log("err", err)
-      console.log("stdout", stdout)
-      // console.log(stdout.split('\n')[2].split(' ')[0])
+      if (stdout) 
+        syslog.write(syslog.create().debug("/login request " + stdout))
       if (err) {
+        syslog.write(syslog.create().error("Error on /login. Failed ela cli exec.", err).addCaller())
         res.json({ ok: false })
       } else {
         res.json({ ok: true, address: stdout.split("\n")[2].split(" ")[0] })
@@ -304,19 +306,19 @@ router.post("/login", (req, res) => {
 
 router.post("/createWallet", (req, res) => {
   let pwd = req.body.pwd
-  console.log("PASSWORD RECEIVED", pwd, req.body)
-
   exec(
     "echo 'elabox:" + pwd + "' | sudo chpasswd",
     { maxBuffer: 1024 * maxBufferSize },
     async (err, stdout, stderr) => {
-      console.log("Changing Pi Password... ")
+      syslog.write(syslog.create().debug("Updating Raspberry PI password"))
       if (!stdout) {
-        console.log("Password setting succeeds")
-        console.log(stdout)
+        syslog.write(syslog.create().debug("Success updating RPI password " + stdout))
+      }
+      if (err) {
+        syslog.write(syslog.create().error("Error while updating RPI password", err).addCaller())
       }
       if (stderr) {
-        console.log("System password setup failed: ", stderr)
+        syslog.write(syslog.create().error("Error while updating RPI password.", stderr).addCaller())
       }
     }
   )
@@ -331,13 +333,18 @@ router.post("/createWallet", (req, res) => {
       "",
     { maxBuffer: 1024 * maxBufferSize },
     async (err, stdout, stderr) => {
-      console.log(stdout)
-      // res.json({balance})
-      res.json({ ok: "ok" })
+      if (stderr) {
+        syslog.write(syslog.create().error("Error while updating RPI password.", stderr).addCaller())
+      }
+      if (err) {
+        syslog.write(syslog.create().error("Error while creating wallet", err).addCaller())
+        res.json({ ok: "nope" })
+      } else {
+        syslog.write(syslog.create().debug("Success creating wallet " + stdout))
+        res.json({ ok: "ok" })
+      }
     }
   )
-
-  // console.log(pwd)
 })
 
 // let users download the wallet file
@@ -351,7 +358,8 @@ router.post("/getBalance", (req, res) => {
     "curl http://localhost:20334/api/v1/asset/balances/" + address,
     { maxBuffer: 1024 * maxBufferSize },
     async (err, stdout, stderr) => {
-      console.log("getBalance", stdout)
+      if (err) 
+        syslog.write(syslog.create().error("Error retrieving wallet balance", err).addCaller())
       let balance = "..."
       if (stdout !== "") {
         let balanceInfo = JSON.parse(stdout)
@@ -389,8 +397,7 @@ router.get("/downloadWallet", function (req, res) {
 })
 
 const restartCarrier = async (callback) => {
-  console.log("Restarting Carrier")
-  console.log("To view carrier log >>>> sudo cat tail /var/log/syslog")
+  syslog.write(syslog.create().info("Restarting carrier...").addCategory("carrier"))
   await killProcess("ela-bootstrapd")
   await requestSpawn(
     //"./ela-bootstrapd --config=bootstrapd.conf --foreground",
@@ -502,7 +509,8 @@ const checkFile = (file) => {
   var prom = new Promise((resolve, reject) => {
     try {
       fs.access(file, fs.constants.R_OK, (err) => {
-        console.log(`${file} ${err ? "is not readable" : "is readable"}`)
+        if (err) 
+          syslog.write(syslog.create().error(`File ${file} is not readable.`, err).addCaller())
         return err ? resolve(false) : resolve(true)
       })
     } catch (err) {
@@ -511,7 +519,7 @@ const checkFile = (file) => {
       }
     }
   }).catch((error) => {
-    console.log(error)
+    syslog.write(syslog.create().error(`Error while checking file ${file}`, error).addCaller())
   })
 
   return prom
@@ -523,11 +531,14 @@ const getOnionAddress = () => {
       "echo elabox | sudo -S cat /var/lib/tor/elabox/hostname",
       { maxBuffer: 1024 * maxBufferSize },
       async (err, stdout, stderr) => {
+        if (err) {
+          syslog.write(syslog.create().error(`Error while getting onion address`, err).addCaller())
+          reject(err)
+          return
+        }
         resolve(stdout.trim())
       }
     )
-  }).catch((error) => {
-    console.log(error)
   })
 }
 
@@ -541,13 +552,16 @@ const regenerateTor = () => {
           "echo elabox | sudo -S systemctl restart tor@default",
           { maxBuffer: 1024 * maxBufferSize },
           async (err, stdout, stderr) => {
+            if (err) {
+              syslog.write(syslog.create().error(`Error while generating Tor address`, err).addCaller())
+              reject(err)
+              return
+            }
             resolve()
           }
         )
       }
     )
-  }).catch((error) => {
-    console.log(error)
   })
 }
 ///ota functions
@@ -614,11 +628,6 @@ async function checkVersion() {
   }
 }
 async function downloadElaFile(destinationPath, version, extension = "box") {
-  const destinationFileName = path.join(
-    destinationPath,
-    `/${version}.${extension}`
-  )
-  console.log(`${config.PACKAGES_URL}/${version}.${extension}`)
   const downloader = new Downloader({
     url: `${config.PACKAGES_URL}/${version}.${extension}`,
     directory: destinationPath,
@@ -715,18 +724,12 @@ async function processDownloadPackage(req, res) {
 app.use("/", router)
 
 app.listen(config.PORT, async function () {
-  console.log("Runnning on " + config.PORT)
-  const response = await feedsHandler.runFeeds()
-  if (!response.success){
-    feedsNodestatus = response.data
-  }
-
+  syslog.write(syslog.create().info("Companion start running on " + config.PORT))
+  await feedsHandler.runFeeds()
   checkProcessingRunning("ela-bootstrapd").then((running) => {
-    if (!running){
-      restartCarrier((response) =>console.log(response))
-    }
-    
-    
+    if (!running) restartCarrier((response) => {
+      syslog.write(syslog.create().debug('Carrier restart response ' + response))
+    })
   })
 
 

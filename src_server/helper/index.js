@@ -1,12 +1,13 @@
 var shell = require("shelljs");
 const { spawn } = require("child_process");
 const delay = require("delay")
+const syslog = require("../logger")
 
 const execShell = (cmd, opts) => {
   return new Promise((resolve, reject) => {
     shell.exec(cmd, opts, (error, stdout) => {
       if (error) {
-        console.log("error: ", error);
+        syslog.write(syslog.create().error(`Shell exec ${cmd} error`, error).addCaller())
         reject(error);
       }
 
@@ -26,11 +27,10 @@ const killProcess = async (process, all = false) => {
     }
     const processID = await execShell(`pidof -zx ${process}`);
 
-    console.log("killing process " + processID.split(" ")[0]);
+    syslog.write(syslog.create().debug(`Killing process ${process}`))
     await execShell(`kill -9 ${processID.split(" ")[0]}`);
-    console.log("process killed");
   } catch (err) {
-    console.log(`process ${process} is not found`, 'error ', err);
+    syslog.write(syslog.create().error(`Killing process ${process} error`, err).addCaller().addStack())
   }
 };
 
@@ -38,13 +38,9 @@ const killProcess = async (process, all = false) => {
 const checkProcessingRunning = async (process) => {
   try {
     const processID = await execShell(`pidof -zx ${process}`);
-
-    if (processID) console.log(`${process} running with ID ${processID}`);
-    //else console.log(`process ${process} is not found`);
-
     return processID ? true : false;
   } catch (err) {
-    console.log(`process ${process} is not found`);
+    syslog.write(syslog.create().error(`Check running process ${process} error`, err).addCaller())
     return false;
   }
 };
@@ -61,12 +57,11 @@ const requestSpawn = async (command, callback, options) => {
     spawn_instance.unref()
 
     spawn_instance.stdout.on("data", (data) => {
-      // console.log(`${data}`);
+      syslog.write(syslog.create().debug(`Spawn ${command} response ${data}`))
     })
 
     spawn_instance.stderr.on("data", (data) => {
-      console.log(`ERROR ${data}`)
-      nodeOutput+=data.toString();
+      syslog.write(syslog.create().error(`Spawn ${command} error`, data).addCaller())
     })
 
     // stdout and sterr are included to nodeOutput so even if there's
@@ -76,7 +71,7 @@ const requestSpawn = async (command, callback, options) => {
       else callback({ success: false, error: signal})
     })
   } catch (err) {
-    console.log("Spawn error", err)
+    syslog.write(syslog.create().error(`Spawn ${command} error`, err).addCaller())
     callback({ success: false, error: err })
   }
 }

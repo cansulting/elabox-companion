@@ -5,24 +5,14 @@ const fs = require('fs')
 const config = require("./config")
 const isPortReachable = require("is-port-reachable")
 const maxBufferSize = 10000
-var proccessResult = ""
+const syslog = require("./logger")
 
 // contains procedures that manages the mainchain process 
 class MainchainHandler {
     async init() {
         await this.start((response) => {
-          console.log(response)
-            // Get errors if it appeared upon initialization.
-            if (!response.success){
-              if (response.error != ""){
-                proccessResult = response.error
-              }
-            }
-          });
-
-        if(proccessResult == ""){
-          proccessResult = await processhelper.getErrorLog() 
-        }
+          syslog.write(syslog.create().debug(`Mainchain start response ${response}`).addCategory("mainchain"))
+        })
     }
     getBlockSize(height) {
         return new Promise(function (resolve, reject) {
@@ -38,8 +28,6 @@ class MainchainHandler {
               }
             }
           )
-        }).catch((error) => {
-          reject(error)
         })
       }
       
@@ -66,40 +54,27 @@ class MainchainHandler {
 
     async start(callback = () => {}) {
         if ( !await processhelper.checkProcessingRunning('ela')) {
-            console.log(`Starting ela...`)
-            await processhelper.requestSpawn(`./ela --datadir ${config.ELABLOCKS_DIR}`, callback, {
-              maxBuffer: 1024 * maxBufferSize,
-              detached: true,
-              shell: true,
-              cwd: config.ELA_DIR,
-              },
-              // Get errors if it appeared during initialization.
-              async (err, stdout, stderr) => {
-                console.log("GETTING SPAWN LOG")
-                if (!stdout) {
-                  console.log("No stdout")
-                  console.log(stdout)
-                }
-                if (stderr) {
-                  console.log("Error encountered during spawn ", stderr)
-                  proccessResult = stderr
-                }
-              }
-          )
+            syslog.write(syslog.create().info(`Start spawning mainchain`).addCategory("mainchain"))
+            await processhelper.requestSpawn(`nohup ./ela --datadir ${config.ELABLOCKS_DIR} > /dev/null 2>output &`, callback, {
+                maxBuffer: 1024 * maxBufferSize,
+                detached: true,
+                shell: true,
+                cwd: config.ELA_DIR,
+            })
         } else {
-            console.log("ELA Already started...")
+            syslog.write(syslog.create().debug("Mainchain already started.").addCategory("mainchain"))
         }
     }
     // use to close and open the node again
     async restart(callback) {
-        console.log("Restarting ela...")
+        syslog.write(syslog.create().info("Restarting mainchain...").addCategory("mainchain"))
         await processhelper.killProcess('ela')
         await delay(5000)
         await this.start(callback)
     }
     // close the node and resync
     async resync(callback) {
-        console.log("Resyncing ela")
+        syslog.write(syslog.create().info("Resyncing mainchain...").addCategory("mainchain"))
         await processhelper.killProcess('ela')
         await delay(1000)
         fs.rmdirSync(config.ELABLOCKS_DIR, { maxRetries: 3, force: true, recursive: true} )
@@ -118,18 +93,6 @@ class MainchainHandler {
           proccessResult = errorLogs
         }
 
-        const nodestatus = await processhelper.execShell(
-          `curl -X POST http://User:Password@localhost:${config.ELA_PORT} -H "Content-Type: application/json" -d \'{"method": "getnodestate"}\' `,
-          { maxBuffer: 1024 * maxBufferSize }
-        )
-
-        
-        // If there's an error within the node when it is online it is caught here
-        const nodestatusError = JSON.parse(nodestatus).error
-        proccessResult = nodestatusError
-
-        // If there's an error within the node when it quitted or got corrupted it is caught 
-        // on spawn stored on  `processResult` and sent here
         if (!isRunning || !servicesRunning ) {
             return { isRunning, servicesRunning, nodestatus: proccessResult }
         }
@@ -170,6 +133,7 @@ class MainchainHandler {
                 }
             }
         } catch (err) {
+            syslog.write(syslog.create().error("Error while getting status", err).addStack().addCategory("mainchain"))
             throw err
         }
     }

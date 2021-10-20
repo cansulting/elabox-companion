@@ -1,11 +1,13 @@
 var shell = require("shelljs");
 const config = require("./config");
+const logger = require("./logger");
+
 process
   .on("unhandledRejection", (reason, p) => {
-    console.error(reason, "Unhandled Rejection at Promise", p);
+    logger.write(logger.create().error("Unhandled rejection", reason).addCaller())
   })
   .on("uncaughtException", (err) => {
-    console.error(err, "Uncaught Exception thrown");
+    logger.write(logger.create().error("Uncaught Exception thrown", err).addCaller())
     process.exit(1);
   });
 const runFeeds = () => {
@@ -21,14 +23,14 @@ const runFeeds = () => {
 
       (err, stdout, stderr) => {
         if (err) {
-          console.log("Failed Feeds", err);
-          resolve({success: false, data: err});
+          logger.write(logger.create().error("Failed Feeds", err).addCaller())
+          reject(false);
           // throw (err)
         } else {
-          console.log("Success Feeds", stdout);
-          console.log("Warns Feeds", stderr);
-          resolve({success: true, data: "success"});
-
+          logger.write(logger.create().debug("Success Feeds " +stdout ))
+          if (stderr)
+            logger.write(logger.create().error("Feeds std error", stderr).addCaller())
+          resolve(true);
         }
       }
     );

@@ -12,7 +12,7 @@ var watcher = chokidar.watch(ELA_LOG_DIR, {
   ignoreInitial: true,
 });
 
-console.log(__dirname);
+//console.log(__dirname);
 
 watcher.on("add", function (path) {
   console.log("File", path, "has been added");

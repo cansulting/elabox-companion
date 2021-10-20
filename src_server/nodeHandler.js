@@ -4,6 +4,7 @@ const delay = require("delay");
 //const WebSocket = require("ws")
 const Web3 = require("web3");
 const isPortReachable = require("is-port-reachable");
+const syslog = require("./logger")
 //const GETHWS_RECON = 5000;
 const maxBufferSize = 10000;
 var proccessResult = ""
@@ -20,13 +21,7 @@ class NodeHandler {
   }
   async init() {
     await this.start((response) => {
-      console.log(response)
-      // Get errors if it appeared upon initialization.
-      if (!response.success){
-        if (response.error != ""){
-          proccessResult = response.error
-        }
-      }
+      syslog.write(syslog.create().debug(`${this.options.binaryName} start response ${response}`).addCategory(this.options.binaryName))
     });
 
     if(proccessResult == ""){
@@ -74,7 +69,7 @@ class NodeHandler {
     if (
       !(await processhelper.checkProcessingRunning(this.options.binaryName))
     ) {
-      console.log(`Starting ${this.options.binaryName}...`);
+      syslog.write(syslog.create().info(`Starting ${this.options.binaryName}`).addCategory(this.options.binaryName))
       await processhelper.requestSpawn(
         `echo "\n" | ./${this.options.binaryName} --datadir ${this.options.dataPath} --syncmode "full" --ws --wsport ${this.options.wsport} --wsapi eth,web3 > /dev/null 2>output &`,
         callback,
@@ -98,12 +93,12 @@ class NodeHandler {
           }
       );
     } else {
-      console.log("EID Already started...");
+      syslog.write(syslog.create().info(`${this.options.binaryName} already started`).addCategory(this.options.binaryName))
     }
   }
   // use to close and open the node again
   async restart(callback) {
-    console.log("Restarting " + this.options.binaryName);
+    syslog.write(syslog.create().info(`Restarting ${this.options.binaryName}`).addCategory(this.options.binaryName))
     this.web3 = null;
     await processhelper.killProcess(this.options.binaryName, true);
     await delay(5000);
@@ -114,7 +109,7 @@ class NodeHandler {
   }
   // close the node and resync
   async resync(callback) {
-    console.log("Resyncing " + this.options.binaryName);
+    syslog.write(syslog.create().info(`Resyncing ${this.options.binaryName}`).addCategory(this.options.binaryName))
     this.web3 = null;
     await processhelper.killProcess(this.options.binaryName);
     await delay(1000);
@@ -191,7 +186,15 @@ class NodeHandler {
         },
       };
     } catch (err) {
+<<<<<<< HEAD
       return err;
+=======
+      syslog.write(
+        syslog.create().error(`Found error while getting status of ${this.options.binaryName}`, err)
+        .addStack()
+        .addCategory(this.options.binaryName))
+      throw err;
+>>>>>>> 086755aca50e8e728cf7864f2d7432090006e1a5
     }
   }
   // set callback when node initialize successfully

@@ -1,12 +1,13 @@
 var shell = require("shelljs");
 const config = require("./config");
+const logger = require("./logger")
 
 process
   .on("unhandledRejection", (reason, p) => {
-    console.error(reason, "Unhandled Rejection at Promise", p);
+    logger.write(logger.create().error("Unhandled rejection", reason).addCaller())
   })
   .on("uncaughtException", (err) => {
-    console.error(err, "Uncaught Exception thrown");
+    logger.write(logger.create().error("Uncaught Exception thrown", err).addCaller())
     process.exit(1);
   });
 
@@ -20,11 +21,12 @@ shell.exec(
 
   (err, stdout, stderr) => {
     if (err) {
-      console.log("Failed CP", err);
+      logger.write(logger.create().error("Failed Carrier", err).addCaller())
       // throw (err)
     } else {
-      console.log("Success CP", stdout);
-      console.log("Warns CP", stderr);
+      logger.write(logger.create().debug("Success Carrier " +stdout ))
+      if (stderr)
+        logger.write(logger.create().error("CP error", stderr).addCaller())
     }
   }
 );
