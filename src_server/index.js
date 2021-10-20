@@ -93,8 +93,6 @@ router.get("/synced", (req, res) => {
 
 router.get("/ela", async (req, res) => {
   try {
-    statusMain =  res.json(await mainchain.getStatus())
-    console.log(statusMain)
     return res.json(await mainchain.getStatus())
   } catch (err) {
     // return res.json(await mainchain.getStatus())
@@ -408,13 +406,6 @@ const restartCarrier = async (callback) => {
       detached: true,
       shell: true,
       cwd: config.CARRIER_DIR + "/",
-    },
-    (err, stdout, stderr) => {
-      if (err) {
-        console.log("Failed to start carrier", stdout);
-        console.log("Stdout", stdout);
-        carrierNodestatus = stderr
-      } 
     }
 
 
@@ -422,12 +413,7 @@ const restartCarrier = async (callback) => {
 }
 
 router.post("/restartMainchain", async (req, res) => {
-  await mainchain.restart((resp) => 
-  {
-    console.log("RESPONSE ", res.json(resp).data)
-    res.json(resp)
-  }
-  )
+  await mainchain.restart((resp) => res.json(resp))
 })
 
 router.post("/resyncMainchain", async (req, res) => {
@@ -453,14 +439,12 @@ router.post("/resyncESC", async (req, res) => {
 router.post("/restartCarrier", async (req, res) => {
   await restartCarrier((resp) => res.json(resp))
 })
+
 router.post("/restartFeeds", async (req, res) => {
   const isSucess = await feedsHandler.runFeeds()
-  if (isSucess.success){
-    res.status(200).json({ success: isSucess.success})
-  }else{
-    res.status(200).json({ success: isSucess.success})
-  }
+  res.status(200).json({ success: isSucess.success})
 })
+
 router.get("/getOnion", async (req, res) => {
   res.send({ onion: await getOnionAddress() })
 })

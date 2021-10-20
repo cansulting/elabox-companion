@@ -81,7 +81,6 @@ const readErrorLogFile = async (process) => {
 
 
 
-var nodeOutput = ""
 
 // spawn a command
 const requestSpawn = async (command, callback, options) => {
@@ -99,10 +98,8 @@ const requestSpawn = async (command, callback, options) => {
       syslog.write(syslog.create().error(`Spawn ${command} error`, data).addCaller())
     })
 
-    // stdout and sterr are included to nodeOutput so even if there's
-    // an error, it can be traced on what was working till where it failed. 
     spawn_instance.on("exit", (code, signal) => {
-      if (!code) callback({ sucess: true, data: nodeOutput })
+      if (!code) callback({ sucess: true })
       else callback({ success: false, error: signal})
     })
   } catch (err) {
@@ -111,12 +108,4 @@ const requestSpawn = async (command, callback, options) => {
   }
 }
 
-const getErrorLog = async () => {
-  nodeReturn = nodeOutput
-  nodeOutput = ""
-  return nodeReturn
-}
-
-
-
-module.exports = { execShell, checkProcessingRunning, killProcess, requestSpawn, getErrorLog, readErrorLogFile };
+module.exports = { execShell, checkProcessingRunning, killProcess, requestSpawn, readErrorLogFile };
