@@ -227,18 +227,18 @@ const Dashboard = ({ isMobile }) => {
             children={
               feeds.isRunning && (
                 <Button
-                  as="achor"
-                  style={{
-                    marginLeft: "5em",
-                    marginTop: "0.5em",
-                    width: "17em",
-                  }}
-                  color="success"
-                  target="_blank"
-                  href="http://elabox.local:10018/"
-                >
-                  Launch
-                </Button>
+                as="achor"
+                style={{
+                  marginTop: "0.5em",
+                  width: "100%",
+                }}
+                color="success"
+                target="_blank"
+                href="http://elabox.local:10018/"
+              >
+                Launch
+              </Button>
+
               )
             }
           />
