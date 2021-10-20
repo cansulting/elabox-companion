@@ -2,6 +2,7 @@ var shell = require("shelljs");
 const { spawn } = require("child_process");
 const delay = require("delay")
 const syslog = require("../logger")
+const config = require("../config")
 
 const execShell = (cmd, opts) => {
   return new Promise((resolve, reject) => {
@@ -46,6 +47,40 @@ const checkProcessingRunning = async (process) => {
 };
 
 
+// Reads error log file and returns the latest 
+// error log the node have encountered.
+const readErrorLogFile = async (process) => {
+
+  var errorLogs = []; 
+  try {
+      var fs = require('fs');
+      fs.readFile(config.LOG_FILE, 'utf8', function(err, data){
+      dataList = data.trim().split("\n")
+
+      errorLogs = dataList.filter(function(item){
+          itemParsed = JSON.parse(item)
+          if (itemParsed.level == "error" && itemParsed.category == process){
+            return itemParsed
+          }
+          
+      },[])
+    
+      latestErrorOfNode = JSON.parse(errorLogs[errorLogs.length -1])
+      console.log(latestErrorOfNode)
+      return latestErrorOfNode
+
+      });
+
+  } 
+  catch (err) {
+    return false;
+  }
+
+
+};
+
+
+
 var nodeOutput = ""
 
 // spawn a command
@@ -84,4 +119,4 @@ const getErrorLog = async () => {
 
 
 
-module.exports = { execShell, checkProcessingRunning, killProcess, requestSpawn, getErrorLog };
+module.exports = { execShell, checkProcessingRunning, killProcess, requestSpawn, getErrorLog, readErrorLogFile };

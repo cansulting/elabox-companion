@@ -6,13 +6,18 @@ const config = require("./config")
 const isPortReachable = require("is-port-reachable")
 const maxBufferSize = 10000
 const syslog = require("./logger")
-
+var proccessResult = null
 // contains procedures that manages the mainchain process 
 class MainchainHandler {
     async init() {
+
+        
         await this.start((response) => {
           syslog.write(syslog.create().debug(`Mainchain start response ${response}`).addCategory("mainchain"))
         })
+
+        const errorLogsRead = await processhelper.readErrorLogFile('mainchain')
+        proccessResult = errorLogsRead
     }
     getBlockSize(height) {
         return new Promise(function (resolve, reject) {
@@ -53,6 +58,7 @@ class MainchainHandler {
     }
 
     async start(callback = () => {}) {
+
         if ( !await processhelper.checkProcessingRunning('ela')) {
             syslog.write(syslog.create().info(`Start spawning mainchain`).addCategory("mainchain"))
             await processhelper.requestSpawn(`nohup ./ela --datadir ${config.ELABLOCKS_DIR} > /dev/null 2>output &`, callback, {
@@ -81,14 +87,13 @@ class MainchainHandler {
         await this.start(callback)
     }
 
-  
-
-
     // get the current status of eid. this returns the state and blocks
     async getStatus() {
         const isRunning = await processhelper.checkProcessingRunning('ela')
         const servicesRunning = await isPortReachable(config.ELA_PORT, { host: "localhost" })
-        const errorLogs = await processhelper.getErrorLog()
+        const errorLogs = await processhelper.readErrorLogFile('mainchain')
+        console.log(errorLogs)
+
         if (errorLogs != ""){
           proccessResult = errorLogs
         }
