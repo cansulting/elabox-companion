@@ -10,6 +10,7 @@ const propTypes = {
   icon: PropTypes.string,
   color: PropTypes.string,
   variant: PropTypes.string,
+  node: PropTypes.string,
   footer: PropTypes.bool,
   link: PropTypes.string,
   children: PropTypes.node,

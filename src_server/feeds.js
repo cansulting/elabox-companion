@@ -22,12 +22,13 @@ const runFeeds = () => {
       (err, stdout, stderr) => {
         if (err) {
           console.log("Failed Feeds", err);
-          reject(false);
+          resolve({success: false, data: err});
           // throw (err)
         } else {
           console.log("Success Feeds", stdout);
           console.log("Warns Feeds", stderr);
-          resolve(true);
+          resolve({success: true, data: "success"});
+
         }
       }
     );

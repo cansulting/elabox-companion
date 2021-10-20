@@ -5,16 +5,24 @@ const fs = require('fs')
 const config = require("./config")
 const isPortReachable = require("is-port-reachable")
 const maxBufferSize = 10000
-var proccessResult = null
+var proccessResult = ""
 
 // contains procedures that manages the mainchain process 
 class MainchainHandler {
     async init() {
         await this.start((response) => {
+          console.log(response)
             // Get errors if it appeared upon initialization.
-            console.log("ERRORS COLLECTED: ", response)
-            proccessResult = response.data
-          })
+            if (!response.success){
+              if (response.error != ""){
+                proccessResult = response.error
+              }
+            }
+          });
+
+        if(proccessResult == ""){
+          proccessResult = await processhelper.getErrorLog() 
+        }
     }
     getBlockSize(height) {
         return new Promise(function (resolve, reject) {
@@ -104,9 +112,7 @@ class MainchainHandler {
     // get the current status of eid. this returns the state and blocks
     async getStatus() {
         const isRunning = await processhelper.checkProcessingRunning('ela')
-        console.log("ISRUNNING", isRunning)
         const servicesRunning = await isPortReachable(config.ELA_PORT, { host: "localhost" })
-        console.log("SERVICESRUNNING", servicesRunning)
         const errorLogs = await processhelper.getErrorLog()
         if (errorLogs != ""){
           proccessResult = errorLogs
@@ -149,9 +155,6 @@ class MainchainHandler {
                 nbOfTxList.push(nbOfTx)
             }
 
-            console.log("====PROCESS RESULT====")
-            console.log(proccessResult)
-            console.log("====/PROCESS RESULT====")
 
             return {
                 blockCount: blockCount - 1,

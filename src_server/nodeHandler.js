@@ -6,6 +6,7 @@ const Web3 = require("web3");
 const isPortReachable = require("is-port-reachable");
 //const GETHWS_RECON = 5000;
 const maxBufferSize = 10000;
+var proccessResult = ""
 
 // class that manages nodes( ESC, EID and other related nodes) 
 class NodeHandler {
@@ -19,8 +20,19 @@ class NodeHandler {
   }
   async init() {
     await this.start((response) => {
-      console.log(response);
+      console.log(response)
+      // Get errors if it appeared upon initialization.
+      if (!response.success){
+        if (response.error != ""){
+          proccessResult = response.error
+        }
+      }
     });
+
+    if(proccessResult == ""){
+      proccessResult = await processhelper.getErrorLog() 
+    }
+
     //setupWS()
   }
 
@@ -71,7 +83,19 @@ class NodeHandler {
           detached: true,
           shell: true,
           cwd: this.options.cwd,
-        }
+        },
+          // Get errors if it appeared during initialization.
+          async (err, stdout, stderr) => {
+            console.log("GETTING SPAWN LOG")
+            if (!stdout) {
+              console.log("No stdout")
+              console.log(stdout)
+            }
+            if (stderr) {
+              console.log("Error encountered during spawn ", stderr)
+              proccessResult = stderr
+            }
+          }
       );
     } else {
       console.log("EID Already started...");
@@ -121,10 +145,14 @@ class NodeHandler {
         host: "localhost",
       });
 
+      const errorLogs = await processhelper.getErrorLog()
+      if (errorLogs != ""){
+        proccessResult = errorLogs
+      }
 
       //console.log(await isSyncing())
       if (!isRunning || !servicesRunning) {
-        return { isRunning, servicesRunning};
+          return { isRunning, servicesRunning, nodestatus: proccessResult }
       }
       this._initWeb3();
 
@@ -152,7 +180,7 @@ class NodeHandler {
       return {
         isRunning: isRunning,
         servicesRunning,
-        nodestatus: nodestatusError,
+        nodestatus: proccessResult,
         blockCount: bestBlockN,
         blockSizes: blockSizeList,
         nbOfTxs: nbOfTxList,

@@ -29,8 +29,11 @@ const Dashboard = ({ isMobile }) => {
   const errorlogsetting = (node) => {
 
     var nodestatus = ""
-    if (node === eid || node === esc) {
-
+    console.log("NODE: ", node)
+    console.log("NODESTATUS: ", node.nodestatus)
+    if (node.nodestatus !== ""){
+      nodestatus = node.nodestatus
+    }else{
 
       if  (!node.isRunning && !node.servicesRunning) {
         nodestatus = `Process not found and Failed to connect to port: connection refused`
@@ -40,20 +43,17 @@ const Dashboard = ({ isMobile }) => {
       } 
       else if (!node.isRunning){
         nodestatus = `Process not found`
-
+  
       }
       else{
         nodestatus = node.nodestatus
       }
 
-
-    }else{
-
-      nodestatus = node.nodestatus
-
     }
 
     setErrorLog(nodestatus)
+
+  
 
   }
 
@@ -201,8 +201,6 @@ const Dashboard = ({ isMobile }) => {
               dialog={dialogtoggle}
               node={ela}
               errorsetting={errorlogsetting}
-
-
             />
           )}
         </Col>

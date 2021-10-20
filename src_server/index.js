@@ -59,6 +59,8 @@ const router = express.Router()
 // for mailing
 const postmark = require("postmark")
 const postMarkMail = new postmark.ServerClient(config.POSTMARK_SERVER_TOKEN)
+var feedsNodestatus = ""
+var carrierNodestatus = ""
 
 let elaPath = config.ELA_DIR
 let keyStorePath = config.KEYSTORE_PATH
@@ -135,6 +137,12 @@ router.get("/carrier", async (req, res) => {
       nodestatus = ""
     }
 
+    // If corruption failure occurs, it gets corrupted response from feeds
+    if (carrierNodestatus != ""){
+      nodestatus = carrierNodestatus
+    }
+  
+
     return res.status(200).json({ isRunning, carrierIP: carrierIP.trim(), nodestatus })
   } catch (err) {
     console.log(err)
@@ -144,17 +152,18 @@ router.get("/carrier", async (req, res) => {
 router.get("/feeds", async (req, res) => {
   try {
     const isRunning = await urlExist(config.FEEDS_URL)
-
-
-    var nodestatus = ""
-
     if (!isRunning) {
-      nodestatus = "Feeds binary fle not found"
+      nodestatus = "Feeds binary file not found"
     }else{
       nodestatus = ""
     }
 
-    return res.status(200).json({ isRunning: isRunning, nodestatus })
+    // If corruption failure occurs, it gets corrupted response from feeds
+    if (feedsNodestatus != ""){
+      nodestatus = feedsNodestatus
+    }
+
+    return res.status(200).json({ isRunning: isRunning, nodestatus:nodestatus })
   } catch (err) {
     console.log(err)
     res.status(500).send({ error: err })
@@ -392,7 +401,16 @@ const restartCarrier = async (callback) => {
       detached: true,
       shell: true,
       cwd: config.CARRIER_DIR + "/",
+    },
+    (err, stdout, stderr) => {
+      if (err) {
+        console.log("Failed to start carrier", stdout);
+        console.log("Stdout", stdout);
+        carrierNodestatus = stderr
+      } 
     }
+
+
   )
 }
 
@@ -430,7 +448,11 @@ router.post("/restartCarrier", async (req, res) => {
 })
 router.post("/restartFeeds", async (req, res) => {
   const isSucess = await feedsHandler.runFeeds()
-  res.status(200).json({ success: isSucess })
+  if (isSucess.success){
+    res.status(200).json({ success: isSucess.success})
+  }else{
+    res.status(200).json({ success: isSucess.success})
+  }
 })
 router.get("/getOnion", async (req, res) => {
   res.send({ onion: await getOnionAddress() })
@@ -694,10 +716,20 @@ app.use("/", router)
 
 app.listen(config.PORT, async function () {
   console.log("Runnning on " + config.PORT)
-  await feedsHandler.runFeeds()
+  const response = await feedsHandler.runFeeds()
+  if (!response.success){
+    feedsNodestatus = response.data
+  }
+
   checkProcessingRunning("ela-bootstrapd").then((running) => {
-    if (!running) restartCarrier((response) => console.log(response))
+    if (!running){
+      restartCarrier((response) =>console.log(response))
+    }
+    
+    
   })
+
+
   await mainchain.init()
   mainchain.setOnComplete(async () => {
     await eid.init()

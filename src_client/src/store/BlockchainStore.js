@@ -22,10 +22,7 @@ export const Ela = types
       try {
         console.log("ELA Restarting... ");
         const response = yield API.fetchEla();
-        console.log("ELA RESTART LOG------")
         console.log(response)
-        console.log("/ELA RESTART LOG------")
-
         applySnapshot(self, response);
       } catch (err) {
         console.log("ELA had an issue while restarting");

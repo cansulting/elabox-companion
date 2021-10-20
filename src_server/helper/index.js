@@ -73,7 +73,7 @@ const requestSpawn = async (command, callback, options) => {
     // an error, it can be traced on what was working till where it failed. 
     spawn_instance.on("exit", (code, signal) => {
       if (!code) callback({ sucess: true, data: nodeOutput })
-      else callback({ success: false, error: signal, data:nodeOutput})
+      else callback({ success: false, error: signal})
     })
   } catch (err) {
     console.log("Spawn error", err)
