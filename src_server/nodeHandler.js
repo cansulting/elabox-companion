@@ -140,11 +140,6 @@ class NodeHandler {
         host: "localhost",
       });
 
-      const errorLogs = await processhelper.getErrorLog()
-      if (errorLogs != ""){
-        proccessResult = errorLogs
-      }
-
       //console.log(await isSyncing())
       if (!isRunning || !servicesRunning) {
           return { isRunning, servicesRunning, nodestatus: proccessResult }
