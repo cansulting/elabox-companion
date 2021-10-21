@@ -49,14 +49,15 @@ const checkProcessingRunning = async (process) => {
 
 // Reads error log file and returns the latest 
 // error log the node have encountered.
-const readErrorLogFile = async (process) => {
-
+async function readErrorLogFile(process) {
+  console.log("NODE BEING READ: ", process)
   var errorLogs = []; 
   try {
-      var fs = require('fs');
-      fs.readFile(config.LOG_FILE, 'utf8', function(err, data){
-      dataList = data.trim().split("\n")
+      const fs = require('fs').promises;
+      const data = await fs.readFile(config.LOG_FILE, 'utf8');
+      
 
+      dataList = data.trim().split("\n")
       errorLogs = dataList.filter(function(item){
           itemParsed = JSON.parse(item)
           if (itemParsed.level == "error" && itemParsed.category == process){
@@ -66,10 +67,7 @@ const readErrorLogFile = async (process) => {
       },[])
     
       latestErrorOfNode = JSON.parse(errorLogs[errorLogs.length -1])
-      console.log(latestErrorOfNode)
       return latestErrorOfNode
-
-      });
 
   } 
   catch (err) {

@@ -7,7 +7,7 @@ const isPortReachable = require("is-port-reachable");
 const syslog = require("./logger")
 //const GETHWS_RECON = 5000;
 const maxBufferSize = 10000;
-var proccessResult = ""
+var proccessResult = null
 
 // class that manages nodes( ESC, EID and other related nodes) 
 class NodeHandler {
@@ -24,8 +24,10 @@ class NodeHandler {
       syslog.write(syslog.create().debug(`${this.options.binaryName} start response ${response}`).addCategory(this.options.binaryName))
     });
 
-    if(proccessResult == ""){
-      proccessResult = await processhelper.getErrorLog() 
+    const errorLogs = await processhelper.readErrorLogFile(`${this.options.binaryName}`)
+
+    if (errorLogs != ""){
+      proccessResult = errorLogs.message + ' stack trace: ' + errorLogs.stack
     }
 
     //setupWS()
@@ -88,7 +90,6 @@ class NodeHandler {
             }
             if (stderr) {
               console.log("Error encountered during spawn ", stderr)
-              proccessResult = stderr
             }
           }
       );
@@ -134,6 +135,11 @@ class NodeHandler {
         this.options.binaryName
       );
 
+      const errorLogs = await processhelper.readErrorLogFile(`${this.options.binaryName}`)
+
+      if (errorLogs != ""){
+        proccessResult = errorLogs.message + ' stack trace: ' + errorLogs.stack
+      }
       const port = this.options.wsport
 
       let servicesRunning = await isPortReachable(port, {

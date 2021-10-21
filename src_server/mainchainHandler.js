@@ -16,8 +16,12 @@ class MainchainHandler {
           syslog.write(syslog.create().debug(`Mainchain start response ${response}`).addCategory("mainchain"))
         })
 
-        const errorLogsRead = await processhelper.readErrorLogFile('mainchain')
-        proccessResult = errorLogsRead
+        const errorLogs = await processhelper.readErrorLogFile('mainchain')
+
+        if (errorLogs != ""){
+          proccessResult = errorLogs.message + ' stack trace: ' + errorLogs.stack
+        }
+
     }
     getBlockSize(height) {
         return new Promise(function (resolve, reject) {
@@ -92,10 +96,9 @@ class MainchainHandler {
         const isRunning = await processhelper.checkProcessingRunning('ela')
         const servicesRunning = await isPortReachable(config.ELA_PORT, { host: "localhost" })
         const errorLogs = await processhelper.readErrorLogFile('mainchain')
-        console.log(errorLogs)
 
         if (errorLogs != ""){
-          proccessResult = errorLogs
+          proccessResult = errorLogs.message + ' stack trace: ' + errorLogs.stack
         }
 
         if (!isRunning || !servicesRunning ) {
