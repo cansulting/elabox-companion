@@ -6,18 +6,20 @@ const config = require("./config")
 const isPortReachable = require("is-port-reachable")
 const maxBufferSize = 10000
 const syslog = require("./logger")
+
 var proccessResult = null
+
 // contains procedures that manages the mainchain process 
 class MainchainHandler {
+
+  
     async init() {
 
         
         await this.start((response) => {
           syslog.write(syslog.create().debug(`Mainchain start response ${response}`).addCategory("mainchain"))
         })
-
         const errorLogs = await processhelper.readErrorLogFile('mainchain')
-
         if (errorLogs != ""){
           proccessResult = errorLogs.message + ' stack trace: ' + errorLogs.stack
         }
@@ -96,7 +98,6 @@ class MainchainHandler {
         const isRunning = await processhelper.checkProcessingRunning('ela')
         const servicesRunning = await isPortReachable(config.ELA_PORT, { host: "localhost" })
         const errorLogs = await processhelper.readErrorLogFile('mainchain')
-
         if (errorLogs != ""){
           proccessResult = errorLogs.message + ' stack trace: ' + errorLogs.stack
         }
@@ -132,7 +133,7 @@ class MainchainHandler {
                 blockSizes: blockSizeList,
                 nbOfTxs: nbOfTxList,
                 isRunning: isRunning,
-                servicesRunning,
+                servicesRunning: servicesRunning,
                 nodestatus: proccessResult,
                 latestBlock: {
                     blockTime: latestBlock.time,

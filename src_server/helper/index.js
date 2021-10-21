@@ -67,6 +67,7 @@ async function readErrorLogFile(process) {
       },[])
     
       latestErrorOfNode = JSON.parse(errorLogs[errorLogs.length -1])
+      console.log(latestErrorOfNode)
       return latestErrorOfNode
 
   } 
