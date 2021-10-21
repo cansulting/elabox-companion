@@ -59,7 +59,12 @@ async function readErrorLogFile(process) {
 
       dataList = data.trim().split("\n")
       errorLogs = dataList.filter(function(item){
-          itemParsed = JSON.parse(item)
+
+          try {
+            itemParsed = JSON.parse(item)
+          }catch (err){
+            console("Found bad format JSON")
+          }
           if (itemParsed.level == "error" && itemParsed.category == process){
             console.log(itemParsed)
             return itemParsed
@@ -67,9 +72,14 @@ async function readErrorLogFile(process) {
           
       },[])
     
-      latestErrorOfNode = JSON.parse(errorLogs[errorLogs.length -1])
-      console.log(latestErrorOfNode)
-      return latestErrorOfNode
+      if (errorLogs.length > 0){
+        latestErrorOfNode = JSON.parse(errorLogs[errorLogs.length -1])
+        console.log(latestErrorOfNode)
+        return latestErrorOfNode
+      } else{
+        return false
+      }
+
 
   } 
   catch (err) {

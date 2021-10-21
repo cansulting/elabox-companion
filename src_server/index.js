@@ -126,11 +126,8 @@ router.get("/carrier", async (req, res) => {
 
     var nodestatus = ""
     const errorLogs = await processhelper.readErrorLogFile('carrier')
-    console.log("===============")
-    console.log(errorLogs)
-    console.log("/===============")
-
-    if (!isRunning && errorLogs != "") {
+   
+    if (!isRunning && errorLogs) {
       const errorText = errorLogs.message + '. stacktrace:' + errorLogs.error  
       nodestatus = errorText
     }
@@ -432,7 +429,11 @@ router.post("/restartCarrier", async (req, res) => {
 router.post("/restartFeeds", async (req, res) => {
   const isSucess = await feedsHandler.runFeeds()
   const errorLogs = await processhelper.readErrorLogFile('feeds')
-  const errorText = errorLogs.message + ' stacktrace: ' + errorLogs.error
+  var errorText = ""
+  if (errorLogs){
+    errorText = errorLogs.message + ' stacktrace: ' + errorLogs.error
+
+  }
   res.status(200).json({ success: isSucess.success, nodestatus: errorText})
 })
 

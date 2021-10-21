@@ -26,7 +26,7 @@ class NodeHandler {
 
     const errorLogs = await processhelper.readErrorLogFile(`${this.options.binaryName}`)
 
-    if (errorLogs != ""){
+    if (errorLog){
       proccessResult = errorLogs.message + ' stack trace: ' + errorLogs.stack
     }
 
@@ -137,7 +137,7 @@ class NodeHandler {
 
       const errorLogs = await processhelper.readErrorLogFile(`${this.options.binaryName}`)
 
-      if (errorLogs != ""){
+      if (errorLogs){
         proccessResult = errorLogs.message + ' stack trace: ' + errorLogs.stack
       }
       const port = this.options.wsport
