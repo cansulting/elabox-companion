@@ -23,9 +23,7 @@ class NodeHandler {
     await this.start((response) => {
       syslog.write(syslog.create().debug(`${this.options.binaryName} start response ${response}`).addCategory(this.options.binaryName))
     });
-
     const errorLogs = await processhelper.readErrorLogFile(`${this.options.binaryName}`)
-
     if (errorLog){
       proccessResult = errorLogs.message + ' stack trace: ' + errorLogs.stack
     }
@@ -136,10 +134,14 @@ class NodeHandler {
       );
 
       const errorLogs = await processhelper.readErrorLogFile(`${this.options.binaryName}`)
-
       if (errorLogs){
         proccessResult = errorLogs.message + ' stack trace: ' + errorLogs.stack
       }
+
+      if (proccessResult == null){
+        proccessResult =  `${this.options.binaryName} might be disabled. Please restart`  
+      }
+      
       const port = this.options.wsport
 
       let servicesRunning = await isPortReachable(port, {

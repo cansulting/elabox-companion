@@ -14,8 +14,6 @@ class MainchainHandler {
 
   
     async init() {
-
-        
         await this.start((response) => {
           syslog.write(syslog.create().debug(`Mainchain start response ${response}`).addCategory("mainchain"))
         })
@@ -98,8 +96,12 @@ class MainchainHandler {
         const isRunning = await processhelper.checkProcessingRunning('ela')
         const servicesRunning = await isPortReachable(config.ELA_PORT, { host: "localhost" })
         const errorLogs = await processhelper.readErrorLogFile('mainchain')
-        if (errorLogs != ""){
+        if (errorLogs){
           proccessResult = errorLogs.message + ' stack trace: ' + errorLogs.stack
+        }
+
+        if (proccessResult == null){
+          proccessResult = "ELA mainchain might be disabled. Please restart"
         }
 
         if (!isRunning || !servicesRunning ) {
@@ -133,7 +135,7 @@ class MainchainHandler {
                 blockSizes: blockSizeList,
                 nbOfTxs: nbOfTxList,
                 isRunning: isRunning,
-                servicesRunning: servicesRunning,
+                servicesRunning,
                 nodestatus: proccessResult,
                 latestBlock: {
                     blockTime: latestBlock.time,

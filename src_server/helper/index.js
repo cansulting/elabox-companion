@@ -65,6 +65,7 @@ async function readErrorLogFile(process) {
           }catch (err){
             console("Found bad format JSON")
           }
+
           if (itemParsed.level == "error" && itemParsed.category == process){
             console.log(itemParsed)
             return itemParsed
