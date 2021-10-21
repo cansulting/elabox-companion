@@ -21,12 +21,12 @@ shell.exec(
 
   (err, stdout, stderr) => {
     if (err) {
-      logger.write(logger.create().error("Failed Carrier", err).addCaller())
+      logger.write(logger.create().error("Failed Carrier", err).addCategory("carrier").addCaller())
       // throw (err)
     } else {
       logger.write(logger.create().debug("Success Carrier " +stdout ))
       if (stderr)
-        logger.write(logger.create().error("CP error", stderr).addCaller())
+        logger.write(logger.create().error("CP error", stderr).addCategory("carrier").addCaller())
     }
   }
 );

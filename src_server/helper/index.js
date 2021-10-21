@@ -61,6 +61,7 @@ async function readErrorLogFile(process) {
       errorLogs = dataList.filter(function(item){
           itemParsed = JSON.parse(item)
           if (itemParsed.level == "error" && itemParsed.category == process){
+            console.log(itemParsed)
             return itemParsed
           }
           
@@ -72,6 +73,7 @@ async function readErrorLogFile(process) {
 
   } 
   catch (err) {
+    console.log(err)
     return false;
   }
 

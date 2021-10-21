@@ -2,6 +2,8 @@ const express = require("express")
 const eventhandler = require("./helper/eventHandler")
 const Downloader = require("nodejs-file-downloader")
 const urlExist = require("url-exist")
+const processhelper = require("./helper");
+
 // to allow cross-origin request
 const cors = require("cors")
 const bodyParser = require("body-parser")
@@ -60,8 +62,6 @@ const router = express.Router()
 // for mailing
 const postmark = require("postmark")
 const postMarkMail = new postmark.ServerClient(config.POSTMARK_SERVER_TOKEN)
-var feedsNodestatus = ""
-var carrierNodestatus = ""
 
 let elaPath = config.ELA_DIR
 let keyStorePath = config.KEYSTORE_PATH
@@ -120,30 +120,22 @@ router.get("/esc", async (req, res) => {
 router.get("/carrier", async (req, res) => {
   try {
     const isRunning = await checkProcessingRunning("ela-bootstrapd")
-
     const carrierIP = await execShell("curl -s ifconfig.me", {
       maxBuffer: 1024 * 500,
     })
 
     var nodestatus = ""
+    const errorLogs = await processhelper.readErrorLogFile('carrier')
+    console.log("===============")
+    console.log(errorLogs)
+    console.log("/===============")
 
-    if (!isRunning && carrierIP == null) {
-      nodestatus = "Connection refused to Carrier IP and ela-bootstrapped not found"
-    }else if (carrierIP==null) {
-      nodestatus = "Connection refused to Carrier IP"
-    }else if (!isRunning) {
-      nodestatus = "ela-bootstrapped not found"
-    }else{
-      nodestatus = ""
+    if (!isRunning && errorLogs != "") {
+      const errorText = errorLogs.message + '. stacktrace:' + errorLogs.error  
+      nodestatus = errorText
     }
 
-    // If corruption failure occurs, it gets corrupted response from feeds
-    if (carrierNodestatus != ""){
-      nodestatus = carrierNodestatus
-    }
-  
-
-    return res.status(200).json({ isRunning, carrierIP: carrierIP.trim(), nodestatus })
+    return res.status(200).json({ isRunning, carrierIP: carrierIP.trim(), nodestatus:nodestatus })
   } catch (err) {
     syslog.write(syslog.create().error("Error on /carrier request ", err).addStack())
     res.status(500).send({ error: err })
@@ -152,18 +144,15 @@ router.get("/carrier", async (req, res) => {
 router.get("/feeds", async (req, res) => {
   try {
     const isRunning = await urlExist(config.FEEDS_URL)
-    if (!isRunning) {
-      nodestatus = "Feeds binary file not found"
+    const errorLogs = await processhelper.readErrorLogFile('feeds')
+    const errorText = errorLogs.message + '. stacktrace:' + errorLogs.error
+
+    if (!isRunning && errorText != "") {
+      nodestatus = errorText
     }else{
       nodestatus = ""
     }
-
-    // If corruption failure occurs, it gets corrupted response from feeds
-    if (feedsNodestatus != ""){
-      nodestatus = feedsNodestatus
-    }
-
-    return res.status(200).json({ isRunning: isRunning, nodestatus:nodestatus })
+    return res.status(200).json({ isRunning: isRunning, nodestatus: nodestatus })
   } catch (err) {
     syslog.write(syslog.create().error("Error on /feeds request ", err).addStack())
     res.status(500).send({ error: err })
@@ -442,7 +431,9 @@ router.post("/restartCarrier", async (req, res) => {
 
 router.post("/restartFeeds", async (req, res) => {
   const isSucess = await feedsHandler.runFeeds()
-  res.status(200).json({ success: isSucess.success})
+  const errorLogs = await processhelper.readErrorLogFile('feeds')
+  const errorText = errorLogs.message + ' stacktrace: ' + errorLogs.error
+  res.status(200).json({ success: isSucess.success, nodestatus: errorText})
 })
 
 router.get("/getOnion", async (req, res) => {
@@ -710,6 +701,9 @@ app.use("/", router)
 app.listen(config.PORT, async function () {
   syslog.write(syslog.create().info("Companion start running on " + config.PORT))
   await feedsHandler.runFeeds()
+
+
+  
   checkProcessingRunning("ela-bootstrapd").then((running) => {
     if (!running) restartCarrier((response) => {
       syslog.write(syslog.create().debug('Carrier restart response ' + response))

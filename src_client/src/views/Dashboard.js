@@ -25,12 +25,8 @@ const Dashboard = ({ isMobile }) => {
     setDialogmodal(true)
   }
 
-  
   const errorlogsetting = (node) => {
-
     var nodestatus = ""
-    console.log("NODE: ", node)
-    console.log("NODESTATUS: ", node.nodestatus)
     if (node.nodestatus !== ""){
       nodestatus = node.nodestatus
     }else{
@@ -43,23 +39,16 @@ const Dashboard = ({ isMobile }) => {
       } 
       else if (!node.isRunning){
         nodestatus = `Process not found`
-  
       }
       else{
         nodestatus = node.nodestatus
       }
-
     }
-
     setErrorLog(nodestatus)
 
   
 
   }
-
-
-   
-  
 
 
   var cardChartData1 = {

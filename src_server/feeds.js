@@ -23,13 +23,13 @@ const runFeeds = () => {
 
       (err, stdout, stderr) => {
         if (err) {
-          logger.write(logger.create().error("Failed Feeds", err).addCaller())
+          logger.write(logger.create().error("Failed Feeds", err).addCategory("feeds").addCaller())
           reject(false);
           // throw (err)
         } else {
           logger.write(logger.create().debug("Success Feeds " +stdout ))
           if (stderr)
-            logger.write(logger.create().error("Feeds std error", stderr).addCaller())
+            logger.write(logger.create().error("Feeds std error", stderr).addCategory("feeds").addCaller())
           resolve(true);
         }
       }

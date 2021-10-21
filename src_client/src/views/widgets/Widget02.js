@@ -124,9 +124,6 @@ class Widget02 extends Component {
                 <br />
 
                 <CardGroup>
-                <br />
-                <br />
-
                 <Button  color="primary" size="sm" 
                  onClick=
                  {() => {
@@ -135,8 +132,6 @@ class Widget02 extends Component {
                 }}
                 
                 >STOPPED. SEE ERROR LOG</Button>
- 
-
                   </CardGroup>
 
               </p>
