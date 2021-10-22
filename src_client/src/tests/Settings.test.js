@@ -13,7 +13,6 @@ describe("Settings",()=>{
     })
     describe("Restart/Relaunch services",()=>{
         test("Feeds",async ()=>{
-            clearLocalStorage()
             renderApp()
             await screen.findByText("Sign In")
             const passwordInput = screen.getByTestId("password")
@@ -31,7 +30,6 @@ describe("Settings",()=>{
             fireEvent.click(restartBtn)
         })
         test("Carrier",async ()=>{
-            clearLocalStorage()
             renderApp()
             await screen.findByText("Sign In")
             const passwordInput = screen.getByTestId("password")
@@ -49,7 +47,6 @@ describe("Settings",()=>{
             fireEvent.click(restartBtn)            
         })
         test("ESC",async ()=>{
-            clearLocalStorage()
             renderApp()
             await screen.findByText("Sign In")
             const passwordInput = screen.getByTestId("password")
@@ -67,7 +64,6 @@ describe("Settings",()=>{
             fireEvent.click(restartBtn)                        
         })
         test("EID",async ()=>{
-            clearLocalStorage()
             renderApp()
             await screen.findByText("Sign In")
             const passwordInput = screen.getByTestId("password")
@@ -85,7 +81,6 @@ describe("Settings",()=>{
             fireEvent.click(restartBtn)                        
         })        
         test("ELA",async ()=>{
-            clearLocalStorage()
             renderApp()
             await screen.findByText("Sign In")
             const passwordInput = screen.getByTestId("password")
@@ -105,7 +100,6 @@ describe("Settings",()=>{
     })
     describe("Resync",()=>{
         test("ELA",async ()=>{
-            clearLocalStorage()
             renderApp()
             await screen.findByText("Sign In")
             const passwordInput = screen.getByTestId("password")
@@ -123,7 +117,6 @@ describe("Settings",()=>{
             fireEvent.click(resyncBtn)                        
         })
         test("EID",async ()=>{
-            clearLocalStorage()
             renderApp()
             await screen.findByText("Sign In")
             const passwordInput = screen.getByTestId("password")
@@ -141,7 +134,6 @@ describe("Settings",()=>{
             fireEvent.click(resyncBtn)                        
         })                         
         test("EID",async ()=>{
-            clearLocalStorage()
             renderApp()
             await screen.findByText("Sign In")
             const passwordInput = screen.getByTestId("password")
@@ -164,7 +156,6 @@ describe("Settings",()=>{
         Object.defineProperty(window, 'location', {
             value: { href: "" }
           });                
-        clearLocalStorage()
         renderApp()
         await screen.findByText("Sign In")
         const passwordInput = screen.getByTestId("password")
@@ -182,7 +173,6 @@ describe("Settings",()=>{
     });
     describe("Onion address",()=>{
         test("Show",async ()=>{
-            clearLocalStorage()
             renderApp()
             await screen.findByText("Sign In")
             const passwordInput = screen.getByTestId("password")
@@ -200,7 +190,6 @@ describe("Settings",()=>{
             expect(onionParagraph.textContent).toBe("2puhles2lyireofz66k3jg47eiul2yoozckg7kljcmqzuoru3w6u4lyd.onion")
         })
         test("Hide",async ()=>{
-            clearLocalStorage()
             renderApp()
             await screen.findByText("Sign In")
             const passwordInput = screen.getByTestId("password")
