@@ -184,11 +184,11 @@ class Wallet extends Component {
               <b>{this.state.recipient}</b> <br /><br />
             Enter your wallet password to confirm<br /><br />
             </center>
-            <Input type="password" id="pwd" name="pwd" placeholder="Enter ELA wallet password" required onChange={(e) => this.handleChange(e)} />
+            <Input data-testid="sending-ela-pasword" type="password" id="pwd" name="pwd" placeholder="Enter ELA wallet password" required onChange={(e) => this.handleChange(e)} />
           </ModalBody>
           <ModalFooter>
-            <Button color="success" onClick={this.verifyPwd} >Send</Button>
-            <Button color="danger" onClick={this.pwdmodaltoggle} >Cancel</Button>
+            <Button data-testid="sending-ela-send-btn" color="success" onClick={this.verifyPwd} >Send</Button>
+            <Button data-testid="sending-ela-cancel-btn" color="danger" onClick={this.pwdmodaltoggle} >Cancel</Button>
           </ModalFooter>
         </Modal>
 
@@ -286,7 +286,7 @@ class Wallet extends Component {
             </CardHeader>
             <CardBody >
               <div className="h-100 d-flex flex-column text-center justify-content-center align-items-center">
-                <div className="p-2"><h1>{this.state.balance}</h1></div>
+                <div data-testid="balance" className="p-2"><h1>{this.state.balance}</h1></div>
                 <div className="p-2"><h4>ELA</h4></div>
               </div>
 
@@ -303,7 +303,7 @@ class Wallet extends Component {
                   <Col xs="12">
                     <FormGroup>
                       <Label htmlFor="name">Recipient's address</Label>
-                      <Input type="text" id="recipient" name="recipient" placeholder="ELA wallet address" required onChange={(e) => this.handleChange(e)} />
+                      <Input type="text" data-testid="recipient" id="recipient" name="recipient" placeholder="ELA wallet address" required onChange={(e) => this.handleChange(e)} />
                     </FormGroup>
                   </Col>
                 </Row>
@@ -311,7 +311,7 @@ class Wallet extends Component {
                   <Col xs="12">
                     <FormGroup>
                       <Label htmlFor="ccnumber">Amount (in ELA)</Label>
-                      <Input type="text" id="amount" name="amount" placeholder="1" required onChange={(e) => this.handleChange(e)} />
+                      <Input type="text" data-testid="amount" id="amount" name="amount" placeholder="1" required onChange={(e) => this.handleChange(e)} />
                           fee: 0.001 ELA
                         </FormGroup>
                   </Col>
@@ -320,7 +320,7 @@ class Wallet extends Component {
               </CardBody>
               <CardFooter>
                 {/* <Button type="submit" size="sm" color="success"><i className="fa fa-dot-circle-o"></i> Send</Button> */}
-                <Button color="success" onClick={this.checkForm} >Send</Button>
+                <Button data-testid="send" color="success" onClick={this.checkForm} >Send</Button>
               </CardFooter>
             </Form>
           </Card>
@@ -330,14 +330,14 @@ class Wallet extends Component {
             </CardHeader>
             <CardBody>
               <center style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <QRCode value={address} />
+                <QRCode  data-testid="qr-code" value={address} />
                 <br />
                 {address}
               </center>
 
             </CardBody>
             <CardFooter>
-              <Button color="success" onClick={this.copyToClipboard}>Copy to clipboard</Button>
+              <Button   data-testid="copy-qr"  color="success" onClick={this.copyToClipboard}>Copy to clipboard</Button>
               {/* <Button type="submit" size="sm" color="success" onClick={this.copyToClipboard}><i className="fa fa-dot-circle-o"></i> Copy to clipboard</Button> */}
             </CardFooter>
           </Card>
@@ -351,7 +351,7 @@ class Wallet extends Component {
                 <i className="fa fa-align-justify"></i> Recent transactions
               </CardHeader>
               <CardBody>
-                <Table responsive striped style={{ color: 'white' }}>
+                <Table data-testid="transactions-table" responsive striped style={{ color: 'white' }}>
                   <thead>
                     <tr>
                       <th>Type</th>
