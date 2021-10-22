@@ -66,10 +66,6 @@ async function readErrorLogFile(process) {
             console("Found bad format JSON")
           }
 
-          if (itemParsed.level == "debug" && itemParsed.category =='mainchain-node'){
-             console.log(itemParsed)
-          }
-
           if (itemParsed.level == "error" && itemParsed.category == process){
             return itemParsed
           }
