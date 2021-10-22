@@ -15,7 +15,14 @@ class MainchainHandler {
   
     async init() {
         await this.start((response) => {
-          syslog.write(syslog.create().debug(`Mainchain start response ${response}`).addCategory("mainchain"))
+          const responseStringified = JSON.stringify(response)
+          syslog.write(syslog.create().debug(`Mainchain start response ${responseStringified}`).addCategory("mainchain"))
+
+          const responseJsonified = JSON.parse(responseStringified.trim());
+          if (!responseJsonified.sucess){
+            syslog.write(syslog.create().error(`Node issue ${responseStringified}`).addCategory("mainchain"))
+          }
+
         })
         const errorLogs = await processhelper.readErrorLogFile('mainchain')
         if (errorLogs != ""){

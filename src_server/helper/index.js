@@ -66,8 +66,11 @@ async function readErrorLogFile(process) {
             console("Found bad format JSON")
           }
 
+          if (itemParsed.level == "debug" && itemParsed.category =='mainchain-node'){
+             console.log(itemParsed)
+          }
+
           if (itemParsed.level == "error" && itemParsed.category == process){
-            console.log(itemParsed)
             return itemParsed
           }
           
@@ -75,7 +78,7 @@ async function readErrorLogFile(process) {
     
       if (errorLogs.length > 0){
         latestErrorOfNode = JSON.parse(errorLogs[errorLogs.length -1])
-        console.log(latestErrorOfNode)
+        // console.log(latestErrorOfNode)
         return latestErrorOfNode
       } else{
         return false

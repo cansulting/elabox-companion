@@ -21,7 +21,18 @@ class NodeHandler {
   }
   async init() {
     await this.start((response) => {
-      syslog.write(syslog.create().debug(`${this.options.binaryName} start response ${response}`).addCategory(this.options.binaryName))
+
+      const responseStringified = JSON.stringify(response)
+
+      syslog.write(syslog.create().debug(`${this.options.binaryName} start response ${responseStringified}`).addCategory(this.options.binaryName))
+      const responseJsonified = JSON.parse(responseStringified.trim())
+      if (!responseJsonified.sucess){
+        syslog.write(syslog.create().error(`Node issue ${responseStringified}`).addCategory("mainchain"))
+      }
+
+   
+   
+   
     });
     const errorLogs = await processhelper.readErrorLogFile(`${this.options.binaryName}`)
     if (errorLog){
