@@ -446,10 +446,7 @@ router.post("/version_info", (req, res) => {
 })
 router.get("/check_new_updates", processCheckNewUpdates)
 router.get("/download_package", processDownloadPackage)
-router.get("/latest_eid", async (req, res) => {
-  const block = await eid.getLatestBlock()
-  res.json(block)
-})
+
 //end ota routes
 
 const checkFile = (file) => {
