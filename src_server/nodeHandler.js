@@ -99,7 +99,7 @@ class NodeHandler {
       `yes | ./${this.options.binaryName} removedb --datadir ${this.options.dataPath} > /dev/null 2>output &`,
       async () => {
         await delay(2000);
-        await start(callback);
+        await this.start(callback);
       },
       {
         maxBuffer: 1024 * maxBufferSize,
