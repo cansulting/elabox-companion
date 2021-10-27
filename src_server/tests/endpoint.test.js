@@ -1,4 +1,5 @@
 const supertest=require("supertest")
+const {validateEmail,validateIPaddress}= require("./helpers")
 const http=require("http")
 const app=require("../index")
 describe("ENDPOINT TESTING",()=>{
@@ -12,7 +13,7 @@ describe("ENDPOINT TESTING",()=>{
     afterAll((done) => {
         server.close(done);
       });   
-    describe("GET",()=>{
+    describe.skip("GET",()=>{
         test("/",async ()=>{
             const response= await request.get("/")
             expect(response.status).toBe(200)
@@ -120,11 +121,103 @@ describe("ENDPOINT TESTING",()=>{
             expect(data.new_update).toBeBoolean()           
         })
     })
+    describe("POST",()=>{
+        // test("/getBalance",async ()=>{
+        //     response= await request.post("/getBalance").send({address:"2091u3183213"})
+        //     const data=JSON.parse(response.text)
+        //     expect(response.status).toBe(200)            
+        //     expect(response.headers["content-type"]).toBe("application/json; charset=utf-8")
+        //     expect(data).toBeInstanceOf(Object) 
+        //     expect(data).toContainKeys(["balance"])
+        //     expect(data.balance).toBeString()
+        // })
+        // test("/restartMainchain",async ()=>{
+        //     response= await request.post("/restartMainchain")         
+        //     const data=JSON.parse(response.text)
+        //     expect(response.status).toBe(200)            
+        //     expect(response.headers["content-type"]).toBe("application/json; charset=utf-8")
+        //     expect(data).toBeInstanceOf(Object) 
+        //     expect(data).toContainKeys(["sucess"])
+        //     expect(data.sucess).toBeBoolean()
+
+        // })
+        // test("/resyncMainchain",async ()=>{
+        //     response= await request.post("/resyncMainchain")         
+        //     const data=JSON.parse(response.text)      
+        //     expect(response.status).toBe(200)            
+        //     expect(response.headers["content-type"]).toBe("application/json; charset=utf-8")
+        //     expect(data).toBeInstanceOf(Object) 
+        //     expect(data).toContainKeys(["sucess"])
+        //     expect(data.sucess).toBeBoolean()
+
+        // })
+        // test("/restartEID",async ()=>{
+        //     response= await request.post("/restartEID")         
+        //     const data=JSON.parse(response.text)      
+        //     expect(response.status).toBe(200)            
+        //     expect(response.headers["content-type"]).toBe("application/json; charset=utf-8")
+        //     expect(data).toBeInstanceOf(Object) 
+        //     expect(data).toContainKeys(["sucess"])
+        //     expect(data.sucess).toBeBoolean()            
+        // })
+        // test("/resyncEID",async ()=>{
+        //     response= await request.post("/resyncEID")         
+        //     const data=JSON.parse(response.text)      
+        //     expect(response.status).toBe(200)            
+        //     expect(response.headers["content-type"]).toBe("application/json; charset=utf-8")
+        //     expect(data).toBeInstanceOf(Object) 
+        //     expect(data).toContainKeys(["sucess"])
+        //     expect(data.sucess).toBeBoolean()                        
+        // })
+        // test("/restartESC",async ()=>{
+        //     response= await request.post("/restartESC")         
+        //     const data=JSON.parse(response.text)      
+        //     expect(response.status).toBe(200)            
+        //     expect(response.headers["content-type"]).toBe("application/json; charset=utf-8")
+        //     expect(data).toBeInstanceOf(Object) 
+        //     expect(data).toContainKeys(["sucess"])
+        //     expect(data.sucess).toBeBoolean()                 
+        // })
+        // test("/resyncESC",async ()=>{
+        //     response= await request.post("/resyncESC")         
+        //     const data=JSON.parse(response.text)      
+        //     expect(response.status).toBe(200)            
+        //     expect(response.headers["content-type"]).toBe("application/json; charset=utf-8")
+        //     expect(data).toBeInstanceOf(Object) 
+        //     expect(data).toContainKeys(["sucess"])
+        //     expect(data.sucess).toBeBoolean()                             
+        // })
+        // test("/restartCarrier",async ()=>{
+        //     response= await request.post("/restartCarrier")         
+        //     const data=JSON.parse(response.text)      
+        //     expect(response.status).toBe(200)            
+        //     expect(response.headers["content-type"]).toBe("application/json; charset=utf-8")
+        //     expect(data).toBeInstanceOf(Object) 
+        //     expect(data).toContainKeys(["sucess"])
+        //     expect(data.sucess).toBeBoolean()                                         
+        // })
+        // test("/restartFeeds",async ()=>{
+        //     response= await request.post("/restartFeeds")         
+        //     const data=JSON.parse(response.text)      
+        //     expect(response.status).toBe(200)            
+        //     expect(response.headers["content-type"]).toBe("application/json; charset=utf-8")
+        //     expect(data).toBeInstanceOf(Object) 
+        //     expect(data).toContainKeys(["success"])
+        //     expect(data.success).toBeBoolean()                                         
+        // })        
+        test("/sendElaPassswordVerification",async ()=>{
+            response= await request.post("/sendElaPassswordVerification").send({pwd:"blah"})         
+            const data=JSON.parse(response.text)          
+            expect(response.status).toBe(200) 
+            expect(response.headers["content-type"]).toBe("application/json; charset=utf-8")            
+            expect(data).toBeInstanceOf(Object)
+            expect(data).toContainAnyKeys(["ok","address"])
+            expect(data.ok).toBeBoolean()
+            if(data.address){
+                expect(validateEmail(data.address)).toBeTrue()
+            }
+
+        })
+    })
 })
 
-function validateIPaddress(ipaddress) {  
-  if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {  
-    return (true)  
-  }  
-  return (false)  
-}  
