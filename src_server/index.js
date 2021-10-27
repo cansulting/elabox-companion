@@ -446,10 +446,7 @@ router.post("/version_info", (req, res) => {
 })
 router.get("/check_new_updates", processCheckNewUpdates)
 router.get("/download_package", processDownloadPackage)
-router.get("/latest_eid", async (req, res) => {
-  const block = await eid.getLatestBlock()
-  res.json(block)
-})
+
 //end ota routes
 
 const checkFile = (file) => {
@@ -541,7 +538,7 @@ async function runInstaller(version) {
         config.ELA_SYSTEM_TMP_INSTALLER
       )
       spawn("chmod", ["+x", config.ELA_SYSTEM_TMP_INSTALLER])
-      spawn("elasystem", ["terminate"])
+      spawn("ebox", ["terminate"])
       const installPackageProcess = spawn(
         `${config.ELA_SYSTEM_TMP_INSTALLER}`,
         [`${config.TMP_PATH}/${version}.box`, "-s", "-l"],
