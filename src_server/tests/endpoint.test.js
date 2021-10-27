@@ -1,0 +1,130 @@
+const supertest=require("supertest")
+const http=require("http")
+const app=require("../index")
+describe("ENDPOINT TESTING",()=>{
+    jest.setTimeout(500000)    
+    let server=http.createServer(app)
+    let request;
+    beforeAll((done)=>{
+        server.listen(done)
+        request=supertest(server)
+    })
+    afterAll((done) => {
+        server.close(done);
+      });   
+    describe("GET",()=>{
+        test("/",async ()=>{
+            const response= await request.get("/")
+            expect(response.status).toBe(200)
+            expect(response.headers['content-type']).toBe("text/html; charset=utf-8")
+            expect(response.text).toBe("HELLO WORLD")
+        })      
+        test("/ela",async ()=>{
+            const response= await request.get("/ela")
+            const data=JSON.parse(response.text)
+            expect(response.status).toBe(200)
+            expect(response.headers['content-type']).toBe("application/json; charset=utf-8")            
+            expect(data).toBeInstanceOf(Object)   
+            expect(data).toContainKeys(["isRunning","servicesRunning"])                                       
+            expect(data.isRunning).toBeBoolean()
+            expect(data.servicesRunning).toBeBoolean()            
+        }) 
+        test("/eid",async ()=>{
+            const response= await request.get("/eid")
+            const data=JSON.parse(response.text)
+            expect(response.status).toBe(200)
+            expect(response.headers['content-type']).toBe("application/json; charset=utf-8")   
+            expect(data).toBeInstanceOf(Object)     
+            expect(data).toContainKeys(["isRunning","servicesRunning"])                                                                                    
+            expect(data.isRunning).toBeBoolean()
+            expect(data.servicesRunning).toBeBoolean()            
+        })
+        test("/esc",async ()=>{
+            const response= await request.get("/esc")
+            const data=JSON.parse(response.text)
+            expect(response.status).toBe(200)
+            expect(response.headers['content-type']).toBe("application/json; charset=utf-8")                        
+            expect(data).toBeInstanceOf(Object)           
+            expect(data).toContainKeys(["isRunning","servicesRunning"])                                                                                                                   
+            expect(data.isRunning).toBeBoolean()
+            expect(data.servicesRunning).toBeBoolean()            
+        })
+        test("/feeds",async ()=>{
+            const response= await request.get("/feeds")
+            const data=JSON.parse(response.text)
+            expect(response.status).toBe(200)
+            expect(response.headers['content-type']).toBe("application/json; charset=utf-8")                        
+            expect(data).toBeInstanceOf(Object)       
+            expect(data).toContainKeys(["isRunning"]) 
+            expect(data).toHaveProperty('isRunning')
+            expect(data.isRunning).toBeBoolean()
+        })        
+        test("/carrier",async ()=>{
+            const response= await request.get("/carrier")
+            const data=JSON.parse(response.text)
+            expect(response.status).toBe(200)
+            expect(response.headers['content-type']).toBe("application/json; charset=utf-8")                        
+            expect(data).toBeInstanceOf(Object)                                          
+            expect(data).toContainKeys(["isRunning","carrierIP"])
+            expect(validateIPaddress(data.carrierIP)).toBeTrue()                    
+            expect(data.isRunning).toBeBoolean()
+        })
+        test("/downloadWallet",async ()=>{
+            const response= await request.get("/downloadWallet")
+            const data=response.body
+            expect(response.status).toBe(200)
+            expect(response.headers['content-type']).toBe("application/octet-stream")      
+            expect(data).toBeInstanceOf(Buffer)                  
+
+        })
+        test("/checkInstallation",async ()=>{
+            const response= await request.get("/checkInstallation")
+            const data=JSON.parse(response.text)
+            expect(response.status).toBe(200)
+            expect(response.headers['content-type']).toBe("application/json; charset=utf-8")      
+            expect(data).toBeInstanceOf(Object)       
+            expect(data).toContainKeys(["configed"])            
+            expect(data.configed).toBeOneOf(["true","false"])                    
+        })
+        test("/getOnion",async ()=>{
+            const response= await request.get("/getOnion")
+            const data=JSON.parse(response.text)  
+            expect(response.status).toBe(200)
+            expect(response.headers['content-type']).toBe("application/json; charset=utf-8")      
+            expect(data).toBeInstanceOf(Object) 
+            expect(data).toContainKeys(["onion"])               
+            expect(data.onion).toContain(".onion")                     
+        })
+        test("/regenerateOnion",async ()=>{
+            let response=await request.get("/getOnion")
+            const oldData=JSON.parse(response.text)
+            response= await request.get("/regenerateOnion")
+            const newData=JSON.parse(response.text)  
+            expect(response.status).toBe(200)
+            expect(response.headers['content-type']).toBe("application/json; charset=utf-8")      
+            expect(newData).toBeInstanceOf(Object) 
+            expect(newData).toContainKeys(["onion"])                 
+            expect(newData.onion).toContain(".onion")                     
+            expect(newData.onion).not.toBe(oldData.onion)
+        })
+        test("/check_new_updates",async ()=>{
+            const response= await request.get("/check_new_updates")
+            const data=JSON.parse(response.text)  
+            expect(response.status).toBe(200)
+            expect(response.headers['content-type']).toBe("text/html; charset=utf-8")      
+            expect(data).toBeInstanceOf(Object)    
+            expect(data).toContainKeys(["count","current","latest","new_update"])
+            expect(data.current).toBeNumber()
+            expect(data.current).toBeNumber()
+            expect(data.latest).toBeNumber() 
+            expect(data.new_update).toBeBoolean()           
+        })
+    })
+})
+
+function validateIPaddress(ipaddress) {  
+  if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {  
+    return (true)  
+  }  
+  return (false)  
+}  
