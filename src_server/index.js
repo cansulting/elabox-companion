@@ -518,8 +518,9 @@ async function getVersionInfo(version, path) {
   const info = await fsExtra.readJson(elaJsonFile)
   return info
 }
-async function getLatestVersion() {
-  let version = 1
+// use to check the latest version
+// @version. the starting point of version to check
+async function checkLatestVersion(version = 1) {
   while (version) {
     version += 1
     const isExist = await urlExist(`${config.PACKAGES_URL}/${version}.json`)
@@ -547,13 +548,13 @@ async function runInstaller(version) {
       installPackageProcess.unref()
       resolve("completed")
     } catch (error) {
-      reject("error")
+      reject(error)
     }
   })
 }
 async function checkVersion() {
   const currentVersion = await getCurrentVersion()
-  const latestVersion = await getLatestVersion()
+  const latestVersion = await checkLatestVersion(currentVersion)
   const response = {
     current: currentVersion,
     latest: latestVersion,
@@ -572,6 +573,7 @@ async function checkVersion() {
   }
 }
 async function downloadElaFile(destinationPath, version, extension = "box") {
+  syslog.write(syslog.create().debug("Downloading update file @ " + destinationPath + " version " + version))
   const downloader = new Downloader({
     url: `${config.PACKAGES_URL}/${version}.${extension}`,
     directory: destinationPath,
@@ -589,6 +591,7 @@ async function processUpdateVersion(req, res) {
     }
     res.send(false)
   } catch (error) {
+    syslog.write(syslog.create().error("Failed initializing update", error).addStack())
     res.status(500).send("Update error.")
   }
 }
@@ -604,7 +607,8 @@ async function processCheckNewUpdates(req, res) {
 async function processDownloadPackage(req, res) {
   try {
     const path = config.TMP_PATH
-    const version = await getLatestVersion()
+    const currentVersion = await getCurrentVersion()
+    const version = await checkLatestVersion(currentVersion)
     eventhandler.broadcast(
       config.INSTALLER_PK_ID,
       config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
@@ -661,6 +665,7 @@ async function processDownloadPackage(req, res) {
     )
     res.send(true)
   } catch (error) {
+    syslog.write(syslog.create().error("Failed downloading update package", error).addStack())
     res.status(500).send("Download error.")
   }
 }
