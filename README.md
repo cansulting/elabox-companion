@@ -6,4 +6,5 @@ cd src_client
 yarn test
 
 ### server side
-coming soon
+cd src_server
+yarn test
