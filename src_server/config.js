@@ -11,9 +11,10 @@ const tmpPath = path.join(storagePath, "tmp")
 const elaSystemPath = "/usr/ela/system/ela.system/"
 const elaSystemInfoPath = path.join(elaSystemPath, "info.json")
 const elaInstallerPath = "/usr/ela/system/ela.installer/"
-const elaSystemInstallerPath = path.join(elaInstallerPath, "main")
+const packageInstallerName = "packageinstaller"
+const elaSystemInstallerPath = path.join(elaInstallerPath, packageInstallerName)
 const elaTmpPath = "/tmp/ela"
-const elaInstaller = path.join(elaTmpPath, "/main")
+const elaInstaller = path.join(elaTmpPath, packageInstallerName)
 const buildMode = process.env.ELABUILD || "DEBUG"
 const elaboxVersion = process.env.ELAVERSION
 console.log(buildMode + " MODE")
