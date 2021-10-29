@@ -26,8 +26,8 @@
     "web3": "^1.5.2"
   },
   "scripts": {
-    "start": "nodemon --ignore ./storage/ index.js",
-    "test": "sudo ./node_modules/.bin/jest --config ./jest.config.json --forceExit",
+    "start": "nodemon --ignore ./storage/ server.js",
+    "test": "sudo ./node_modules/.bin/jest --config ./jest.config.json --silent --forceExit",
     "watch": "sudo yarn test --watch"
   },
   "devDependencies": {

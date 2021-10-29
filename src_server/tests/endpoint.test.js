@@ -1,7 +1,7 @@
-const supertest=require("supertest")
-const {validateEmail,validateIPaddress}= require("./helpers")
-const http=require("http")
-const app=require("../index")
+const supertest = require("supertest")
+const {validateEmail,validateIPaddress} = require("./helpers")
+const http = require("http")
+const {app} = require("../index")
 describe("ENDPOINT TESTING",()=>{
     jest.setTimeout(500000)    
     let server=http.createServer(app)
@@ -12,7 +12,7 @@ describe("ENDPOINT TESTING",()=>{
     })
     afterAll((done) => {
         server.close(done);
-      });   
+    });   
     describe("GET",()=>{
         test("/",async ()=>{
             const response= await request.get("/")
