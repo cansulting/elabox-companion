@@ -14,13 +14,12 @@ const runFeeds = () => {
   return new Promise((resolve, reject) => {
     shell.exec("sudo kill-port 10018");
     shell.exec(
-      "nohup ./feedsd --config=./feedsd.conf > /dev/null &",
+      "./feedsd --config=./feedsd.conf > /dev/null &",
       {
         maxBuffer: 1024 * 500 * 10000,
         detached: true,
         cwd: config.FEEDS_DIR + "/",
       },
-
       (err, stdout, stderr) => {
         if (err) {
           logger.write(logger.create().error("Failed Feeds", err).addCaller())
