@@ -14,6 +14,7 @@ var errorHandler = require("errorhandler")
 //ota
 const path = require("path")
 const fsExtra = require("fs-extra")
+const axios=require("axios")
 const app = express()
 
 // nodes
@@ -441,8 +442,18 @@ router.post("/sendSupportEmail", async (req, res) => {
 })
 //ota routes
 router.get("/update_version", processUpdateVersion)
-router.post("/version_info", (req, res) => {
-  res.send({ version: config.ELABOX_VERSION, env: config.BUILD_MODE })
+router.post("/version_info", async (req, res) => {
+  const {version_type} = req.body;
+  if(version_type==="current"){
+    res.send({ version: config.ELABOX_VERSION, env: config.BUILD_MODE })
+  }
+  else{
+    const currentVersion = await getCurrentVersion()    
+    const latestVersion =await checkLatestVersion(currentVersion)
+    const info= await getVersionInfo(latestVersion)
+    res.send({ version: info.version, env: config.BUILD_MODE,name:info.name })
+  }
+
 })
 router.get("/check_new_updates", processCheckNewUpdates)
 router.get("/download_package", processDownloadPackage)
@@ -513,19 +524,17 @@ async function getCurrentVersion() {
   const { build } = await fsExtra.readJSON(config.ELA_SYSTEM_INFO_PATH)
   return build
 }
-async function getVersionInfo(version, path) {
-  const elaJsonFile = `${path}/${version}.json`
-  const info = await fsExtra.readJson(elaJsonFile)
-  return info
+async function getVersionInfo(version) {
+  const {data} = await axios.get(`${config.PACKAGES_URL}/${version}.json`)
+  return data
 }
 // use to check the latest version
 // @version. the starting point of version to check
 async function checkLatestVersion(version = 1) {
-  while (version) {
+  while (true) {
     version += 1
     const isExist = await urlExist(`${config.PACKAGES_URL}/${version}.json`)
-    if (!isExist) {
-      version -= 1
+    if (isExist) {
       break
     }
   }
@@ -554,6 +563,7 @@ async function runInstaller(version) {
 }
 async function checkVersion() {
   const currentVersion = await getCurrentVersion()
+  console.log(currentVersion)
   const latestVersion = await checkLatestVersion(currentVersion)
   const response = {
     current: currentVersion,
@@ -577,6 +587,16 @@ async function downloadElaFile(destinationPath, version, extension = "box") {
   const downloader = new Downloader({
     url: `${config.PACKAGES_URL}/${version}.${extension}`,
     directory: destinationPath,
+    onProgress:function(percentage){
+      eventhandler.broadcast(
+        config.INSTALLER_PK_ID,
+        config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
+        {
+          status: "downloading file",
+          percent: percentage,
+        }
+      )
+    }             
   })
   await downloader.download()
 }
@@ -585,7 +605,6 @@ async function processUpdateVersion(req, res) {
     const checkVersionResponse = await checkVersion()
     if (checkVersionResponse.new_update) {
       await runInstaller(checkVersionResponse.latest)
-      // await fsExtra.emptyDir(config.ELA_SYSTEM_TMP_PATH)
       res.send(true)
       return
     }
@@ -609,51 +628,7 @@ async function processDownloadPackage(req, res) {
     const path = config.TMP_PATH
     const currentVersion = await getCurrentVersion()
     const version = await checkLatestVersion(currentVersion)
-    eventhandler.broadcast(
-      config.INSTALLER_PK_ID,
-      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
-      {
-        status: "downloading file",
-        percent: 20,
-      }
-    )
-    await delay(1000)
-    eventhandler.broadcast(
-      config.INSTALLER_PK_ID,
-      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
-      {
-        status: "downloading file",
-        percent: 40,
-      }
-    )
-    await delay(1000)
-    eventhandler.broadcast(
-      config.INSTALLER_PK_ID,
-      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
-      {
-        status: "downloading file",
-        percent: 60,
-      }
-    )
-    await delay(1000)
-    eventhandler.broadcast(
-      config.INSTALLER_PK_ID,
-      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
-      {
-        status: "downloading file",
-        percent: 80,
-      }
-    )
     await downloadElaFile(path, version, "box")
-    eventhandler.broadcast(
-      config.INSTALLER_PK_ID,
-      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
-      {
-        status: "downloading file",
-        percent: 100,
-      }
-    )
-    await delay(1000)
     //revert back
     eventhandler.broadcast(
       config.INSTALLER_PK_ID,
