@@ -534,7 +534,8 @@ async function checkLatestVersion(version = 1) {
   while (true) {
     version += 1
     const isExist = await urlExist(`${config.PACKAGES_URL}/${version}.json`)
-    if (isExist) {
+    const ifNextVersionExist =  await urlExist(`${config.PACKAGES_URL}/${version+1}.json`)
+    if (isExist && !ifNextVersionExist) {
       break
     }
   }
@@ -649,18 +650,18 @@ async function processDownloadPackage(req, res) {
 app.use("/", router)
 
 app.listen(config.PORT, async function () {
-  syslog.write(syslog.create().info("Companion start running on " + config.PORT))
-  await feedsHandler.runFeeds()
-  checkProcessingRunning("ela-bootstrapd").then((running) => {
-    if (!running) restartCarrier((response) => {
-      syslog.write(syslog.create().debug('Carrier restart response ' + response))
-    })
-  })
-  await mainchain.init()
-  mainchain.setOnComplete(async () => {
-    await eid.init()
-    await eid.setOnComplete(() => esc.init())
-  })
+  // syslog.write(syslog.create().info("Companion start running on " + config.PORT))
+  // await feedsHandler.runFeeds()
+  // checkProcessingRunning("ela-bootstrapd").then((running) => {
+  //   if (!running) restartCarrier((response) => {
+  //     syslog.write(syslog.create().debug('Carrier restart response ' + response))
+  //   })
+  // })
+  // await mainchain.init()
+  // mainchain.setOnComplete(async () => {
+  //   await eid.init()
+  //   await eid.setOnComplete(() => esc.init())
+  // })
 })
 
 module.exports = app
