@@ -544,6 +544,10 @@ async function checkLatestVersion(version = 1) {
 async function runInstaller(version) {
   return new Promise(async (resolve, reject) => {
     try {
+      // check if the binary exist. if not then use the old name
+      if (!fsExtra.existsSync(config.ELA_SYSTEM_INSTALLER_PATH)) {
+        config.ELA_SYSTEM_INSTALLER_PATH = path.join(config.ELA_SYSTEM_INSTALLER_DIR, "main") 
+      }
       await fsExtra.copy(
         config.ELA_SYSTEM_INSTALLER_PATH,
         config.ELA_SYSTEM_TMP_INSTALLER

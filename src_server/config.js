@@ -9,9 +9,9 @@ const cwd = path.join(__dirname, ".")
 const tmpPath = "/tmp/ela"
 const elaSystemPath = "/usr/ela/system/ela.system/"
 const elaSystemInfoPath = path.join(elaSystemPath, "info.json")
-const elaInstallerPath = "/usr/ela/system/ela.installer/"
-const packageInstallerName = "main"
-const elaSystemInstallerPath = path.join(elaInstallerPath, packageInstallerName)
+const installerDir = "/usr/ela/system/ela.installer/"
+const packageInstallerName = "packageinstaller"
+const elaSystemInstallerPath = path.join(installerDir, packageInstallerName)
 const elaTmpPath = "/tmp/ela"
 const elaInstaller = path.join(elaTmpPath, packageInstallerName)
 const buildMode = process.env.ELABUILD || "DEBUG"
@@ -40,6 +40,7 @@ module.exports = {
   ELA_SYSTEM_PATH: elaSystemPath,                     // dir where the system apps installed
   ELA_SYSTEM_INFO_PATH: elaSystemInfoPath,            // where information about the system installed
   ELA_SYSTEM_INSTALLER_PATH: elaSystemInstallerPath,  // dir for installer binary
+  ELA_SYSTEM_INSTALLER_DIR: installerDir,
   ELA_SYSTEM_TMP_PATH: elaTmpPath,                    // temp/cache path
   ELA_SYSTEM_TMP_INSTALLER: elaInstaller,             // the path where temp installer will be copied during system update
   ELA_SYSTEM: "ela.system",
