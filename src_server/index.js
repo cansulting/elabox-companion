@@ -559,9 +559,12 @@ async function runInstaller(version) {
         [`${config.TMP_PATH}/${version}.box`, "-s", "-l"],
         { detached: true, stdio: "ignore" }
       )
+      installPackageProcess.on('error', (err) => 
+        syslog.write(syslog.create().error("Failed installing update...", err)))
       installPackageProcess.unref()
       resolve("completed")
     } catch (error) {
+      syslog.write(syslog.create().error("Failed installing update...", error))
       reject(error)
     }
   })
