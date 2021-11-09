@@ -10,6 +10,7 @@ const syslog = require("./logger")
 // contains procedures that manages the mainchain process 
 class MainchainHandler {
     async init() {
+        syslog.write(syslog.create().debug("Starting mainchain...").addCategory("mainchain"))
         await this.start((response) => {
           syslog.write(syslog.create().debug(`Mainchain start response ${response}`).addCategory("mainchain"))
         })
