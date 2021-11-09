@@ -674,4 +674,5 @@ const startServer=()=>{
   })
 }
 
+startServer()
 module.exports = {app,startServer}
