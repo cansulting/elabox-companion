@@ -660,7 +660,7 @@ app.use("/", router)
 const startServer=()=>{
   app.listen(config.PORT, async function () {
     syslog.write(syslog.create().info("Companion start running on " + config.PORT))
-    await feedsHandler.runFeeds()
+    feedsHandler.runFeeds()
     checkProcessingRunning("ela-bootstrapd").then((running) => {
       if (!running) restartCarrier((response) => {
         syslog.write(syslog.create().debug('Carrier restart response ' + response))
