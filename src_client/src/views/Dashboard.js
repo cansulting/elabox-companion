@@ -234,7 +234,7 @@ const Dashboard = ({ isMobile }) => {
                 }}
                 color="success"
                 target="_blank"
-                href="http://elabox.local:10018/"
+                href={"http://" + window.location.hostname + ":10018/"}
               >
                 Launch
               </Button>
