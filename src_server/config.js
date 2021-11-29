@@ -33,6 +33,8 @@ module.exports = {
   EID_PORT: 20645,                                    // eid port that can be access for web3 api
   ESC_PORT: 20646,                                    // esc port that can be access for web3 api
   ELA_PORT: 20336,
+  RPC_PORT_EID: 20636,                                // EID RPC
+  RPC_PORT_ESC: 20637,                                // ESC RPC
   CARRIER_DIR: homeapps + "/ela.carrier", // carrier app directory
   KEYSTORE_PATH: eladatadir + "/keystore.dat", // keystore data path
   SUPPORT_EMAIL: "contact@elabox.com",

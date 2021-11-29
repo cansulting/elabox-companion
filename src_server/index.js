@@ -27,12 +27,14 @@ const eid = new NodeHandler({
   cwd: config.EID_DIR,
   dataPath: config.EIDDATA_DIR + "/blocks",
   wsport: config.EID_PORT,
+  rpcport: config.RPC_PORT_EID,
 })
 const esc = new NodeHandler({
   binaryName: "esc",
   cwd: config.ESC_DIR,
   dataPath: config.ESCDATA_DIR + "/blocks",
   wsport: config.ESC_PORT,
+  rpcport: config.RPC_PORT_ESC,
 })
 
 // define port number
