@@ -14,7 +14,7 @@ const packageInstallerName = "packageinstaller"
 const elaSystemInstallerPath = path.join(installerDir, packageInstallerName)
 const elaTmpPath = "/tmp/ela"
 const elaInstaller = path.join(elaTmpPath, packageInstallerName)
-const buildMode = process.env.ELABUILD || "DEBUG"
+const buildMode = process.env.ELAENV || "DEBUG"
 const elaboxVersion = process.env.ELAVERSION
 console.log(buildMode + " MODE")
 console.log("Version " + elaboxVersion)

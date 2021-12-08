@@ -450,10 +450,16 @@ router.post("/version_info", async (req, res) => {
     res.send({ version: config.ELABOX_VERSION, env: config.BUILD_MODE })
   }
   else{
-    const currentVersion = await getCurrentVersion()    
-    const latestVersion =await checkLatestVersion(currentVersion)
-    const info= await getVersionInfo(latestVersion)
-    res.send({ version: info.version, env: config.BUILD_MODE,name:info.name })
+    let currentVersion;
+    try {
+      currentVersion = await getCurrentVersion()    
+      const latestVersion =await checkLatestVersion(currentVersion)
+      const info= await getVersionInfo(latestVersion)
+      res.send({ version: info.version, env: config.BUILD_MODE,name:info.name })
+    }catch(e) {
+      res.send({ version: currentVersion, env: config.BUILD_MODE, name: '' })
+      syslog.write(syslog.create().error(e.message, e))
+    }
   }
 
 })
@@ -533,15 +539,14 @@ async function getVersionInfo(version) {
 // use to check the latest version
 // @version. the starting point of version to check
 async function checkLatestVersion(version = 1) {
+  let running = version
   while (true) {
-    version += 1
-    const isExist = await urlExist(`${config.PACKAGES_URL}/${version}.json`)
-    const ifNextVersionExist =  await urlExist(`${config.PACKAGES_URL}/${version+1}.json`)
-    if (isExist && !ifNextVersionExist) {
-      break
+    const isExist = await urlExist(`${config.PACKAGES_URL}/${running}.json`)
+    if (!isExist) {
+      return running
     }
+    running ++
   }
-  return version
 }
 async function runInstaller(version) {
   return new Promise(async (resolve, reject) => {
@@ -573,7 +578,6 @@ async function runInstaller(version) {
 }
 async function checkVersion() {
   const currentVersion = await getCurrentVersion()
-  console.log(currentVersion)
   const latestVersion = await checkLatestVersion(currentVersion)
   const response = {
     current: currentVersion,
@@ -662,6 +666,7 @@ app.use("/", router)
 const startServer=()=>{
   app.listen(config.PORT, async function () {
     syslog.write(syslog.create().info("Companion start running on " + config.PORT))
+    return
     checkProcessingRunning("ela-bootstrapd").then((running) => {
       if (!running) restartCarrier((response) => {
         syslog.write(syslog.create().debug('Carrier restart response ' + response))
