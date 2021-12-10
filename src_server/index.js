@@ -452,8 +452,8 @@ router.post("/version_info", async (req, res) => {
   else{
     let currentVersion;
     try {
-      currentVersion = await getCurrentVersion()    
-      const latestVersion =await checkLatestVersion(currentVersion)
+      currentVersion = await getCurrentBuild()    
+      const latestVersion =await checkLatestBuild(currentVersion)
       const info= await getVersionInfo(latestVersion)
       res.send({ version: info.version, env: config.BUILD_MODE,name:info.name })
     }catch(e) {
@@ -528,7 +528,7 @@ const regenerateTor = () => {
   })
 }
 ///ota functions
-async function getCurrentVersion() {
+async function getCurrentBuild() {
   const { build } = await fsExtra.readJSON(config.ELA_SYSTEM_INFO_PATH)
   return build
 }
@@ -536,16 +536,16 @@ async function getVersionInfo(version) {
   const {data} = await axios.get(`${config.PACKAGES_URL}/${version}.json`)
   return data
 }
-// use to check the latest version
-// @version. the starting point of version to check
-async function checkLatestVersion(version = 1) {
-  let running = version
+// use to check the latest build
+// @build. the starting point of build to check
+async function checkLatestBuild(build = 1) {
+  let running = build
   while (true) {
+    running ++
     const isExist = await urlExist(`${config.PACKAGES_URL}/${running}.json`)
     if (!isExist) {
-      return running
+      return running - 1
     }
-    running ++
   }
 }
 async function runInstaller(version) {
@@ -577,8 +577,8 @@ async function runInstaller(version) {
   })
 }
 async function checkVersion() {
-  const currentVersion = await getCurrentVersion()
-  const latestVersion = await checkLatestVersion(currentVersion)
+  const currentVersion = await getCurrentBuild()
+  const latestVersion = await checkLatestBuild(currentVersion)
   const response = {
     current: currentVersion,
     latest: latestVersion,
@@ -640,8 +640,8 @@ async function processCheckNewUpdates(req, res) {
 async function processDownloadPackage(req, res) {
   try {
     const path = config.TMP_PATH
-    const currentVersion = await getCurrentVersion()
-    const version = await checkLatestVersion(currentVersion)
+    const currentVersion = await getCurrentBuild()
+    const version = await checkLatestBuild(currentVersion)
     await downloadElaFile(path, version, "box")
     //revert back
     eventhandler.broadcast(
