@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { Link, Redirect } from "react-router-dom"
-import { Button, Input } from "reactstrap"
+import { Button, Input, Spinner } from "reactstrap"
 import elaboxLogo from "./images/logo-circle-transparent.png"
 
 import backend from "../api/backend"
@@ -8,8 +8,10 @@ import backend from "../api/backend"
 function Login() {
   const [isLoggedIn, setLoggedIn] = useState(false)
   const [pwd, setPwd] = useState("")
+  const [isProcessing, setProcessing] = useState(false)
 
   function login() {
+    setProcessing(true)
     backend
       .login(pwd)
       .then((responseJson) => {
@@ -21,9 +23,11 @@ function Login() {
         } else {
           alert("Wrong password")
         }
+        setProcessing(false)
       })
       .catch((error) => {
         console.error(error)
+        setProcessing(false)
       })
   }
 
@@ -57,7 +61,8 @@ function Login() {
           <form
             onSubmit={(e) => {
               e.preventDefault()
-              login()
+              if (!isProcessing)
+                login()
             }}
           >
             <Input
@@ -70,8 +75,9 @@ function Login() {
               onChange={(e) => handleChange(e)}
               autoFocus
             />
-            <Button data-testid="sign-in-btn" type="submit" style={{ marginTop: "20px" }}>
-              Sign In
+            <Button data-testid="sign-in-btn" active={!isProcessing} type="submit" style={{ marginTop: "20px" }}>
+              {!isProcessing && "Sign In"} 
+              {isProcessing && <>Please wait<Spinner size='sm' style={{margin:"0 5px"}}/></>}
             </Button>
           </form>
         </div>
