@@ -62,6 +62,7 @@ const router = express.Router()
 
 // for mailing
 const postmark = require("postmark")
+const filedownload = require("./helper/filedownload")
 const postMarkMail = new postmark.ServerClient(config.POSTMARK_SERVER_TOKEN)
 
 let elaPath = config.ELA_DIR
@@ -596,12 +597,12 @@ async function checkVersion() {
     count: 1,
   }
 }
-async function downloadElaFile(destinationPath, version, extension = "box") {
+function downloadElaFile(destinationPath, version, extension = "box") {
   syslog.write(syslog.create().debug("Downloading update file @ " + destinationPath + " version " + version))
-  const downloader = new Downloader({
-    url: `${config.PACKAGES_URL}/${version}.${extension}`,
-    directory: destinationPath,
-    onProgress:function(percentage){
+  return filedownload(
+    `${config.PACKAGES_URL}/${version}.${extension}`, 
+    `${destinationPath}/${version}.${extension}`,
+    (percentage) => {
       eventhandler.broadcast(
         config.INSTALLER_PK_ID,
         config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
@@ -610,9 +611,8 @@ async function downloadElaFile(destinationPath, version, extension = "box") {
           percent: percentage,
         }
       )
-    }             
-  })
-  await downloader.download()
+    }
+  )
 }
 async function processUpdateVersion(req, res) {
   try {
@@ -642,16 +642,31 @@ async function processDownloadPackage(req, res) {
     const path = config.TMP_PATH
     const currentVersion = await getCurrentBuild()
     const version = await checkLatestBuild(currentVersion)
-    await downloadElaFile(path, version, "box")
-    //revert back
-    eventhandler.broadcast(
-      config.INSTALLER_PK_ID,
-      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
-      {
-        status: "download complete",
-        percent: 0,
-      }
-    )
+    downloadElaFile(path, version, "box")
+    .then( res => {
+      //revert back
+      eventhandler.broadcast(
+        config.INSTALLER_PK_ID,
+        config.ELA_INSTALLER_BROADCAST_INSTALL_DONE,
+        {
+          status: "download complete",
+          percent: 0,
+        }
+      )
+    })
+    .catch( err => {
+      //revert back
+      eventhandler.broadcast(
+        config.INSTALLER_PK_ID,
+        config.ELA_INSTALLER_BROADCAST_INSTALL_ERROR,
+        {
+          status: "failed",
+          reason: err.message,
+          percent: 0,
+        }
+      )
+    })
+    
     res.send(true)
   } catch (error) {
     syslog.write(syslog.create().error("Failed downloading update package", error).addStack())

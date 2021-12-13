@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { event_server, SERVICE_ID } from "../../../Socket"
+import { event_server } from "../../../Socket"
 import API from "../../../api/backend"
 export default function Ota({ children }) {
   const [status, setStatus] = useState("idle")
@@ -26,6 +26,14 @@ export default function Ota({ children }) {
   useEffect(() => {
     event_server.on("ela.installer.PROGRESS", ({ data }) => {
       setProgress(data)
+    })
+    event_server.on("ela.installer.INSTALL_DONE", ({}) => {
+      setStatus("new-updates")
+    })
+    event_server.on("ela.installer.INSTALL_ERROR", ({ data }) => {
+      setStatus("new-download")
+      console.log("Failed downloading update " + data.reason)
+      setErrorMsg("Failed downloading update please try again later.")
     })
   }, [])
   const handleCheckUpdates = async () => {
@@ -60,10 +68,7 @@ export default function Ota({ children }) {
   const handleDownloadPackage = async () => {
     try {
       setStatus("downloading")
-      const isDownloaded = await API.processDownloadPackage()
-      if (isDownloaded) {
-        setStatus("new-updates")
-      }
+      await API.processDownloadPackage()
     } catch (error) {
       setStatus("new-download")
       console.log("Failed downloading update " + error)

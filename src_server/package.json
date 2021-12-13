@@ -27,7 +27,7 @@
   },
   "scripts": {
     "start": "nodemon --ignore ./storage/ index.js",
-    "test": "sudo ./node_modules/.bin/jest --config ./jest.config.json --silent --forceExit",
+    "test": "sudo ./node_modules/.bin/jest --config ./jest.config.json --silent --forceExit --verbose false",
     "watch": "sudo yarn test --watch"
   },
   "devDependencies": {

@@ -24,7 +24,7 @@ async function broadcast(packageId, actionId, broadcast_data) {
         }),
       },
       (response) => {
-        syslog.write(syslog.create().debug(`Broadcast ${actionId} with response ${response}`).addCategory("event"))
+        //syslog.write(syslog.create().debug(`Broadcast ${actionId} with response ${response}`).addCategory("event"))
       }
     )
 }

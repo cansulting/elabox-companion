@@ -51,6 +51,8 @@ module.exports = {
   ELA_SYSTEM_BROADCAST: "ela.system.BROADCAST",       // id for broadcasting message to system
   INSTALLER_PK_ID: "ela.installer",
   ELA_SYSTEM_BROADCAST_ID_INSTALLER: "ela.installer.PROGRESS", // installer action id that tells the companion front end it is in progress
+  ELA_INSTALLER_BROADCAST_INSTALL_DONE: "ela.installer.INSTALL_DONE",
+  ELA_INSTALLER_BROADCAST_INSTALL_ERROR: "ela.installer.INSTALL_ERROR",
   BUILD_MODE: buildMode,
   ELABOX_VERSION: elaboxVersion,                      // current version of elabox
   PACKAGES_URL:
