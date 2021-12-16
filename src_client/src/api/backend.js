@@ -235,9 +235,9 @@ class API {
     const { data } = await axios.get(`http://${PUBLIC_URI}/download_package`);
     return data;
   };
-  getVersionDetails = async (versionType) => {
+  getVersionDetails = async (version_type) => {
     const { data } = await axios.post(`http://${PUBLIC_URI}/version_info`, {
-      versionType,
+      version_type,
     });
     return data;
   };

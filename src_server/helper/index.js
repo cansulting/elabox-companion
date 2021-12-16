@@ -46,25 +46,33 @@ const checkProcessingRunning = async (process) => {
 };
 
 // spawn a command
-const requestSpawn = async (command, callback, options) => {
+const requestSpawn = async (
+  command, 
+  callback, 
+  options, 
+  delayValue = 1000) => {
   try {
-    await delay(1000)
+    if (delayValue > 0)
+      await delay(delayValue)
 
     const spawn_instance = spawn(command, options)
     spawn_instance.unref()
-
-    spawn_instance.stdout.on("data", (data) => {
-      syslog.write(syslog.create().debug(`Spawn ${command} response ${data}`))
-    })
-    spawn_instance.stderr.on("data", (data) => {
-      syslog.write(syslog.create().error(`Spawn ${command} error`, data).addCaller())
-    })
+    if (spawn_instance.stdout) {
+      spawn_instance.stdout.on("data", (data) => {
+        syslog.write(syslog.create().debug(`Spawn ${command} response ${data}`))
+      })
+    }
+    if (spawn_instance.stderr) {
+      spawn_instance.stderr.on("data", (data) => {
+        syslog.write(syslog.create().error(`Spawn ${command} error`, data).addCaller())
+      })
+    }
     spawn_instance.on("exit", (code, signal) => {
-      if (!code) callback({ sucess: true })
+      if (!code) callback({ success: true })
       else callback({ success: false, error: signal })
     })
   } catch (err) {
-    syslog.write(syslog.create().error(`Spawn ${command} error`, err).addCaller())
+    syslog.write(syslog.create().error(`Spawn ${command} error ${err.message}`, err).addCaller())
     callback({ success: false, error: err })
   }
 }
