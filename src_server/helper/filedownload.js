@@ -1,3 +1,4 @@
+// handles file downloading given the url
 const https = require("https")
 const fs = require("fs")
 
@@ -16,7 +17,7 @@ module.exports = (url, destination = "", onProgress) => {
         https.get(url, response => {
             let downloaded = 0
             let size = parseInt( response.headers["content-length"], 10)
-            console.log("Size", size)
+            //console.log("Size", size)
             response.pipe(fs.createWriteStream(destination))
             response.on("data", (chunk) => {
                 downloaded += chunk.length

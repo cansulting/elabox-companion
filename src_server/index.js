@@ -1,6 +1,5 @@
 const express = require("express")
 const eventhandler = require("./helper/eventHandler")
-const Downloader = require("nodejs-file-downloader")
 const urlExist = require("url-exist")
 // to allow cross-origin request
 const cors = require("cors")
@@ -124,7 +123,7 @@ router.get("/carrier", async (req, res) => {
     const carrierIP = await execShell("curl -s ifconfig.me", {
       maxBuffer: 1024 * 500,
     })
-
+    
     return res.status(200).json({ isRunning, carrierIP: carrierIP.trim() })
   } catch (err) {
     syslog.write(syslog.create().error("Error on /carrier request ", err).addStack())
@@ -170,56 +169,60 @@ router.post("/sendTx", (req, res) => {
   let amount = req.body.amount
   let recipient = req.body.recipient
   let pwd = req.body.pwd
-  syslog.write(syslog.create().debug(`Sending coint ammount=${amount} recipient=${recipient}`))
-
-  // 1 - buildtx
-  exec(
-    elaPath +
-      "/ela-cli wallet buildtx -w " +
-      config.KEYSTORE_PATH +
-      " --to " +
-      recipient +
-      " --amount " +
-      amount +
-      " --fee 0.001 --rpcuser User --rpcpassword Password " +
-      pwd,
-    { maxBuffer: 1024 * 500 },
-    async (err, stdout) => {
-      if (!err) {
-        // 2 - signtx
-        exec(
-          elaPath +
-            "/ela-cli wallet signtx -w " +
-            config.KEYSTORE_PATH +
-            " -f to_be_signed.txn -p " +
-            pwd,
-          { maxBuffer: 1024 * maxBufferSize },
-          async (err, stdout) => {
-            if (!err) {
-              // 3 - sendtx
-              exec(
-                elaPath +
-                  "/ela-cli wallet sendtx -f ready_to_send.txn --rpcuser User --rpcpassword Password",
-                { maxBuffer: 1024 * maxBufferSize },
-                async (err, stdout) => {
-                  if (!err) {
-                    res.json({ ok: "ok" })
-                  } else {
-                    syslog.write(syslog.create().error(`Error while sending coin to ${recipient}`, err).addCaller())
-                    res.json({ ok: "nope" })
+  syslog.write(syslog.create().debug(`Sending coins ammounting=${amount} recipient=${recipient}`))
+  try {
+    // 1 - buildtx
+    exec(
+      elaPath +
+        "/ela-cli wallet buildtx -w " +
+        config.KEYSTORE_PATH +
+        " --to " +
+        recipient +
+        " --amount " +
+        amount +
+        " --fee 0.001 --rpcuser User --rpcpassword Password " +
+        pwd,
+      { maxBuffer: 1024 * 500 },
+      async (err, stdout) => {
+        if (!err) {
+          // 2 - signtx
+          exec(
+            elaPath +
+              "/ela-cli wallet signtx -w " +
+              config.KEYSTORE_PATH +
+              " -f to_be_signed.txn -p " +
+              pwd,
+            { maxBuffer: 1024 * maxBufferSize },
+            async (err, stdout) => {
+              if (!err) {
+                // 3 - sendtx
+                exec(
+                  elaPath +
+                    "/ela-cli wallet sendtx -f ready_to_send.txn --rpcuser User --rpcpassword Password",
+                  { maxBuffer: 1024 * maxBufferSize },
+                  async (err, stdout) => {
+                    if (!err) {
+                      res.json({ ok: "ok" })
+                    } else {
+                      syslog.write(syslog.create().error(`Error while sending coin to ${recipient}`, err).addCaller())
+                      res.json({ ok: "nope" })
+                    }
                   }
-                }
-              )
-            } else {
-              res.json({ ok: "nope" })
+                )
+              } else {
+                res.json({ ok: "nope" })
+              }
             }
-          }
-        )
-      } else {
-        res.json({ ok: "nope" })
+          )
+        } else {
+          res.json({ ok: "nope" })
+        }
       }
-    }
-  )
+    )
+  }catch (e) {
+    syslog.write(syslog.create().error("Failed sendTx", e))
+    res.json({ ok: "nope" })
+  } 
 })
 
 
@@ -561,15 +564,12 @@ async function runInstaller(version) {
         config.ELA_SYSTEM_TMP_INSTALLER
       )
       spawn("chmod", ["+x", config.ELA_SYSTEM_TMP_INSTALLER])
-      spawn("ebox", ["terminate"])
-      const installPackageProcess = spawn(
-        `${config.ELA_SYSTEM_TMP_INSTALLER}`,
-        [`${config.TMP_PATH}/${version}.box`, "-s", "-l"],
+      spawn(
+        `${config.ELA_SYSTEM_TMP_INSTALLER}`, [`${config.TMP_PATH}/${version}.box`,"-s", "-l"],
         { detached: true, stdio: "ignore" }
-      )
-      installPackageProcess.on('error', (err) => 
-        syslog.write(syslog.create().error("Failed installing update...", err)))
-      installPackageProcess.unref()
+      ).unref()
+      spawn("ebox", ["terminate"])
+      //syslog.write(syslog.create().debug(`installing ${config.TMP_PATH}/${version}.box`))
       resolve("completed")
     } catch (error) {
       syslog.write(syslog.create().error("Failed installing update...", error))

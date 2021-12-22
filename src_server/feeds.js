@@ -27,9 +27,10 @@ const runFeeds = () => {
           reject(false);
           // throw (err)
         } else {
-          logger.write(logger.create().debug("Success Feeds " +stdout ))
           if (stderr)
             logger.write(logger.create().error("Feeds std error", stderr).addCaller())
+          else
+            logger.write(logger.create().debug("Success Feeds " +stdout ))
           resolve(true);
         }
       }
