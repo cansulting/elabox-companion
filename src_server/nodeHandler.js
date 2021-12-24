@@ -14,7 +14,7 @@ class NodeHandler {
   // @cwd: path where binary is saved
   // @dataPath: path where data is saved
   // @wsport: port where ws api is accessible
-  constructor(options = { binaryName: "", cwd: "", dataPath: "", wsport: 0 }) {
+  constructor(options = { binaryName: "", cwd: "", dataPath: "", wsport: 0, rpcport: 0, }) {
     this.options = options;
     this.wspath = "ws://localhost:" + options.wsport;
   }
@@ -65,7 +65,7 @@ class NodeHandler {
     ) {
       syslog.write(syslog.create().info(`Starting ${this.options.binaryName}`).addCategory(this.options.binaryName))
       await processhelper.requestSpawn(
-        `echo "\n" | ./${this.options.binaryName} --datadir ${this.options.dataPath} --syncmode "full" --ws --wsport ${this.options.wsport} --wsapi eth,web3 > /dev/null 2>output &`,
+        `echo "\n" | ./${this.options.binaryName} --datadir ${this.options.dataPath} --syncmode "full" --rpc --rpcport ${this.options.rpcport} --ws --wsport ${this.options.wsport} --wsapi eth,web3 > /dev/null 2>output &`,
         callback,
         {
           maxBuffer: 1024 * maxBufferSize,
@@ -99,7 +99,7 @@ class NodeHandler {
       `yes | ./${this.options.binaryName} removedb --datadir ${this.options.dataPath} > /dev/null 2>output &`,
       async () => {
         await delay(2000);
-        await start(callback);
+        await this.start(callback);
       },
       {
         maxBuffer: 1024 * maxBufferSize,

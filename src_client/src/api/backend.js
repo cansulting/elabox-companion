@@ -160,6 +160,32 @@ class API {
     }).then((response) => response.json());
   };
 
+  sendElaPassswordVerification = (pwd) => {
+    return fetch(`http://${PUBLIC_URI}/sendElaPassswordVerification`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        pwd: pwd,
+      }),
+    }).then((response) => response.json());
+  };
+
+  resyncNodeVerification = (pwd) => {
+    return fetch(`http://${PUBLIC_URI}/resyncNodeVerification`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        pwd: pwd,
+      }),
+    }).then((response) => response.json());
+  };
+
   sendTx = (recipient, amount, pwd) => {
     return fetch(`http://${PUBLIC_URI}/sendTx`, {
       method: "POST",
@@ -174,6 +200,7 @@ class API {
       }),
     }).then((response) => response.json());
   };
+
 
   txHistory = (address) => {
     console.log(
@@ -208,9 +235,9 @@ class API {
     const { data } = await axios.get(`http://${PUBLIC_URI}/download_package`);
     return data;
   };
-  getVersionDetails = async (versionType) => {
+  getVersionDetails = async (version_type) => {
     const { data } = await axios.post(`http://${PUBLIC_URI}/version_info`, {
-      versionType,
+      version_type,
     });
     return data;
   };

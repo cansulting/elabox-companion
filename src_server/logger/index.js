@@ -22,10 +22,12 @@ function create() {
 async function write(log = new Log()) {
     initLogFile()
     const obj = log.toObject()
-    if (!obj.error)
-        console.log(obj.level, ":", obj.message)
-    else 
-        console.log(obj.level, ":", obj.message, ", ERROR = ", obj.error)
+    if (config.BUILD_MODE !== 'RELEASE') {
+        if (!obj.error)
+            console.log(obj.level, ":", obj.message)
+        else 
+            console.log(obj.level, ":", obj.message, ", ERROR = ", obj.error)
+    }
     const strl =log.toString() + "\n"
     //fs.appendFile(config.LOG_FILE, strl, () => {})
     //logFile.cork()

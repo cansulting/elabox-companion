@@ -12,19 +12,19 @@ broadcast_server.on("connect_error", (response) => {
 })
 
 // use to broadcast action to event server
-async function broadcast(package, actionId, broadcast_data) {
+async function broadcast(packageId, actionId, broadcast_data) {
     broadcast_server.emit(
       config.ELA_SYSTEM,
       {
         id: config.ELA_SYSTEM_BROADCAST,
         data: JSON.stringify({
           id: actionId,
-          packageId:package,
+          packageId,
           data: broadcast_data,
         }),
       },
       (response) => {
-        syslog.write(syslog.create().debug(`Broadcast ${actionId} with response ${response}`).addCategory("event"))
+        //syslog.write(syslog.create().debug(`Broadcast ${actionId} with response ${response}`).addCategory("event"))
       }
     )
 }

@@ -22,7 +22,9 @@ class Wallet extends Component {
       'error3modal': false,
       'pwdmodal': false,
       'sentmodal': false,
-      'errormodal': false
+      'errormodal': false,
+      'elasendingsuccess': false,
+      'pwderrormodal': false
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -68,7 +70,26 @@ class Wallet extends Component {
           this.setState({ sentmodal: true })
         }
         else {
+          setTimeout(function(){},2000);
           this.setState({ errormodal: true })
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
+  // Verifies password before calling submitForm which calls /sendTx
+  verifyPwd = () => {
+    backend.sendElaPassswordVerification(this.state.pwd)
+      .then(responseJson => {
+        if (responseJson.ok) {
+          this.setState({ elasendingsuccess: true })
+          this.submitForm()
+        }
+        else {
+          this.setState({ pwderrormodal: true })
+
         }
       })
       .catch(error => {
@@ -91,12 +112,19 @@ class Wallet extends Component {
           this.setState({ error2modal: true })
         }
         else {
-          if (amount.toString().split(".")[1].length > 8) {
-            this.setState({ error3modal: true })
-          }
-          else {
+          if (amount.indexOf('.') > -1){
+
+            if (amount.toString().split(".")[1].length > 8) {
+              this.setState({ error3modal: true })
+            }
+            else {
+              this.setState({ pwdmodal: true })
+            }
+          }else{
             this.setState({ pwdmodal: true })
+
           }
+
         }
       }
     }
@@ -121,6 +149,15 @@ class Wallet extends Component {
     this.setState({ pwdmodal: false })
   }
 
+  pwderrormodaltoggle = () => {
+    this.setState({ pwderrormodal: false })
+  }
+
+  elasendingsuccesstoggle = () => {
+    this.setState({ elasendingsuccess: false })
+  }
+
+  
   render() {
     const { isMobile } = this.props;
 
@@ -147,11 +184,11 @@ class Wallet extends Component {
               <b>{this.state.recipient}</b> <br /><br />
             Enter your wallet password to confirm<br /><br />
             </center>
-            <Input type="password" id="pwd" name="pwd" placeholder="Enter ELA wallet password" required onChange={(e) => this.handleChange(e)} />
+            <Input data-testid="sending-ela-pasword" type="password" id="pwd" name="pwd" placeholder="Enter ELA wallet password" required onChange={(e) => this.handleChange(e)} />
           </ModalBody>
           <ModalFooter>
-            <Button color="success" onClick={this.submitForm} >Send</Button>
-            <Button color="danger" onClick={this.pwdmodaltoggle} >Cancel</Button>
+            <Button data-testid="sending-ela-send-btn" color="success" onClick={this.verifyPwd} >Send</Button>
+            <Button data-testid="sending-ela-cancel-btn" color="danger" onClick={this.pwdmodaltoggle} >Cancel</Button>
           </ModalFooter>
         </Modal>
 
@@ -179,6 +216,36 @@ class Wallet extends Component {
             <Button color="primary" onClick={this.errortoggle} >Close</Button>
           </ModalFooter>
         </Modal>
+
+
+        <Modal isOpen={this.state.pwderrormodal}>
+          <ModalHeader>Error</ModalHeader>
+          <ModalBody>
+            <center>
+              Invalid password, please try again<br /><br />
+              <img src={errorLogo} style={{ width: '50px', height: '50px' }} />
+            </center>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={this.pwderrormodaltoggle} >Close</Button>
+          </ModalFooter>
+        </Modal>
+
+
+        <Modal isOpen={this.state.elasendingsuccess}>
+          <ModalHeader>Success</ModalHeader>
+          <ModalBody>
+            <center>
+              Verified! Now sending ELA... <br /><br />
+              <img src={checkLogo} style={{ width: '50px', height: '50px' }} />
+            </center>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={this.elasendingsuccesstoggle} >Close</Button>
+          </ModalFooter>
+        </Modal>
+
+
 
         <Modal isOpen={this.state.error1modal}>
           <ModalHeader>Error ELA address</ModalHeader>
@@ -219,14 +286,14 @@ class Wallet extends Component {
             </CardHeader>
             <CardBody >
               <div className="h-100 d-flex flex-column text-center justify-content-center align-items-center">
-                <div className="p-2"><h1>{this.state.balance}</h1></div>
+                <div data-testid="balance" className="p-2"><h1>{this.state.balance}</h1></div>
                 <div className="p-2"><h4>ELA</h4></div>
               </div>
 
             </CardBody>
           </Card>
           <Card style={{ backgroundColor: '#272A3D', color: 'white' }}>
-            <Form className="form" onSubmit={(e) => this.submitForm(e)}>
+          <Form className="form" onSubmit={this.verifyPwd}>
               <CardHeader>
                 <strong>Send ELA</strong>
               </CardHeader>
@@ -236,7 +303,7 @@ class Wallet extends Component {
                   <Col xs="12">
                     <FormGroup>
                       <Label htmlFor="name">Recipient's address</Label>
-                      <Input type="text" id="recipient" name="recipient" placeholder="ELA wallet address" required onChange={(e) => this.handleChange(e)} />
+                      <Input type="text" data-testid="recipient" id="recipient" name="recipient" placeholder="ELA wallet address" required onChange={(e) => this.handleChange(e)} />
                     </FormGroup>
                   </Col>
                 </Row>
@@ -244,7 +311,7 @@ class Wallet extends Component {
                   <Col xs="12">
                     <FormGroup>
                       <Label htmlFor="ccnumber">Amount (in ELA)</Label>
-                      <Input type="text" id="amount" name="amount" placeholder="1" required onChange={(e) => this.handleChange(e)} />
+                      <Input type="text" data-testid="amount" id="amount" name="amount" placeholder="1" required onChange={(e) => this.handleChange(e)} />
                           fee: 0.001 ELA
                         </FormGroup>
                   </Col>
@@ -253,7 +320,7 @@ class Wallet extends Component {
               </CardBody>
               <CardFooter>
                 {/* <Button type="submit" size="sm" color="success"><i className="fa fa-dot-circle-o"></i> Send</Button> */}
-                <Button color="success" onClick={this.checkForm} >Send</Button>
+                <Button data-testid="send" color="success" onClick={this.checkForm} >Send</Button>
               </CardFooter>
             </Form>
           </Card>
@@ -263,14 +330,14 @@ class Wallet extends Component {
             </CardHeader>
             <CardBody>
               <center style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <QRCode value={address} />
+                <QRCode  data-testid="qr-code" value={address} />
                 <br />
                 {address}
               </center>
 
             </CardBody>
             <CardFooter>
-              <Button color="success" onClick={this.copyToClipboard}>Copy to clipboard</Button>
+              <Button   data-testid="copy-qr"  color="success" onClick={this.copyToClipboard}>Copy to clipboard</Button>
               {/* <Button type="submit" size="sm" color="success" onClick={this.copyToClipboard}><i className="fa fa-dot-circle-o"></i> Copy to clipboard</Button> */}
             </CardFooter>
           </Card>
@@ -284,7 +351,7 @@ class Wallet extends Component {
                 <i className="fa fa-align-justify"></i> Recent transactions
               </CardHeader>
               <CardBody>
-                <Table responsive striped style={{ color: 'white' }}>
+                <Table data-testid="transactions-table" responsive striped style={{ color: 'white' }}>
                   <thead>
                     <tr>
                       <th>Type</th>

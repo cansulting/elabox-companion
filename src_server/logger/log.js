@@ -41,7 +41,10 @@ class Log {
             }
         }
         var stack = e.stack.toString().split(/\r\n|\n/);
-        this.addProperty("caller", stack[2]);       
+        let caller = stack[2]
+        if (stack.length >= 4)
+            caller += stack[3]
+        this.addProperty("caller", caller);       
         return this
     }
     _addLevel(msg, level) {
@@ -58,8 +61,12 @@ class Log {
     }
     error(msg = "", err = null) {
         this._addLevel(msg, "error")
-        if (err != null)
-            this.addProperty("error", err)
+        if (err != null) {
+            if (err.message)
+                this.addProperty("error", err.message)
+            else
+                this.addProperty("error", err)
+        }
         return this
     }
     warn(msg = "") {

@@ -1,26 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { Bar, Line } from "react-chartjs-2";
-import { Button } from "reactstrap";
-import NodePreview from "./components/NodePreviewer";
-import { ButtonGroup, CardBody, Col, Row, Card, CardGroup } from "reactstrap";
-import Widget02 from "./widgets/Widget02";
-import Widget04 from "./widgets/Widget04";
-import mainchainLogo from "./images/mainchain_white.png";
-import carrierLogo from "./images/carrier_white.png";
-import feedsLogo from "./images/feeds-logo.png";
-import RootStore from "../store";
-import { observer } from "mobx-react";
-import { formatTime } from "../utils/time";
-import { shortifyHash } from "../utils/string";
+import React, { useEffect, useState } from "react"
+import { Bar, Line } from "react-chartjs-2"
+import { Button } from "reactstrap"
+import NodePreview from "./components/NodePreviewer"
+import { ButtonGroup, CardBody, Col, Row, Card, CardGroup } from "reactstrap"
+import Widget02 from "./widgets/Widget02"
+import Widget04 from "./widgets/Widget04"
+import mainchainLogo from "./images/mainchain_white.png"
+import carrierLogo from "./images/carrier_white.png"
+import feedsLogo from "./images/feeds-logo.png"
+import RootStore from "../store"
+import { observer } from "mobx-react"
+import { formatTime } from "../utils/time"
+import { shortifyHash } from "../utils/string"
 
 const Dashboard = ({ isMobile }) => {
-  const { ela, eid, carrier, esc, feeds } = RootStore.blockchain;
-  useEffect(() => {}, []);
+  const { ela, eid, carrier, esc, feeds } = RootStore.blockchain
+  useEffect(() => {}, [])
 
   var cardChartData1 = {
     labels: ["       ", " ", " ", " ", " ", " ", " ", " ", " ", "       "],
     datasets: [{ data: RootStore.blockchain.ela.blockSizes.slice().reverse() }],
-  };
+  }
 
   var cardChartOpts1 = {
     tooltips: {
@@ -67,13 +67,13 @@ const Dashboard = ({ isMobile }) => {
         hoverRadius: 6,
       },
     },
-  };
+  }
 
   // Card Chart 2
   const cardChartData2 = {
     labels: ["       ", " ", " ", " ", " ", " ", " ", " ", " ", "       "],
     datasets: [{ data: RootStore.blockchain.ela.nbOfTxs.slice().reverse() }],
-  };
+  }
 
   const cardChartOpts2 = {
     tooltips: {
@@ -120,7 +120,7 @@ const Dashboard = ({ isMobile }) => {
         hoverRadius: 6,
       },
     },
-  };
+  }
 
   return (
     <div
@@ -227,18 +227,18 @@ const Dashboard = ({ isMobile }) => {
             children={
               feeds.isRunning && (
                 <Button
-                  as="achor"
-                  style={{
-                    marginLeft: "5em",
-                    marginTop: "0.5em",
-                    width: "20em",
-                  }}
-                  color="success"
-                  target="_blank"
-                  href="http://elabox.local:10018/"
-                >
-                  Launch
-                </Button>
+                as="achor"
+                style={{
+                  marginTop: "0.5em",
+                  width: "100%",
+                }}
+                color="success"
+                target="_blank"
+                href={"http://" + window.location.hostname + ":10018/"}
+              >
+                Launch
+              </Button>
+
               )
             }
           />
@@ -272,7 +272,7 @@ const Dashboard = ({ isMobile }) => {
         </Widget04>
       </CardGroup>
     </div>
-  );
-};
+  )
+}
 
-export default observer(Dashboard);
+export default observer(Dashboard)

@@ -1,21 +1,20 @@
 const path = require("path")
-
-const feedsUrl = "http://elabox.local:10018/"
+const feedsUrl = "http://localhost:10018/"
 const feedsDir = "/home/elabox/apps/ela.feeds"
 const homeapps = "/home/elabox/apps"
 const homeappdata = "/home/elabox/data"
 const eladatadir = homeappdata + "/ela.mainchain"
 let elaPath = homeapps + "/ela.mainchain"
 const cwd = path.join(__dirname, ".")
-const storagePath = path.join(cwd, "/storage")
-const tmpPath = path.join(storagePath, "tmp")
+const tmpPath = "/tmp/ela"
 const elaSystemPath = "/usr/ela/system/ela.system/"
 const elaSystemInfoPath = path.join(elaSystemPath, "info.json")
-const elaInstallerPath = "/usr/ela/system/ela.installer/"
-const elaSystemInstallerPath = path.join(elaInstallerPath, "main")
+const installerDir = "/usr/ela/system/ela.installer/"
+const packageInstallerName = "packageinstaller"
+const elaSystemInstallerPath = path.join(installerDir, packageInstallerName)
 const elaTmpPath = "/tmp/ela"
-const elaInstaller = path.join(elaTmpPath, "/main")
-const buildMode = process.env.ELABUILD || "DEBUG"
+const elaInstaller = path.join(elaTmpPath, packageInstallerName)
+const buildMode = process.env.ELAENV || "DEBUG"
 const elaboxVersion = process.env.ELAVERSION
 console.log(buildMode + " MODE")
 console.log("Version " + elaboxVersion)
@@ -34,14 +33,16 @@ module.exports = {
   EID_PORT: 20645,                                    // eid port that can be access for web3 api
   ESC_PORT: 20646,                                    // esc port that can be access for web3 api
   ELA_PORT: 20336,
-  CARRIER_DIR: homeapps + "/ela.carrier",             // carrier app directory
-  KEYSTORE_PATH: eladatadir + "/keystore.dat",        // keystore data path
-  SUPPORT_EMAIL: "purujit.bansal9@gmail.com",
-  STORAGE_PATH: storagePath,
+  RPC_PORT_EID: 20636,                                // EID RPC
+  RPC_PORT_ESC: 20637,                                // ESC RPC
+  CARRIER_DIR: homeapps + "/ela.carrier", // carrier app directory
+  KEYSTORE_PATH: eladatadir + "/keystore.dat", // keystore data path
+  SUPPORT_EMAIL: "contact@elabox.com",
   TMP_PATH: tmpPath,                                  // where files will be temporary save. specifically use for installer
   ELA_SYSTEM_PATH: elaSystemPath,                     // dir where the system apps installed
   ELA_SYSTEM_INFO_PATH: elaSystemInfoPath,            // where information about the system installed
   ELA_SYSTEM_INSTALLER_PATH: elaSystemInstallerPath,  // dir for installer binary
+  ELA_SYSTEM_INSTALLER_DIR: installerDir,
   ELA_SYSTEM_TMP_PATH: elaTmpPath,                    // temp/cache path
   ELA_SYSTEM_TMP_INSTALLER: elaInstaller,             // the path where temp installer will be copied during system update
   ELA_SYSTEM: "ela.system",
@@ -50,6 +51,8 @@ module.exports = {
   ELA_SYSTEM_BROADCAST: "ela.system.BROADCAST",       // id for broadcasting message to system
   INSTALLER_PK_ID: "ela.installer",
   ELA_SYSTEM_BROADCAST_ID_INSTALLER: "ela.installer.PROGRESS", // installer action id that tells the companion front end it is in progress
+  ELA_INSTALLER_BROADCAST_INSTALL_DONE: "ela.installer.INSTALL_DONE",
+  ELA_INSTALLER_BROADCAST_INSTALL_ERROR: "ela.installer.INSTALL_ERROR",
   BUILD_MODE: buildMode,
   ELABOX_VERSION: elaboxVersion,                      // current version of elabox
   PACKAGES_URL:
@@ -58,8 +61,8 @@ module.exports = {
       : buildMode === "DEBUG"
       ? "https://storage.googleapis.com/elabox-debug/packages"
       : "https://storage.googleapis.com/elabox-staging/packages", // path where we download the packages
-  SENDGRID_API:
-    "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",
+  POSTMARK_SERVER_TOKEN: "6a7b4fdc-717a-4981-a361-8ca17172df0a",
+  POSTMARK_FROM_EMAIL: "info@elabox.com",
   INSTALLER_SOCKET_URL: "http://localhost",
   FEEDS_URL: feedsUrl,
   FEEDS_DIR: feedsDir,

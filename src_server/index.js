@@ -1,6 +1,5 @@
 const express = require("express")
 const eventhandler = require("./helper/eventHandler")
-const Downloader = require("nodejs-file-downloader")
 const urlExist = require("url-exist")
 // to allow cross-origin request
 const cors = require("cors")
@@ -14,6 +13,7 @@ var errorHandler = require("errorhandler")
 //ota
 const path = require("path")
 const fsExtra = require("fs-extra")
+const axios=require("axios")
 const app = express()
 
 // nodes
@@ -26,12 +26,14 @@ const eid = new NodeHandler({
   cwd: config.EID_DIR,
   dataPath: config.EIDDATA_DIR + "/blocks",
   wsport: config.EID_PORT,
+  rpcport: config.RPC_PORT_EID,
 })
 const esc = new NodeHandler({
   binaryName: "esc",
   cwd: config.ESC_DIR,
   dataPath: config.ESCDATA_DIR + "/blocks",
   wsport: config.ESC_PORT,
+  rpcport: config.RPC_PORT_ESC,
 })
 
 // define port number
@@ -58,8 +60,9 @@ const maxBufferSize = 10000
 const router = express.Router()
 
 // for mailing
-const sgMail = require("@sendgrid/mail")
-sgMail.setApiKey(config.SENDGRID_API)
+const postmark = require("postmark")
+const filedownload = require("./helper/filedownload")
+const postMarkMail = new postmark.ServerClient(config.POSTMARK_SERVER_TOKEN)
 
 let elaPath = config.ELA_DIR
 let keyStorePath = config.KEYSTORE_PATH
@@ -120,7 +123,7 @@ router.get("/carrier", async (req, res) => {
     const carrierIP = await execShell("curl -s ifconfig.me", {
       maxBuffer: 1024 * 500,
     })
-
+    
     return res.status(200).json({ isRunning, carrierIP: carrierIP.trim() })
   } catch (err) {
     syslog.write(syslog.create().error("Error on /carrier request ", err).addStack())
@@ -136,61 +139,119 @@ router.get("/feeds", async (req, res) => {
     res.status(500).send({ error: err })
   }
 })
+
+
+router.post("/sendElaPassswordVerification", (req, res) => {
+  let pwd = req.body.pwd
+  exec(
+    elaPath +
+      "/ela-cli wallet a -w " +
+      config.KEYSTORE_PATH +
+      " -p " +
+      pwd +
+      "",
+    { maxBuffer: 1024 * maxBufferSize },
+    async (err, stdout, stderr) => {
+      console.log("err", err)
+      console.log("stdout", stdout)
+      if (err) {
+        res.json({ ok: false })
+      } else {
+        res.json({ ok: true, address: stdout.split("\n")[2].split(" ")[0] })
+      }
+    }
+  )
+
+})
+
+
 router.post("/sendTx", (req, res) => {
   let amount = req.body.amount
   let recipient = req.body.recipient
   let pwd = req.body.pwd
-  syslog.write(syslog.create().debug(`Sending coint ammount=${amount} recipient=${recipient}`))
+  syslog.write(syslog.create().debug(`Sending coins ammounting=${amount} recipient=${recipient}`))
+  try {
+    // 1 - buildtx
+    exec(
+      elaPath +
+        "/ela-cli wallet buildtx -w " +
+        config.KEYSTORE_PATH +
+        " --to " +
+        recipient +
+        " --amount " +
+        amount +
+        " --fee 0.001 --rpcuser User --rpcpassword Password " +
+        pwd,
+      { maxBuffer: 1024 * 500 },
+      async (err, stdout) => {
+        if (!err) {
+          // 2 - signtx
+          exec(
+            elaPath +
+              "/ela-cli wallet signtx -w " +
+              config.KEYSTORE_PATH +
+              " -f to_be_signed.txn -p " +
+              pwd,
+            { maxBuffer: 1024 * maxBufferSize },
+            async (err, stdout) => {
+              if (!err) {
+                // 3 - sendtx
+                exec(
+                  elaPath +
+                    "/ela-cli wallet sendtx -f ready_to_send.txn --rpcuser User --rpcpassword Password",
+                  { maxBuffer: 1024 * maxBufferSize },
+                  async (err, stdout) => {
+                    if (!err) {
+                      res.json({ ok: "ok" })
+                    } else {
+                      syslog.write(syslog.create().error(`Error while sending coin to ${recipient}`, err).addCaller())
+                      res.json({ ok: "nope" })
+                    }
+                  }
+                )
+              } else {
+                res.json({ ok: "nope" })
+              }
+            }
+          )
+        } else {
+          res.json({ ok: "nope" })
+        }
+      }
+    )
+  }catch (e) {
+    syslog.write(syslog.create().error("Failed sendTx", e))
+    res.json({ ok: "nope" })
+  } 
+})
 
-  // 1 - buildtx
+
+
+router.post("/resyncNodeVerification", (req, res) => {
+  let pwd = req.body.pwd
+  console.log("PASSWORD RECEIVED", pwd, req.body)
   exec(
     elaPath +
-      "/ela-cli wallet buildtx -w " +
+      "/ela-cli wallet a -w " +
       config.KEYSTORE_PATH +
-      " --to " +
-      recipient +
-      " --amount " +
-      amount +
-      " --fee 0.001 --rpcuser User --rpcpassword Password " +
-      pwd,
-    { maxBuffer: 1024 * 500 },
-    async (err, stdout) => {
-      if (!err) {
-        // 2 - signtx
-        exec(
-          elaPath +
-            "/ela-cli wallet signtx -w " +
-            config.KEYSTORE_PATH +
-            " -f to_be_signed.txn -p " +
-            pwd,
-          { maxBuffer: 1024 * maxBufferSize },
-          async (err, stdout) => {
-            if (!err) {
-              // 3 - sendtx
-              exec(
-                elaPath +
-                  "/ela-cli wallet sendtx -f ready_to_send.txn --rpcuser User --rpcpassword Password",
-                { maxBuffer: 1024 * maxBufferSize },
-                async (err, stdout) => {
-                  if (!err) {
-                    res.json({ ok: "ok" })
-                  } else {
-                    syslog.write(syslog.create().error(`Error while sending coin to ${recipient}`, err).addCaller())
-                    res.json({ ok: "nope" })
-                  }
-                }
-              )
-            } else {
-              res.json({ ok: "nope" })
-            }
-          }
-        )
+      " -p " +
+      pwd +
+      "",
+    { maxBuffer: 1024 * maxBufferSize },
+    async (err, stdout, stderr) => {
+      console.log("err", err)
+      console.log("stdout", stdout)
+      if (err) {
+        res.json({ ok: false })
       } else {
-        res.json({ ok: "nope" })
+        res.json({ ok: true, address: stdout.split("\n")[2].split(" ")[0] })
       }
     }
   )
+
 })
+
+
 
 router.post("/login", (req, res) => {
   let pwd = req.body.pwd
@@ -365,38 +426,50 @@ router.get("/regenerateOnion", async (req, res) => {
 
 // support mail
 router.post("/sendSupportEmail", async (req, res) => {
-  const msg = {
-    to: config.SUPPORT_EMAIL,
-    from: req.body.email.trim(),
-    subject: "Elabox Support Needed " + req.body.name,
-    text:
-      "Elabox Support is needed to\n Name: " +
-      req.body.name +
-      "\nEmail: " +
-      req.body.email +
-      "\nProblem: " +
-      req.body.problem,
-  }
-  sgMail.send(msg, (err, result) => {
-    if (err) {
-      syslog.write(syslog.create().error("Error sending support email.", err).addCaller())
-      res.status(500)
-    } else {
-      res.send({ ok: true })
+  try {
+    const msg = {
+      to: config.SUPPORT_EMAIL,
+      from: config.POSTMARK_FROM_EMAIL,
+      subject: "Elabox Support Needed " + req.body.name,
+      htmlBody:
+        "Elabox Support is needed to\n Name: " +
+        req.body.name +
+        "\nEmail: " +
+        req.body.email +
+        "\nProblem: " +
+        req.body.problem,
     }
-  })
+    await postMarkMail.sendEmail(msg)
+    res.send({ ok: true })
+  } catch (error) {
+    console.log(error)
+    res.status(500)
+  }
 })
 //ota routes
 router.get("/update_version", processUpdateVersion)
-router.post("/version_info", (req, res) => {
-  res.send({ version: config.ELABOX_VERSION, env: config.BUILD_MODE })
+router.post("/version_info", async (req, res) => {
+  const {version_type} = req.body;
+  if(version_type==="current"){
+    res.send({ version: config.ELABOX_VERSION, env: config.BUILD_MODE })
+  }
+  else{
+    let currentVersion;
+    try {
+      currentVersion = await getCurrentBuild()    
+      const latestVersion =await checkLatestBuild(currentVersion)
+      const info= await getVersionInfo(latestVersion)
+      res.send({ version: info.version, env: config.BUILD_MODE,name:info.name })
+    }catch(e) {
+      res.send({ version: currentVersion, env: config.BUILD_MODE, name: '' })
+      syslog.write(syslog.create().error(e.message, e))
+    }
+  }
+
 })
 router.get("/check_new_updates", processCheckNewUpdates)
 router.get("/download_package", processDownloadPackage)
-router.get("/latest_eid", async (req, res) => {
-  const block = await eid.getLatestBlock()
-  res.json(block)
-})
+
 //end ota routes
 
 const checkFile = (file) => {
@@ -459,51 +532,54 @@ const regenerateTor = () => {
   })
 }
 ///ota functions
-async function getCurrentVersion() {
+async function getCurrentBuild() {
   const { build } = await fsExtra.readJSON(config.ELA_SYSTEM_INFO_PATH)
   return build
 }
-async function getVersionInfo(version, path) {
-  const elaJsonFile = `${path}/${version}.json`
-  const info = await fsExtra.readJson(elaJsonFile)
-  return info
+async function getVersionInfo(version) {
+  const {data} = await axios.get(`${config.PACKAGES_URL}/${version}.json`)
+  return data
 }
-async function getLatestVersion() {
-  let version = 1
-  while (version) {
-    version += 1
-    const isExist = await urlExist(`${config.PACKAGES_URL}/${version}.json`)
+// use to check the latest build
+// @build. the starting point of build to check
+async function checkLatestBuild(build = 1) {
+  let running = build
+  while (true) {
+    running ++
+    const isExist = await urlExist(`${config.PACKAGES_URL}/${running}.json`)
     if (!isExist) {
-      version -= 1
-      break
+      return running - 1
     }
   }
-  return version
 }
 async function runInstaller(version) {
   return new Promise(async (resolve, reject) => {
     try {
+      // check if the binary exist. if not then use the old name
+      if (!fsExtra.existsSync(config.ELA_SYSTEM_INSTALLER_PATH)) {
+        config.ELA_SYSTEM_INSTALLER_PATH = path.join(config.ELA_SYSTEM_INSTALLER_DIR, "main") 
+      }
       await fsExtra.copy(
         config.ELA_SYSTEM_INSTALLER_PATH,
         config.ELA_SYSTEM_TMP_INSTALLER
       )
       spawn("chmod", ["+x", config.ELA_SYSTEM_TMP_INSTALLER])
-      spawn("elasystem", ["terminate"])
-      const installPackageProcess = spawn(
-        `${config.ELA_SYSTEM_TMP_INSTALLER}`,
-        [`${config.TMP_PATH}/${version}.box`, "-s", "-l"],
+      spawn(
+        `${config.ELA_SYSTEM_TMP_INSTALLER}`, [`${config.TMP_PATH}/${version}.box`,"-s", "-l"],
         { detached: true, stdio: "ignore" }
-      )
-      installPackageProcess.unref()
+      ).unref()
+      spawn("ebox", ["terminate"])
+      //syslog.write(syslog.create().debug(`installing ${config.TMP_PATH}/${version}.box`))
       resolve("completed")
     } catch (error) {
-      reject("error")
+      syslog.write(syslog.create().error("Failed installing update...", error))
+      reject(error)
     }
   })
 }
 async function checkVersion() {
-  const currentVersion = await getCurrentVersion()
-  const latestVersion = await getLatestVersion()
+  const currentVersion = await getCurrentBuild()
+  const latestVersion = await checkLatestBuild(currentVersion)
   const response = {
     current: currentVersion,
     latest: latestVersion,
@@ -521,24 +597,34 @@ async function checkVersion() {
     count: 1,
   }
 }
-async function downloadElaFile(destinationPath, version, extension = "box") {
-  const downloader = new Downloader({
-    url: `${config.PACKAGES_URL}/${version}.${extension}`,
-    directory: destinationPath,
-  })
-  await downloader.download()
+function downloadElaFile(destinationPath, version, extension = "box") {
+  syslog.write(syslog.create().debug("Downloading update file @ " + destinationPath + " version " + version))
+  return filedownload(
+    `${config.PACKAGES_URL}/${version}.${extension}`, 
+    `${destinationPath}/${version}.${extension}`,
+    (percentage) => {
+      eventhandler.broadcast(
+        config.INSTALLER_PK_ID,
+        config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
+        {
+          status: "downloading file",
+          percent: percentage,
+        }
+      )
+    }
+  )
 }
 async function processUpdateVersion(req, res) {
   try {
     const checkVersionResponse = await checkVersion()
     if (checkVersionResponse.new_update) {
       await runInstaller(checkVersionResponse.latest)
-      // await fsExtra.emptyDir(config.ELA_SYSTEM_TMP_PATH)
       res.send(true)
       return
     }
     res.send(false)
   } catch (error) {
+    syslog.write(syslog.create().error("Failed initializing update", error).addStack())
     res.status(500).send("Update error.")
   }
 }
@@ -554,63 +640,36 @@ async function processCheckNewUpdates(req, res) {
 async function processDownloadPackage(req, res) {
   try {
     const path = config.TMP_PATH
-    const version = await getLatestVersion()
-    eventhandler.broadcast(
-      config.INSTALLER_PK_ID,
-      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
-      {
-        status: "downloading file",
-        percent: 20,
-      }
-    )
-    await delay(1000)
-    eventhandler.broadcast(
-      config.INSTALLER_PK_ID,
-      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
-      {
-        status: "downloading file",
-        percent: 40,
-      }
-    )
-    await delay(1000)
-    eventhandler.broadcast(
-      config.INSTALLER_PK_ID,
-      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
-      {
-        status: "downloading file",
-        percent: 60,
-      }
-    )
-    await delay(1000)
-    eventhandler.broadcast(
-      config.INSTALLER_PK_ID,
-      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
-      {
-        status: "downloading file",
-        percent: 80,
-      }
-    )
-    await downloadElaFile(path, version, "box")
-    eventhandler.broadcast(
-      config.INSTALLER_PK_ID,
-      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
-      {
-        status: "downloading file",
-        percent: 100,
-      }
-    )
-    await delay(1000)
-    //revert back
-    eventhandler.broadcast(
-      config.INSTALLER_PK_ID,
-      config.ELA_SYSTEM_BROADCAST_ID_INSTALLER,
-      {
-        status: "download complete",
-        percent: 0,
-      }
-    )
+    const currentVersion = await getCurrentBuild()
+    const version = await checkLatestBuild(currentVersion)
+    downloadElaFile(path, version, "box")
+    .then( res => {
+      //revert back
+      eventhandler.broadcast(
+        config.INSTALLER_PK_ID,
+        config.ELA_INSTALLER_BROADCAST_INSTALL_DONE,
+        {
+          status: "download complete",
+          percent: 0,
+        }
+      )
+    })
+    .catch( err => {
+      //revert back
+      eventhandler.broadcast(
+        config.INSTALLER_PK_ID,
+        config.ELA_INSTALLER_BROADCAST_INSTALL_ERROR,
+        {
+          status: "failed",
+          reason: err.message,
+          percent: 0,
+        }
+      )
+    })
+    
     res.send(true)
   } catch (error) {
+    syslog.write(syslog.create().error("Failed downloading update package", error).addStack())
     res.status(500).send("Download error.")
   }
 }
@@ -618,19 +677,23 @@ async function processDownloadPackage(req, res) {
 // define the router to use
 app.use("/", router)
 
-app.listen(config.PORT, async function () {
-  syslog.write(syslog.create().info("Companion start running on " + config.PORT))
-  await feedsHandler.runFeeds()
-  checkProcessingRunning("ela-bootstrapd").then((running) => {
-    if (!running) restartCarrier((response) => {
-      syslog.write(syslog.create().debug('Carrier restart response ' + response))
-    })
-  })
-  await mainchain.init()
-  mainchain.setOnComplete(async () => {
-    await eid.init()
-    await eid.setOnComplete(() => esc.init())
-  })
-})
 
-module.exports = app
+const startServer=()=>{
+  app.listen(config.PORT, async function () {
+    syslog.write(syslog.create().info("Companion start running on " + config.PORT))
+    checkProcessingRunning("ela-bootstrapd").then((running) => {
+      if (!running) restartCarrier((response) => {
+        syslog.write(syslog.create().debug('Carrier restart response ' + response))
+      })
+    })
+    await mainchain.init()
+    mainchain.setOnComplete(async () => {
+      await eid.init()
+      await eid.setOnComplete(() => esc.init())
+    })
+    feedsHandler.runFeeds()
+  })
+}
+
+startServer()
+module.exports = {app,startServer}

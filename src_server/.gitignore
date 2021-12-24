@@ -25,5 +25,5 @@ package-lock.json
 
 /build
 
-/storage/tmp/*.box
-/storage/tmp/*.json
+/storage/
+key.json

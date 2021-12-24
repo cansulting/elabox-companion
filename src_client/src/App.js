@@ -30,6 +30,7 @@ class App extends React.Component {
       });
     } catch (e) {
       console.error(e);
+      this.setState({ loading: false });
     }
   }
 
