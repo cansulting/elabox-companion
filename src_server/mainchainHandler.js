@@ -3,9 +3,9 @@ const delay = require("delay")
 const { exec } = require("child_process")
 const fs = require('fs')
 const config = require("./config")
-const isPortReachable = require("is-port-reachable")
 const maxBufferSize = 10000
-const syslog = require("./logger")
+const syslog = require("./logger");
+const { isPortTaken } = require("./utilities/isPortTaken");
 
 // contains procedures that manages the mainchain process 
 class MainchainHandler {
@@ -84,7 +84,7 @@ class MainchainHandler {
     // get the current status of eid. this returns the state and blocks
     async getStatus() {
         const isRunning = await processhelper.checkProcessingRunning('ela')
-        const servicesRunning = await isPortReachable(config.ELA_PORT, { host: "localhost" })
+        const servicesRunning = await isPortTaken(config.ELA_PORT)
 
         if (!isRunning || !servicesRunning ) {
             return { isRunning, servicesRunning }
@@ -129,7 +129,7 @@ class MainchainHandler {
         }
     }
     async setOnComplete(callback = () => {}) {
-        let servicesRunning = await isPortReachable(config.ELA_PORT, { host: "localhost" })
+        let servicesRunning = await isPortTaken(config.ELA_PORT)
         if (!servicesRunning) {
             setTimeout(() => {
                 this.setOnComplete(callback)
