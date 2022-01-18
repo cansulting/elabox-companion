@@ -5,11 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "command": "npm start",
-            "name": "Run npm server",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "name": "Server",
+            "program": "${workspaceFolder}/src_server/index.js",
             "request": "launch",
-            "type": "node-terminal",
-            "cwd": "${workspaceFolder}/src_server"
+            "restart": true,
+            "runtimeExecutable": "nodemon",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "pwa-node"
         },
         {
             "command": "npm start",
