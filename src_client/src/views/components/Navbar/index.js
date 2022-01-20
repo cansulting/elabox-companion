@@ -60,7 +60,7 @@ const Navbar = ({ logOut, onMenuClick }) => {
               <FiLogOut /> Log Out
             </DropdownItem>
             <DropdownItem>
-              <FiRefreshCcw /> Restart
+              <FiRefreshCcw /> Reboot
             </DropdownItem>
             <DropdownItem>
               <FiPower /> Shut down
