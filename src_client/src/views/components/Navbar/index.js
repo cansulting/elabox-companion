@@ -1,13 +1,28 @@
-import React from "react";
-import { FiMenu, FiLogOut } from "react-icons/fi";
-import { GrLogout } from "react-icons/gr";
+import React, { useState } from "react";
+import {
+  FiMenu,
+  FiLogOut,
+  FiAlignCenter,
+  FiPower,
+  FiRefreshCcw,
+} from "react-icons/fi";
 import elaboxLogo from "../../images/logo-wht.png";
 import { useMediaQuery } from "react-responsive";
 
-import { Navbar as NavB, Button } from "reactstrap";
+import {
+  Navbar as NavB,
+  Button,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from "reactstrap";
 const Navbar = ({ logOut, onMenuClick }) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
-
+  const [isDropDownOpen, setIsDropdownOpen] = useState(false);
+  const handleDropDownToggle = () => {
+    setIsDropdownOpen(!isDropDownOpen);
+  };
   return (
     <>
       <NavB fixed="top" style={{ backgroundColor: "#1E1E26" }}>
@@ -26,9 +41,35 @@ const Navbar = ({ logOut, onMenuClick }) => {
           style={{ widht: "60px", height: "60px" }}
           alt={"Elabox Logo"}
         />
-        <Button onClick={logOut} color="danger">
+        <Dropdown isOpen={isDropDownOpen} toggle={handleDropDownToggle}>
+          <DropdownToggle
+            caret
+            style={{ backgroundColor: "rgb(44, 113, 246)" }}
+          >
+            <FiAlignCenter /> Controls
+          </DropdownToggle>
+          <DropdownMenu
+            className="nar-dropdown"
+            dark
+            style={{
+              textAlign: "center",
+              backgroundColor: "rgb(39, 42, 61)",
+            }}
+          >
+            <DropdownItem onClick={logOut}>
+              <FiLogOut /> Log Out
+            </DropdownItem>
+            <DropdownItem>
+              <FiRefreshCcw /> Restart
+            </DropdownItem>
+            <DropdownItem>
+              <FiPower /> Shut down
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+        {/* <Button onClick={logOut} color="danger">
           {isMobile ? <FiLogOut /> : "Log Out"}
-        </Button>
+        </Button> */}
       </NavB>
     </>
   );
