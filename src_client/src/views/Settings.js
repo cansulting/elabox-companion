@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { Component } from "react";
 import {
   Button,
   Modal,
@@ -17,19 +17,18 @@ import {
   PaginationLink,
   Row,
   Table,
-} from "reactstrap"
-import Widget05 from "./widgets/Widget05"
+} from "reactstrap";
+import Widget05 from "./widgets/Widget05";
 
-import master from "../api/master"
-import backend from "../api/backend"
-import RootStore from "../store"
-import errorLogo from './images/error.png'
-import checkLogo from './images/check.png'
-
+import master from "../api/master";
+import backend from "../api/backend";
+import RootStore from "../store";
+import errorLogo from "./images/error.png";
+import checkLogo from "./images/check.png";
 
 class Settings extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       pwd: "",
       mainchainRestartModal: false,
@@ -43,71 +42,64 @@ class Settings extends Component {
       updateNowModal: false,
       errorUpdateModal: false,
       version: "",
+      nodeVersion: "",
       onion: "",
       env: "",
       showOnion: false,
       errormodal: false,
       resyncsuccessmodal: false,
-    }
+    };
   }
 
   componentWillMount() {
-    this.getVersion()
-    this.getOnion()
+    this.getVersion();
+    this.getOnion();
   }
-
 
   verifyPassword = () => {
     // e.preventDefault();
-    this.setState({ resyncModal: false })
+    this.setState({ resyncModal: false });
 
-
-    backend.resyncNodeVerification(this.state.pwd)
-      .then(responseJson => {
-        console.log("RESYNC RESPONSE JSON: ")
-        console.log(responseJson)
+    backend
+      .resyncNodeVerification(this.state.pwd)
+      .then((responseJson) => {
+        console.log("RESYNC RESPONSE JSON: ");
+        console.log(responseJson);
         if (responseJson.ok) {
-          this.setState({ resyncsuccessmodal: true })
-          this.resyncNode(this.state.node)
-
-
-        }
-        else {
-          this.setState({ errormodal: true })
-
+          this.setState({ resyncsuccessmodal: true });
+          this.resyncNode(this.state.node);
+        } else {
+          this.setState({ errormodal: true });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
-  }
-
-
-
+  };
 
   handleChange = async (event) => {
-    const { target } = event
-    const value = target.type === "checkbox" ? target.checked : target.value
-    const { name } = target
+    const { target } = event;
+    const value = target.type === "checkbox" ? target.checked : target.value;
+    const { name } = target;
     await this.setState({
       [name]: value,
-    })
-  }
+    });
+  };
   resyncNode = (node) => {
-    this.setState({ resyncModal: false })
+    this.setState({ resyncModal: false });
 
     node
       .resync()
       .then((responseJson) => {
-        node.fetchData()
+        node.fetchData();
       })
       .catch((error) => {
-        console.error(error)
-      })
-  }
+        console.error(error);
+      });
+  };
   restartNode = (node) => {
     // e.preventDefault();
-    this.setState({ restartModal: false })
+    this.setState({ restartModal: false });
 
     node
       .restart()
@@ -115,122 +107,126 @@ class Settings extends Component {
         if (responseJson.success) {
           // RootStore.blockchain.ela.fetchData();
         } else {
-          node.fetchData()
+          node.fetchData();
         }
       })
       .catch((error) => {
-        console.error(error)
-      })
-  }
+        console.error(error);
+      });
+  };
   showRestart = (label = "node", node) => {
-    this.setState({ restartModal: true, nodeLabel: label, node: node })
-  }
+    this.setState({ restartModal: true, nodeLabel: label, node: node });
+  };
   closeRestart = () => {
-    this.setState({ restartModal: false })
-  }
+    this.setState({ restartModal: false });
+  };
   showResync = (label = "node", node) => {
-    this.setState({ resyncModal: true, nodeLabel: label, node: node })
-  }
+    this.setState({ resyncModal: true, nodeLabel: label, node: node });
+  };
   closeResync = () => {
-    this.setState({ resyncModal: false })
-  }
+    this.setState({ resyncModal: false });
+  };
 
   errortoggle = () => {
-    this.setState({ errormodal: false })
-  }
+    this.setState({ errormodal: false });
+  };
 
   resyncsuccesstoggle = () => {
-    this.setState({ resyncsuccessmodal: false })
-  }
+    this.setState({ resyncsuccessmodal: false });
+  };
 
   checkUpdate = async () => {
     try {
-      const data = await master.checkUpdate()
-      this.setState({ checkUpdateModal: true, update: data.available })
+      const data = await master.checkUpdate();
+      this.setState({ checkUpdateModal: true, update: data.available });
     } catch (error) {
-      console.error(error)
-      this.setState({ networkErrorModal: true })
+      console.error(error);
+      this.setState({ networkErrorModal: true });
     }
-  }
+  };
   closeCheckUpdateModal = () => {
     this.setState({
       checkUpdateModal: false,
-    })
-  }
+    });
+  };
 
   closeNetworkErrorModal = () => {
     this.setState({
       networkErrorModal: false,
-    })
-  }
+    });
+  };
 
   openUpdateNowModal = () => {
     this.setState({
       updateNowModal: true,
-    })
-  }
+    });
+  };
 
   closeUpdateNowModal = () => {
     this.setState({
       updateNowModal: false,
-    })
-  }
+    });
+  };
 
   openErrorUpdateModal = () => {
     this.setState({
       errorUpdateModal: true,
-    })
-  }
+    });
+  };
 
   closeErrorUpdateModal = () => {
     this.setState({
       errorUpdateModal: false,
-    })
-  }
+    });
+  };
 
   updateNow = async () => {
-    this.closeUpdateNowModal()
+    this.closeUpdateNowModal();
     try {
-      const data = await master.updateNow()
+      const data = await master.updateNow();
       setTimeout(() => {
-        window.open(`http://${window.location.hostname}`)
-      }, 5000)
+        window.open(`http://${window.location.hostname}`);
+      }, 5000);
     } catch (error) {
-      this.openErrorUpdateModal()
+      this.openErrorUpdateModal();
     }
-  }
+  };
 
   getVersion = () => {
     backend.getVersionDetails("current").then((response) => {
       //console.log(response)
       this.setState(
-        { elaboxVersion: response.version, env: response.env },
+        {
+          elaboxVersion: response.version,
+          env: response.env,
+          nodeVersion: response.node_version,
+        },
         () => {
           //console.log("state", this.state)
         }
-      )
-    })
-  }
+      );
+    });
+  };
 
   getOnion = () => {
     backend.getOnion().then((response) => {
-      this.setState({ onion: response.data.onion })
-    })
-  }
+      this.setState({ onion: response.data.onion });
+    });
+  };
 
   regenerateOnion = () => {
     backend.regenerateOnion().then((response) => {
-      this.setState({ onion: response.data.onion })
-    })
-  }
+      this.setState({ onion: response.data.onion });
+    });
+  };
 
   toggleOnion = () => {
-    this.setState({ showOnion: !this.state.showOnion })
-    console.log("toggleOnion")
-  }
+    this.setState({ showOnion: !this.state.showOnion });
+    console.log("toggleOnion");
+  };
 
   render() {
-    const { isMobile } = this.props
+    const { isMobile } = this.props;
 
     const {
       update,
@@ -241,9 +237,10 @@ class Settings extends Component {
       onion,
       showOnion,
       elaboxVersion,
+      nodeVersion,
       env,
-    } = this.state
-    console.log("render", showOnion)
+    } = this.state;
+    console.log("render", showOnion);
     return (
       <div
         id="main"
@@ -282,35 +279,38 @@ class Settings extends Component {
           </ModalFooter>
         </Modal>
 
-
-
         <Modal isOpen={this.state.errormodal}>
           <ModalHeader>Error</ModalHeader>
           <ModalBody>
             <center>
-              Invalid password, please try again<br /><br />
-              <img src={errorLogo} style={{ width: '50px', height: '50px' }} />
+              Invalid password, please try again
+              <br />
+              <br />
+              <img src={errorLogo} style={{ width: "50px", height: "50px" }} />
             </center>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.errortoggle} >Close</Button>
+            <Button color="primary" onClick={this.errortoggle}>
+              Close
+            </Button>
           </ModalFooter>
         </Modal>
-
 
         <Modal isOpen={this.state.resyncsuccessmodal}>
           <ModalHeader>Success</ModalHeader>
           <ModalBody>
             <center>
-              Resyncing Node <br /><br />
-              <img src={checkLogo} style={{ width: '50px', height: '50px' }} />
+              Resyncing Node <br />
+              <br />
+              <img src={checkLogo} style={{ width: "50px", height: "50px" }} />
             </center>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.resyncsuccesstoggle} >Close</Button>
+            <Button color="primary" onClick={this.resyncsuccesstoggle}>
+              Close
+            </Button>
           </ModalFooter>
         </Modal>
-
 
         <Modal isOpen={this.state.resyncModal}>
           <ModalHeader>Resync {this.state.nodeLabel}</ModalHeader>
@@ -433,7 +433,7 @@ class Settings extends Component {
         <Row>
           <Col xs="12" sm="6" lg="4">
             <Widget05
-              testid="ela-btn"            
+              testid="ela-btn"
               dataBox={() => ({
                 title: "MainChain",
                 variant: "facebook",
@@ -451,7 +451,7 @@ class Settings extends Component {
 
           <Col xs="12" sm="6" lg="4">
             <Widget05
-              testid="eid-btn"            
+              testid="eid-btn"
               dataBox={() => ({
                 title: "EID",
                 variant: "facebook",
@@ -468,7 +468,7 @@ class Settings extends Component {
           </Col>
           <Col xs="12" sm="6" lg="4">
             <Widget05
-              testid="esc-btn"            
+              testid="esc-btn"
               dataBox={() => ({
                 title: "ESC",
                 variant: "facebook",
@@ -582,6 +582,23 @@ class Settings extends Component {
                 marginTop: "40px",
               }}
             >
+              <CardHeader>Node Version</CardHeader>
+              <CardBody>
+                <b>{nodeVersion}</b>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Card
+              style={{
+                backgroundColor: "#272A3D",
+                color: "white",
+                fontSize: "16px",
+                marginTop: "40px",
+              }}
+            >
               <CardHeader>Your onion address</CardHeader>
               <CardBody>
                 You can access your Elabox from the outside using TOR browser.
@@ -610,7 +627,7 @@ class Settings extends Component {
           </Col>
         </Row>
       </div>
-    )
+    );
   }
 }
-export default Settings
+export default Settings;
