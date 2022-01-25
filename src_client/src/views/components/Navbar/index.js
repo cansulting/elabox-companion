@@ -43,7 +43,7 @@ const Navbar = ({ logOut, onMenuClick }) => {
             className="nar-dropdown"
             dark
             style={{
-              textAlign: "right",
+              textAlign: "left",
               backgroundColor: "rgb(39, 42, 61)",
             }}
           >
