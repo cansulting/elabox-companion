@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  FiMenu,
-  FiLogOut,
-  FiAlignCenter,
-  FiPower,
-  FiRefreshCcw,
-} from "react-icons/fi";
+import { FiMenu, FiLogOut, FiPower, FiRefreshCcw } from "react-icons/fi";
 import elaboxLogo from "../../images/logo-wht.png";
 import { useMediaQuery } from "react-responsive";
 
@@ -42,17 +36,14 @@ const Navbar = ({ logOut, onMenuClick }) => {
           alt={"Elabox Logo"}
         />
         <Dropdown isOpen={isDropDownOpen} toggle={handleDropDownToggle}>
-          <DropdownToggle
-            caret
-            style={{ backgroundColor: "rgb(44, 113, 246)" }}
-          >
-            <FiAlignCenter /> Controls
+          <DropdownToggle caret style={{ backgroundColor: "red" }}>
+            <FiPower />
           </DropdownToggle>
           <DropdownMenu
             className="nar-dropdown"
             dark
             style={{
-              textAlign: "center",
+              textAlign: "right",
               backgroundColor: "rgb(39, 42, 61)",
             }}
           >

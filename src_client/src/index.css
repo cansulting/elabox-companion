@@ -68,12 +68,6 @@ a:hover {
   text-decoration: none !important;
   color: white !important;
 }
-.nar-dropdown > .dropdown-item:nth-child(1):hover {
+.nar-dropdown > .dropdown-item:hover {
   background-color: red;
-}
-.nar-dropdown > .dropdown-item:nth-child(2):hover {
-  background-color: rgb(44, 113, 246);
-}
-.nar-dropdown > .dropdown-item:nth-child(3):hover {
-  background-color: rgb(44, 113, 246);
 }
