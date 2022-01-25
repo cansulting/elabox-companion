@@ -432,6 +432,19 @@ const restartCarrier = async (callback) => {
   );
 };
 
+router.post("/shutdown", (req, res) => {
+  exec(
+    "shutdown", "now"
+  );
+});
+
+router.post("/restart", (req, res) => {
+  exec(
+    "restart",
+  );
+});
+
+
 router.post("/restartMainchain", async (req, res) => {
   await mainchain.restart((resp) => res.json(resp));
 });
