@@ -31,6 +31,7 @@ class Wallet extends Component {
     this.state = {
       recipient: "",
       amount: "",
+      transfer_fee: 0.001,
       tx_list: "",
       pwd: "",
       error1modal: false,
@@ -76,7 +77,7 @@ class Wallet extends Component {
   submitForm = () => {
     // e.preventDefault();
     this.setState({ pwdmodal: false });
-    
+
     backend
       .sendTx(this.state.recipient, this.state.amount, this.state.pwd)
       .then((responseJson) => {
@@ -164,7 +165,8 @@ class Wallet extends Component {
   };
   render() {
     const { isMobile } = this.props;
-    const amountWithFee = parseFloat(this.state.amount) + 0.001;
+    const amountWithFee =
+      parseFloat(this.state.amount) + this.state.transfer_fee;
     let tx = this.state.tx_list;
     let address = localStorage.getItem("address");
     return (
@@ -369,7 +371,7 @@ class Wallet extends Component {
                         required
                         onChange={(e) => this.handleChange(e)}
                       />
-                      fee: 0.001 ELA
+                      fee: {this.state.transfer_fee} ELA
                     </FormGroup>
                   </Col>
                 </Row>
@@ -456,7 +458,11 @@ class Wallet extends Component {
                               ></i>
                             )}
                           </td>
-                          <td>{tx.Value / 100000000}</td>
+                          <td>
+                            {parseFloat(
+                              tx.Value / 100000000 + this.state.transfer_fee
+                            ).toFixed(3)}
+                          </td>
                           <td>{tx.Memo.split("msg:")[1]}</td>
                           {tx.CreateTime < 10 ? (
                             <td>-</td>
