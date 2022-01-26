@@ -433,14 +433,20 @@ const restartCarrier = async (callback) => {
 };
 
 router.post("/shutdown", (req, res) => {
+  syslog.create().info("SHUTDOWN COMMAND RECIEVED").addCategory("system")
   exec(
-    "shutdown", "now"
+    "shutdown",
+    { maxBuffer: 1024 * maxBufferSize },
+
   );
 });
 
 router.post("/restart", (req, res) => {
+  syslog.create().info("RESTART COMMAND RECIEVED").addCategory("system")
   exec(
-    "restart",
+    "reboot",
+    { maxBuffer: 1024 * maxBufferSize },
+
   );
 });
 
