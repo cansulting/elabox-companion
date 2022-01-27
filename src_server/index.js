@@ -432,25 +432,6 @@ const restartCarrier = async (callback) => {
   );
 };
 
-router.post("/shutdown", (req, res) => {
-  syslog.create().info("SHUTDOWN COMMAND RECIEVED").addCategory("system")
-  exec(
-    "shutdown",
-    { maxBuffer: 1024 * maxBufferSize },
-
-  );
-});
-
-router.post("/restart", (req, res) => {
-  syslog.create().info("RESTART COMMAND RECIEVED").addCategory("system")
-  exec(
-    "reboot",
-    { maxBuffer: 1024 * maxBufferSize },
-
-  );
-});
-
-
 router.post("/restartMainchain", async (req, res) => {
   await mainchain.restart((resp) => res.json(resp));
 });
@@ -793,6 +774,7 @@ async function processDownloadPackage(req, res) {
 //ota functions end
 // define the router to use
 app.use("/", router);
+app.use(require('./systemcontrol.js')); 
 
 const startServer = () => {
   app.listen(config.PORT, async function () {
