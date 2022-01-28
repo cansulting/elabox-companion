@@ -1,6 +1,7 @@
 const express = require("express");
 const eventhandler = require("./helper/eventHandler");
 const urlExist = require("url-exist");
+const { generateKeystore, changePassword } = require("./device_setup")
 // to allow cross-origin request
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -298,66 +299,17 @@ router.post("/login", (req, res) => {
 
 router.post("/createWallet", (req, res) => {
   let pwd = req.body.pwd;
-  exec(
-    "echo 'elabox:" + pwd + "' | sudo chpasswd",
-    { maxBuffer: 1024 * maxBufferSize },
-    async (err, stdout, stderr) => {
-      syslog.write(syslog.create().debug("Updating Raspberry PI password"));
-      if (!stdout) {
-        syslog.write(
-          syslog.create().debug("Success updating RPI password " + stdout)
-        );
-      }
-      if (err) {
-        syslog.write(
-          syslog
-            .create()
-            .error("Error while updating RPI password", err)
-            .addCaller()
-        );
-      }
-      if (stderr) {
-        syslog.write(
-          syslog
-            .create()
-            .error("Error while updating RPI password.", stderr)
-            .addCaller()
-        );
-      }
-    }
-  );
-
-  exec(
-    "cd " +
-      config.ELADATA_DIR +
-      "; " +
-      config.ELA_DIR +
-      "/ela-cli wallet create -p " +
-      pwd +
-      "",
-    { maxBuffer: 1024 * maxBufferSize },
-    async (err, stdout, stderr) => {
-      if (stderr) {
-        syslog.write(
-          syslog
-            .create()
-            .error("Error while updating RPI password.", stderr)
-            .addCaller()
-        );
-      }
-      if (err) {
-        syslog.write(
-          syslog.create().error("Error while creating wallet", err).addCaller()
-        );
-        res.json({ ok: "nope" });
-      } else {
-        syslog.write(
-          syslog.create().debug("Success creating wallet " + stdout)
-        );
-        res.json({ ok: "ok" });
-      }
-    }
-  );
+  generateKeystore(pwd, true)
+    .then( (res) => {
+        changePassword(pwd)
+        .then( (res) => {
+          res.json({ ok: "ok" });
+        }).catch(err => {
+          res.json({ ok: "nope", err: err.message });
+        })
+    }).catch(err => {
+      res.json({ ok: "nope", err: err.message });
+    })
 });
 
 // let users download the wallet file
