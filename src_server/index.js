@@ -774,7 +774,7 @@ async function processDownloadPackage(req, res) {
 //ota functions end
 // define the router to use
 app.use("/", router);
-app.use(require('./systemcontrol.js')); 
+app.use(require('./utilities/systemcontrol.js')); 
 
 const startServer = () => {
   app.listen(config.PORT, async function () {
