@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link, Redirect } from 'react-router-dom';
 import { Button, Input, Spinner } from "reactstrap";
 import elaboxLogo from './images/logo-circle-transparent.png'
 import backend from "../api/backend";
+import Divider from '@mui/material/Divider';
+import FileUploader from "./components/FileUploader"
 
 function Config() {
   const [isConfiged, setConfiged] = useState(false);
   const [pwd1, setPwd1] = useState('qweqweqwe');
   const [pwd2, setPwd2] = useState('qweqweqwe');
   const [creating, setCreating] = useState(false)
+
+
+
 
   function createWallet() {
     //console.log(pwd1)
@@ -91,7 +96,18 @@ function Config() {
               <Button data-testid="create-wallet-submit-btn" type="submit" style={{ marginTop: '20px' }}>Create Wallet</Button>
             </form>
 
+            <Divider variant="middle" style={{ color: 'white',  paddingTop: '20px' }} />
+
+            <h2 style={{ color: 'white' }}>or</h2>
+
+      
+
+          <FileUploader ></FileUploader>
+
           </div>
+
+
+
         }
 
       </center>

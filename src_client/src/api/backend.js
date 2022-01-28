@@ -186,6 +186,15 @@ class API {
     }).then((response) => response.json());
   };
 
+
+  importKeystore = (data) => {
+    return fetch(`http://${PUBLIC_URI}/import-keystore`, {
+      method: "POST",
+      body: data,
+    }).then((response) => response.json());
+  };
+
+
   sendTx = (recipient, amount, pwd) => {
     return fetch(`http://${PUBLIC_URI}/sendTx`, {
       method: "POST",

@@ -69,8 +69,6 @@ router.post('/import-keystore', uploads.single('keystore'), function(req, res, n
   console.log("Imported new keystore")
   console.log(req.file);
   return res.json({success: true});
-
-
   //...
 });
 
