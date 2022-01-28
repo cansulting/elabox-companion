@@ -41,7 +41,7 @@ const Navbar = ({ logOut, onMenuClick }) => {
     backend.restart()
   }
   const handleShutDown = () => {
-    // backend.shutdown()
+    backend.shutdown()
     setModalProperties({show:true,status:"Shutting down..."})
   }
   return (

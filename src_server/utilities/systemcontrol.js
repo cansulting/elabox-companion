@@ -1,4 +1,4 @@
-const eventhandler = require("./helper/eventHandler");
+const eventhandler = require("../helper/eventHandler");
 const urlExist = require("url-exist");
 // to allow cross-origin request
 const cors = require("cors");
@@ -6,9 +6,9 @@ const bodyParser = require("body-parser");
 var exec =  require('child_process').exec;
 const logger = require("morgan");
 const fs = require("fs");
-const config = require("./config");
-const utils = require("./utilities");
-const syslog = require("./logger");
+const config = require("../config");
+const utils = require(".");
+const syslog = require("../logger");
 var errorHandler = require("errorhandler");
 
 let keyStorePath = config.KEYSTORE_PATH;
@@ -23,7 +23,7 @@ var router = express.Router();
 router.post("/shutdown", (req, res) => {
   syslog.create().info("SHUTDOWN COMMAND RECIEVED").addCategory("system")
   exec(
-    "shutdown",
+    "shutdown -h now",
     { maxBuffer: 1024 * maxBufferSize },
 
   );
