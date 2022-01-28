@@ -187,7 +187,9 @@ class Wallet extends Component {
           <ModalBody>
             <center>
               You are about to sendTx <br />
-              <b>{amountWithFee.toFixed(3)} ELA </b>
+              <b>{amountWithFee.toFixed(3)} ELA</b>
+              <br/>
+              <b style={{color:"gray"}}>({this.state.amount} + {this.state.transfer_fee} Fee)</b>              
               <br />
               to <br />
               <b>{this.state.recipient}</b> <br />
@@ -459,9 +461,7 @@ class Wallet extends Component {
                             )}
                           </td>
                           <td>
-                            {parseFloat(
-                              tx.Value / 100000000 + this.state.transfer_fee
-                            ).toFixed(3)}
+                            {tx.Value / 100000000}
                           </td>
                           <td>{tx.Memo.split("msg:")[1]}</td>
                           {tx.CreateTime < 10 ? (
