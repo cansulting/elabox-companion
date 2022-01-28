@@ -241,6 +241,19 @@ class API {
     });
     return data;
   };
+  restart = async () => {
+    await axios.post(`http://${PUBLIC_URI}/restart`);
+  };  
+  shutdown = async () => {
+    await axios.post(`http://${PUBLIC_URI}/shutdown`);    
+    setTimeout(()=>{
+      window.location.reload()
+    },5000)    
+  }
+  checkElaboxStatus = async () =>{
+    const { data } = await axios.get(`http://${PUBLIC_URI}/check_elabox_status`);  
+    return data  
+  };
   downloadWallet = () => {
     const response = {
       file: `http://${PUBLIC_URI}/downloadWallet`,
