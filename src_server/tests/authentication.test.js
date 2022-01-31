@@ -1,35 +1,43 @@
-const { generateKeystore, changePassword } = require("../device_setup.js")
+const { generateKeystore, changePassword } = require("../utilities/auth.js")
 
 jest.setTimeout(3000)
-test("change password: throw error for special characters", async () => {
-    changePassword("$$$$$$$$$$$$$$")
-    .then( (res) => {
-        console.log(res)
-        expect(res).toBeNull()
-    }).catch(err => {
-        console.log(err)
-        expect(err).not.toBeNull()
-    })
+const validSpecialChars = "!@#%*_+\-='\"?~$"
+
+test("change password: should accept special characters limited to " + validSpecialChars, async () => {
+    for (let index = 0; index < validSpecialChars.length; index++) {
+        const character = validSpecialChars[index];
+        const pass = "helloworld" + character
+        console.log('checking pass ' + pass)
+        changePassword(pass)
+        .catch(err => {
+            console.log(err)
+            expect(err).toBeNull()
+        })
+    }
 })
+
+test("generate keystore: should accept special characters limited to " + validSpecialChars, async () => {
+    for (let index = 0; index < validSpecialChars.length; index++) {
+        const character = validSpecialChars[index];
+        const pass = "helloworld" + character
+        console.log('checking pass ' + pass)
+        generateKeystore(pass)
+        .catch(err => {
+            console.log(err)
+            expect(err).toBeNull()
+        })
+    }
+})
+
+
 test("Generate keystore with long password", async () => {
-    generateKeystore("sdfsdfasdfasdfasdfasdfasdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdf234234234asdfaDDDFDSDFS443", true)
+    generateKeystore("$$$$sdfsdfasdfasdfasdfasdfasdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdf234234234asdfaDDDFDSDFS443", true)
     .then( (res) => {
         console.log(res)
         expect(res).not.toBeNull()
     }).catch(err => {
         console.log(err)
         expect(err).toBeNull()
-    })
-})
-
-test("Generate keystore failure on special character", async () => {
-    generateKeystore("$$$$$$$$$$$$$$", true)
-    .then( (res) => {
-        console.log(res)
-        expect(res).toBeNull()
-    }).catch(err => {
-        console.log(err)
-        expect(err).not.toBeNull()
     })
 })
 

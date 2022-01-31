@@ -7,7 +7,7 @@ function validCharacters(str = "") {
     if (!str || str.length <= 5) return false
     if (str.search(' ') >= 0) return false;
 
-    const specialChars = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+    const specialChars = /[`^&()\[\]{};:\\|,.<>\/]/;
     return !specialChars.test(str);
 }
 
@@ -75,6 +75,7 @@ function generateKeystore(pwd, replaceOld = false) {
                 pwd +
                 "";
         }
+        console.log(cmd)
         exec(
             cmd,
             { maxBuffer: 1024 * maxBufferSize },
