@@ -56,7 +56,7 @@ module.exports = {
   BUILD_MODE: buildMode,
   ELABOX_VERSION: elaboxVersion,                      // current version of elabox
   PACKAGES_URL:
-    buildMode === "RELEASE"
+    buildMode === "RELEASE" || buildMode === 'STAGING'
       ? "https://storage.googleapis.com/elabox/packages"
       : buildMode === "DEBUG"
       ? "https://storage.googleapis.com/elabox-debug/packages"

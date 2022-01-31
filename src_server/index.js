@@ -1,7 +1,7 @@
 const express = require("express");
 const eventhandler = require("./helper/eventHandler");
 const urlExist = require("url-exist");
-const { generateKeystore, changePassword } = require("./device_setup")
+const { generateKeystore, changePassword, authenticate } = require("./utilities/auth")
 // to allow cross-origin request
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -271,38 +271,17 @@ router.post("/resyncNodeVerification", (req, res) => {
 
 router.post("/login", (req, res) => {
   let pwd = req.body.pwd;
-  exec(
-    elaPath +
-      "/ela-cli wallet a -w " +
-      config.KEYSTORE_PATH +
-      " -p " +
-      pwd +
-      "",
-    { maxBuffer: 1024 * maxBufferSize },
-    async (err, stdout, stderr) => {
-      if (stdout)
-        syslog.write(syslog.create().debug("/login request " + stdout));
-      if (err) {
-        syslog.write(
-          syslog
-            .create()
-            .error("Error on /login. Failed ela cli exec.", err)
-            .addCaller()
-        );
-        res.json({ ok: false });
-      } else {
-        res.json({ ok: true, address: stdout.split("\n")[2].split(" ")[0] });
-      }
-    }
-  );
+  authenticate(pwd)
+    .then( address => res.json({ ok: true, address: address}))
+    .catch( err => res.json({ ok: false, err: err.message }))
 });
 
 router.post("/createWallet", (req, res) => {
   let pwd = req.body.pwd;
   generateKeystore(pwd, true)
-    .then( (res) => {
+    .then( (_) => {
         changePassword(pwd)
-        .then( (res) => {
+        .then( (_) => {
           res.json({ ok: "ok" });
         }).catch(err => {
           res.json({ ok: "nope", err: err.message });

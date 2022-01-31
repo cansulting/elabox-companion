@@ -1,17 +1,19 @@
-const syslog = require("./logger");
+const syslog = require("../logger");
 const { exec } = require("child_process"); 
-const config = require("./config")
+const config = require("../config")
 const maxBufferSize = 10000;
 
-function validPassword(str = "") {
-    if (str.length <= 5) return false
+function validCharacters(str = "") {
+    if (!str || str.length <= 5) return false
+    if (str.search(' ') >= 0) return false;
+
     const specialChars = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
-    return specialChars.test(str);
+    return !specialChars.test(str);
 }
 
 function changePassword(pwd) {
     return new Promise( (resolve, rej) => {
-        if (validPassword(pwd)) {
+        if (!validCharacters(pwd)) {
             rej(Error('password shouldnt contain special characters with atleas 6 characters.'))
             return
         }   
@@ -53,8 +55,8 @@ function changePassword(pwd) {
 
 function generateKeystore(pwd, replaceOld = false) {
     return new Promise( (resolve, rej) => {
-        if (validPassword(pwd)) {
-            rej(Error('password shouldnt contain special characters with atleas 6 characters.'))
+        if (!validCharacters(pwd)) {
+            rej(Error('password shouldnt contain special characters and with atleast 8 characters.'))
             return
         }     
         let cmd = "cd " +
@@ -101,8 +103,43 @@ function generateKeystore(pwd, replaceOld = false) {
     );
 }
 
+function authenticate(pwd) {
+    return new Promise((resolve, reject) => {
+        if (!validCharacters(pwd)) {
+            reject(Error('invalid password'))
+            return
+        }
+
+        exec(
+            config.ELA_DIR +
+              "/ela-cli wallet a -w " +
+              config.KEYSTORE_PATH +
+              " -p " +
+              pwd +
+              "",
+            { maxBuffer: 1024 * maxBufferSize },
+            async (err, stdout, stderr) => {
+              if (stdout)
+                syslog.write(syslog.create().debug("/login request " + stdout));
+              if (err) {
+                syslog.write(
+                  syslog
+                    .create()
+                    .error("Error on /login. Failed ela cli exec.", err)
+                    .addCaller()
+                );
+                reject(Error('unable to authenticate password.'))
+              } else {
+                resolve(stdout.split("\n")[2].split(" ")[0]);
+              }
+            }
+        );
+    })
+}
+
 module.exports = {
     generateKeystore: generateKeystore,
     changePassword: changePassword,
-    validPassword: validPassword
+    validCharacters: validCharacters,
+    authenticate: authenticate,
 }

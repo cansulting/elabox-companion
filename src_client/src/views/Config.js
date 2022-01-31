@@ -31,16 +31,20 @@ function Config() {
         }
         else {
           backend.createWallet(pwd1)
-            .then(responseJson => {
+            .then(response => {
 
               setTimeout(() => {
-                console.log(responseJson)
+                console.log(response)
                 // if success
                 setCreating(false)
-                // localStorage.setItem('isconfiged', responseJson.stdout.trim())
-                localStorage.setItem('isconfiged', true)
-                localStorage.setItem('islogedin', true)
-                setConfiged(true);
+                if (response.ok === "ok" ) {
+                  // localStorage.setItem('isconfiged', response.stdout.trim())
+                  localStorage.setItem('isconfiged', true)
+                  localStorage.setItem('islogedin', true)
+                  setConfiged(true);
+                } else {
+                  alert(response.err)
+                }
               }, 3000)
 
             })
