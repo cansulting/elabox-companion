@@ -11,6 +11,12 @@ const utils = require(".");
 const syslog = require("../logger");
 var errorHandler = require("errorhandler");
 
+var carrierInfo = require(config.CARRIER_DIR + "/info.json");
+var eidInfo = require(config.EID_DIR  + "/info.json");
+var escInfo = require(config.ESC_DIR  + "/info.json");
+var feedsInfo = require(config.FEEDS_DIR  + "/info.json");
+var mainchainInfo = require(config.ELA_DIR  + "/info.json");
+
 let keyStorePath = config.KEYSTORE_PATH;
 
 const maxBufferSize = 10000
@@ -37,8 +43,33 @@ router.post("/restart", (req, res) => {
 
   );
 });
+
 router.get("/check_elabox_status",(req,res) => {
   res.send(true)
+});
+
+router.get("/version/mainchain",(req,res) => {
+    res.send(mainchainInfo.version)
+});
+
+router.get("/version/carrier",(req,res) => {
+  res.send(carrierInfo.version)
+});
+
+router.get("/version/eid",(req,res) => {
+  res.send(eidInfo.version)
+});
+
+router.get("/version/esc",(req,res) => {
+  res.send(escInfo.version)
+});
+
+router.get("/version/feeds",(req,res) => {
+  res.send(feedsInfo.version)
+});
+
+router.get("/version/did",(req,res) => {
+  res.send(feedsInfo.version)
 });
 
 
