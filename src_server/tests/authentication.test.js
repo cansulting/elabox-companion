@@ -1,7 +1,7 @@
-const { generateKeystore, changePassword } = require("../utilities/auth.js")
+const { generateKeystore, changePassword, authenticate } = require("../utilities/auth.js")
 
-jest.setTimeout(3000)
-const validSpecialChars = "!@#%*_+\-='\"?~$"
+jest.setTimeout(100000)
+const validSpecialChars = "!@#%*_+\-=?~"
 
 test("change password: should accept special characters limited to " + validSpecialChars, async () => {
     for (let index = 0; index < validSpecialChars.length; index++) {
@@ -16,13 +16,20 @@ test("change password: should accept special characters limited to " + validSpec
     }
 })
 
+
+
 test("generate keystore: should accept special characters limited to " + validSpecialChars, async () => {
     for (let index = 0; index < validSpecialChars.length; index++) {
         const character = validSpecialChars[index];
         const pass = "helloworld" + character
         console.log('checking pass ' + pass)
-        generateKeystore(pass)
+        await generateKeystore(pass, true)
         .catch(err => {
+            console.log(err)
+            expect(err).toBeNull()
+        })
+        await authenticate(pass)
+        .catch( err => {
             console.log(err)
             expect(err).toBeNull()
         })
@@ -31,10 +38,13 @@ test("generate keystore: should accept special characters limited to " + validSp
 
 
 test("Generate keystore with long password", async () => {
-    generateKeystore("$$$$sdfsdfasdfasdfasdfasdfasdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdf234234234asdfaDDDFDSDFS443", true)
+    const pass = "$$$$sdfsdfasdfasdfasdfasdfasdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdf234234234asdfaDDDFDSDFS443"
+    generateKeystore(pass, true)
     .then( (res) => {
         console.log(res)
-        expect(res).not.toBeNull()
+        authenticate(pass).catch( err => {
+            expect(err).toBeNull()
+        })
     }).catch(err => {
         console.log(err)
         expect(err).toBeNull()

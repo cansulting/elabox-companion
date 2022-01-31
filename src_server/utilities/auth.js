@@ -7,7 +7,7 @@ function validCharacters(str = "") {
     if (!str || str.length <= 5) return false
     if (str.search(' ') >= 0) return false;
 
-    const specialChars = /[`^&()\[\]{};:\\|,.<>\/]/;
+    const specialChars = /[`^$&()\'\"\[\]{};:\\|,.<>\/]/;
     return !specialChars.test(str);
 }
 
@@ -110,19 +110,21 @@ function authenticate(pwd) {
             reject(Error('invalid password'))
             return
         }
-
+        const cmd = config.ELA_DIR +
+            "/ela-cli wallet a -w " +
+            config.KEYSTORE_PATH +
+            " -p " +
+            pwd +
+            ""
+        console.log(cmd)
         exec(
-            config.ELA_DIR +
-              "/ela-cli wallet a -w " +
-              config.KEYSTORE_PATH +
-              " -p " +
-              pwd +
-              "",
+            cmd,
             { maxBuffer: 1024 * maxBufferSize },
-            async (err, stdout, stderr) => {
-              if (stdout)
-                syslog.write(syslog.create().debug("/login request " + stdout));
-              if (err) {
+            (err, stdout, stderr) => {
+              //if (stdout)
+              //  syslog.write(syslog.create().debug("/login request " + stdout));
+              if (err || stderr) {
+                err = err | stderr
                 syslog.write(
                   syslog
                     .create()
