@@ -65,6 +65,11 @@ class Widget05 extends Component {
               {data.title}
             </Col>
           </Row>
+          <Row style={{ height: "70px" }}>
+            <Col style={{ display: "flex", justifyContent: "center" }}>
+              {data.version}
+            </Col>
+          </Row>          
 
           {vals[3] != "" ? (
             <Row>

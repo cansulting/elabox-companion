@@ -12,11 +12,7 @@ import {
   CardBody,
   CardHeader,
   Col,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
   Row,
-  Table,
 } from "reactstrap";
 import Widget05 from "./widgets/Widget05";
 
@@ -42,7 +38,11 @@ class Settings extends Component {
       updateNowModal: false,
       errorUpdateModal: false,
       version: "",
-      nodeVersion: "",
+      mainchainVersion:"",
+      eidVersion:"",
+      escVersion:"",
+      feedsVersion:"",
+      carrierVersion:"",
       onion: "",
       env: "",
       showOnion: false,
@@ -199,7 +199,11 @@ class Settings extends Component {
         {
           elaboxVersion: response.version,
           env: response.env,
-          nodeVersion: response.node_version,
+          mainchainVersion:response.mainchainVersion,
+          eidVersion: response.eidVersion,
+          escVersion: response.escVersion,
+          feedsVersion: response.feedsVersion,
+          carrierVersion: response.carrierVersion,
         },
         () => {
           //console.log("state", this.state)
@@ -237,7 +241,11 @@ class Settings extends Component {
       onion,
       showOnion,
       elaboxVersion,
-      nodeVersion,
+      mainchainVersion,
+      eidVersion,
+      escVersion,
+      feedsVersion,
+      carrierVersion,
       env,
     } = this.state;
     console.log("render", showOnion);
@@ -436,6 +444,7 @@ class Settings extends Component {
               testid="ela-btn"
               dataBox={() => ({
                 title: "MainChain",
+                version: mainchainVersion,
                 variant: "facebook",
                 Restart: "Restart",
                 Resync: "Re-sync",
@@ -454,6 +463,7 @@ class Settings extends Component {
               testid="eid-btn"
               dataBox={() => ({
                 title: "EID",
+                version: eidVersion,                
                 variant: "facebook",
                 Restart: "Restart",
                 Resync: "Re-sync",
@@ -471,6 +481,7 @@ class Settings extends Component {
               testid="esc-btn"
               dataBox={() => ({
                 title: "ESC",
+                version: escVersion,                                
                 variant: "facebook",
                 Restart: "Restart",
                 Resync: "Re-sync",
@@ -488,6 +499,7 @@ class Settings extends Component {
               testid="feeds-btn"
               dataBox={() => ({
                 title: "Feeds",
+                version: feedsVersion,                                
                 variant: "facebook",
                 Restart: "Relaunch",
                 Resync: "",
@@ -502,6 +514,7 @@ class Settings extends Component {
               testid="carrier-btn"
               dataBox={() => ({
                 title: "Carrier",
+                version: carrierVersion,                                
                 variant: "facebook",
                 Restart: "Relaunch",
                 Resync: "",
@@ -568,23 +581,6 @@ class Settings extends Component {
                 <b>
                   Elabox {elaboxVersion} {env}
                 </b>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Card
-              style={{
-                backgroundColor: "#272A3D",
-                color: "white",
-                fontSize: "16px",
-                marginTop: "40px",
-              }}
-            >
-              <CardHeader>Node Version</CardHeader>
-              <CardBody>
-                <b>{nodeVersion}</b>
               </CardBody>
             </Card>
           </Col>
