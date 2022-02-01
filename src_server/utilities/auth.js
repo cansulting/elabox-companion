@@ -75,7 +75,7 @@ function generateKeystore(pwd, replaceOld = false) {
                 pwd +
                 "";
         }
-        console.log(cmd)
+        //console.log(cmd)
         exec(
             cmd,
             { maxBuffer: 1024 * maxBufferSize },
@@ -116,7 +116,7 @@ function authenticate(pwd) {
             " -p " +
             pwd +
             ""
-        console.log(cmd)
+        //console.log(cmd)
         exec(
             cmd,
             { maxBuffer: 1024 * maxBufferSize },
