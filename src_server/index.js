@@ -2,6 +2,16 @@ const express = require("express");
 const eventhandler = require("./helper/eventHandler");
 const urlExist = require("url-exist");
 const { generateKeystore, changePassword, authenticate } = require("./utilities/auth")
+//limiter
+const rateLimit=require("express-rate-limit")
+const authLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, 
+  max: 5, // Limit each IP to 5 auth requests per `window`
+  message:
+    {err:"Too many auth request from this IP, please try again after 1 min",ok:false},
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+})
 // to allow cross-origin request
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -51,7 +61,9 @@ const delay = require("delay");
 require("./watchers");
 
 app.use(logger("dev"));
-app.use(cors());
+app.use(cors({
+  exposedHeaders:['RateLimit-Limit','RateLimit-Remaining','Retry-After','RateLimit-Reset']
+}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(errorHandler({ dumpExceptions: true, showStack: true }));
@@ -269,7 +281,7 @@ router.post("/resyncNodeVerification", (req, res) => {
   );
 });
 
-router.post("/login", (req, res) => {
+router.post("/login",authLimiter, (req, res) => {
   let pwd = req.body.pwd;
   authenticate(pwd)
     .then( address => res.json({ ok: true, address: address}))

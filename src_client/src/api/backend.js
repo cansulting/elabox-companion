@@ -15,7 +15,7 @@ class API {
       body: JSON.stringify({
         pwd,
       }),
-    }).then((response) => response.json());
+    });
   };
 
   fetchEla = async () => {
