@@ -508,7 +508,7 @@ router.post("/version_info", async (req, res) => {
     res.send({
       version: config.ELABOX_VERSION,
       env: config.BUILD_MODE,
-      mainchainVersion: mainchainInfo.info,
+      mainchainVersion: mainchainInfo.version,
       eidVersion: eidInfo.version,
       feedsVersion: feedsInfo.version,
       escVersion: escInfo.version,
