@@ -12,11 +12,7 @@ import {
   CardBody,
   CardHeader,
   Col,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
   Row,
-  Table,
 } from "reactstrap";
 import Widget05 from "./widgets/Widget05";
 
@@ -42,7 +38,11 @@ class Settings extends Component {
       updateNowModal: false,
       errorUpdateModal: false,
       version: "",
-      nodeVersion: "",
+      mainchainVersion:"",
+      eidVersion:"",
+      escVersion:"",
+      feedsVersion:"",
+      carrierVersion:"",
       onion: "",
       env: "",
       showOnion: false,
@@ -199,7 +199,11 @@ class Settings extends Component {
         {
           elaboxVersion: response.version,
           env: response.env,
-          nodeVersion: response.node_version,
+          mainchainVersion:response.mainchainVersion,
+          eidVersion: response.eidVersion,
+          escVersion: response.escVersion,
+          feedsVersion: response.feedsVersion,
+          carrierVersion: response.carrierVersion,
         },
         () => {
           //console.log("state", this.state)
@@ -237,7 +241,11 @@ class Settings extends Component {
       onion,
       showOnion,
       elaboxVersion,
-      nodeVersion,
+      mainchainVersion,
+      eidVersion,
+      escVersion,
+      feedsVersion,
+      carrierVersion,
       env,
     } = this.state;
     console.log("render", showOnion);
@@ -439,6 +447,7 @@ class Settings extends Component {
                 variant: "facebook",
                 Restart: "Restart",
                 Resync: "Re-sync",
+                version: mainchainVersion,                
               })}
               onGreenPress={() =>
                 this.showRestart("ELA", RootStore.blockchain.ela)
@@ -457,6 +466,7 @@ class Settings extends Component {
                 variant: "facebook",
                 Restart: "Restart",
                 Resync: "Re-sync",
+                version: eidVersion,                                
               })}
               onGreenPress={() =>
                 this.showRestart("EID", RootStore.blockchain.eid)
@@ -474,6 +484,7 @@ class Settings extends Component {
                 variant: "facebook",
                 Restart: "Restart",
                 Resync: "Re-sync",
+                version: escVersion,                                                
               })}
               onGreenPress={() =>
                 this.showRestart("ESC", RootStore.blockchain.esc)
@@ -491,6 +502,7 @@ class Settings extends Component {
                 variant: "facebook",
                 Restart: "Relaunch",
                 Resync: "",
+                version: feedsVersion,                                                
               })}
               onGreenPress={() =>
                 this.showRestart("Feeds", RootStore.blockchain.feeds)
@@ -505,6 +517,7 @@ class Settings extends Component {
                 variant: "facebook",
                 Restart: "Relaunch",
                 Resync: "",
+                version: carrierVersion,                                                
               })}
               onGreenPress={() =>
                 this.showRestart("Carrier", RootStore.blockchain.carrier)
@@ -568,23 +581,6 @@ class Settings extends Component {
                 <b>
                   Elabox {elaboxVersion} {env}
                 </b>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Card
-              style={{
-                backgroundColor: "#272A3D",
-                color: "white",
-                fontSize: "16px",
-                marginTop: "40px",
-              }}
-            >
-              <CardHeader>Node Version</CardHeader>
-              <CardBody>
-                <b>{nodeVersion}</b>
               </CardBody>
             </Card>
           </Col>

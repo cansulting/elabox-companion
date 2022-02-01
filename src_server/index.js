@@ -16,6 +16,12 @@ const path = require("path");
 const fsExtra = require("fs-extra");
 const axios = require("axios");
 const app = express();
+//versions
+const carrierInfo = require(config.CARRIER_DIR + "/info.json");
+const eidInfo = require(config.EID_DIR  + "/info.json");
+const escInfo = require(config.ESC_DIR  + "/info.json");
+const feedsInfo = require(config.FEEDS_DIR  + "/info.json");
+const mainchainInfo = require(config.ELA_DIR  + "/info.json");
 
 // nodes
 const NodeHandler = require("./nodeHandler");
@@ -433,7 +439,11 @@ router.post("/version_info", async (req, res) => {
     res.send({
       version: config.ELABOX_VERSION,
       env: config.BUILD_MODE,
-      node_version: process.versions.node,
+      mainchainVersion: mainchainInfo.version,
+      eidVersion: eidInfo.version,
+      feedsVersion: feedsInfo.version,
+      escVersion: escInfo.version,
+      carrierVersion: carrierInfo.version      
     });
   } else {
     let currentVersion;
@@ -445,14 +455,22 @@ router.post("/version_info", async (req, res) => {
         version: info.version,
         env: config.BUILD_MODE,
         name: info.name,
-        node_version: process.versions.node,
+        mainchainVersion: mainchainInfo.info,
+        eidVersion: eidInfo.version,
+        feedsVersion: feedsInfo.version,
+        escVersion: escInfo.version,
+        carrierVersion: carrierInfo.version
       });
     } catch (e) {
       res.send({
         version: currentVersion,
         env: config.BUILD_MODE,
         name: "",
-        node_version: process.versions.node,
+        mainchainVersion: "",
+        eidVersion: "",
+        feedsVersion: "",
+        escVersion: "",
+        carrierVersion: ""
       });
       syslog.write(syslog.create().error(e.message, e));
     }

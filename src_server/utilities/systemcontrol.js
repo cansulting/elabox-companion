@@ -11,6 +11,7 @@ const utils = require(".");
 const syslog = require("../logger");
 var errorHandler = require("errorhandler");
 
+
 let keyStorePath = config.KEYSTORE_PATH;
 
 const maxBufferSize = 10000
@@ -37,6 +38,7 @@ router.post("/restart", (req, res) => {
 
   );
 });
+
 router.get("/check_elabox_status",(req,res) => {
   res.send(true)
 });
