@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { Link, Redirect } from "react-router-dom"
 import { Button, Input, Spinner } from "reactstrap"
+import {validCharacters} from "../utils/auth"
 import elaboxLogo from "./images/logo-circle-transparent.png"
 
 import backend from "../api/backend"
@@ -12,6 +13,11 @@ function Login() {
 
   function login() {
     setProcessing(true)
+    if(!validCharacters(pwd)){
+      alert("Password shouldnt contain special characters and space with atleast 6 characters.")
+      setProcessing(false)      
+      return;
+    }
     backend
       .login(pwd)
       .then((responseJson) => {
@@ -23,11 +29,12 @@ function Login() {
         } else {
           alert("Wrong password")
         }
-        setProcessing(false)
       })
       .catch((error) => {
         console.error(error)
-        setProcessing(false)
+      })
+      .finally(()=>{
+        setProcessing(false)                
       })
   }
 
