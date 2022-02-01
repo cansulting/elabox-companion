@@ -278,7 +278,7 @@ router.post("/login", (req, res) => {
 
 router.post("/createWallet", (req, res) => {
   let pwd = req.body.pwd;
-  generateKeystore(pwd, true)
+  generateKeystore(pwd)
     .then( (_) => {
         changePassword(pwd)
         .then( (_) => {
