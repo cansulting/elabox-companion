@@ -444,10 +444,10 @@ class Settings extends Component {
               testid="ela-btn"
               dataBox={() => ({
                 title: "MainChain",
-                version: mainchainVersion,
                 variant: "facebook",
                 Restart: "Restart",
                 Resync: "Re-sync",
+                version: mainchainVersion,                
               })}
               onGreenPress={() =>
                 this.showRestart("ELA", RootStore.blockchain.ela)
@@ -463,10 +463,10 @@ class Settings extends Component {
               testid="eid-btn"
               dataBox={() => ({
                 title: "EID",
-                version: eidVersion,                
                 variant: "facebook",
                 Restart: "Restart",
                 Resync: "Re-sync",
+                version: eidVersion,                                
               })}
               onGreenPress={() =>
                 this.showRestart("EID", RootStore.blockchain.eid)
@@ -481,10 +481,10 @@ class Settings extends Component {
               testid="esc-btn"
               dataBox={() => ({
                 title: "ESC",
-                version: escVersion,                                
                 variant: "facebook",
                 Restart: "Restart",
                 Resync: "Re-sync",
+                version: escVersion,                                                
               })}
               onGreenPress={() =>
                 this.showRestart("ESC", RootStore.blockchain.esc)
@@ -499,10 +499,10 @@ class Settings extends Component {
               testid="feeds-btn"
               dataBox={() => ({
                 title: "Feeds",
-                version: feedsVersion,                                
                 variant: "facebook",
                 Restart: "Relaunch",
                 Resync: "",
+                version: feedsVersion,                                                
               })}
               onGreenPress={() =>
                 this.showRestart("Feeds", RootStore.blockchain.feeds)
@@ -514,10 +514,10 @@ class Settings extends Component {
               testid="carrier-btn"
               dataBox={() => ({
                 title: "Carrier",
-                version: carrierVersion,                                
                 variant: "facebook",
                 Restart: "Relaunch",
                 Resync: "",
+                version: carrierVersion,                                                
               })}
               onGreenPress={() =>
                 this.showRestart("Carrier", RootStore.blockchain.carrier)
