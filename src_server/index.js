@@ -1,16 +1,43 @@
 const express = require("express");
+const addSeconds=require("date-fns/addSeconds")
+const differenceInSeconds = require('date-fns/differenceInSeconds')
 const eventhandler = require("./helper/eventHandler");
 const urlExist = require("url-exist");
 const { generateKeystore, changePassword, authenticate } = require("./utilities/auth")
 //limiter
+let currentWaitTime = 1;
+let rateLimitRemaining = 0
 const rateLimit=require("express-rate-limit")
 const authLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, 
-  max: 5, // Limit each IP to 5 auth requests per `window`
+  windowMs: 0.5 * 60 * 1000, 
+  max: 3, // Limit each IP to 3 auth requests per `window`
   message:
     {err:"Too many auth request from this IP, please try again after 1 min",ok:false},
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers,
+  handler: (request, response, next, options) =>{
+    rateLimitRemaining=differenceInSeconds(addSeconds(new Date(),currentWaitTime*60),new Date())    
+    setInterval(()=>{
+      if(rateLimitRemaining>0){
+        rateLimitRemaining=rateLimitRemaining-1        
+      }
+    },1000)
+    switch (currentWaitTime) {
+      case 1:
+        currentWaitTime=5;
+        break;
+      case 5:
+        currentWaitTime=15;
+        break;
+      case 15:
+        currentWaitTime=30;
+        break;
+      case 30:
+        currentWaitTime=60;
+        break;
+    }
+    return response.status(options.statusCode).send(options.message)
+  }
 })
 // to allow cross-origin request
 const cors = require("cors");
@@ -75,6 +102,8 @@ const router = express.Router();
 // for mailing
 const postmark = require("postmark");
 const filedownload = require("./helper/filedownload");
+const { route } = require("./utilities/systemcontrol.js");
+const { setTimeout } = require("timers/promises");
 const postMarkMail = new postmark.ServerClient(config.POSTMARK_SERVER_TOKEN);
 
 let elaPath = config.ELA_DIR;
@@ -280,11 +309,16 @@ router.post("/resyncNodeVerification", (req, res) => {
     }
   );
 });
-
+router.get("/rateLimitWaitTime",(req,res)=>{
+  res.json({rateLimitRemaining})
+})
 router.post("/login",authLimiter, (req, res) => {
   let pwd = req.body.pwd;
   authenticate(pwd)
-    .then( address => res.json({ ok: true, address: address}))
+    .then( address => {
+      currentWaitTime=1;
+      res.json({ ok: true, address: address})      
+    })
     .catch( err => res.json({ ok: false, err: err.message }))
 });
 

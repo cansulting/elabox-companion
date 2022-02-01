@@ -7,22 +7,27 @@ import backend from "../api/backend"
 import { useEffect } from "react/cjs/react.development"
 
 function Login() {
-  const [waitingTime,setWaitingTime]=useState(1)
-  const [seconds,setTimer]=useState(window.localStorage.getItem("current_time")?.length>0 ?window.localStorage.getItem("current_time"):0)
+  const [seconds,setTimer]=useState(0)
   const [isLoggedIn, setLoggedIn] = useState(false)
   const [pwd, setPwd] = useState("")
   const [isProcessing, setProcessing] = useState(false)
   const isBlocked= seconds>0 
   useEffect(()=>{
+    backend.getRateLimitWaitTime().then(responseJson => {
+      setTimer(responseJson.rateLimitRemaining)
+    })
+  },[])
+  useEffect(()=>{
     let interval=null
     if(seconds>0){
       interval=setInterval(()=>{
         setTimer(seconds=>seconds-1)
-        window.localStorage.setItem("current_time",seconds)        
       },1000)
     }
     else{
-      window.localStorage.removeItem("current_time")              
+      backend.getRateLimitWaitTime().then(responseJson => {
+        setTimer(responseJson.rateLimitRemaining)
+      })      
       clearInterval(interval)
     }
     return ()=>{
@@ -45,19 +50,9 @@ function Login() {
             alert("Wrong password")
           }
           else{
-            setTimer(waitingTime)    
-            if(waitingTime===1){
-              setWaitingTime(5*60)                    
-            }
-            else if(waitingTime===5){
-              setWaitingTime(15)                                  
-            }
-            else if(waitingTime===15){
-              setWaitingTime(30)                                  
-            }            
-            else if(waitingTime===30){
-              setWaitingTime(60)                                  
-            }                        
+            backend.getRateLimitWaitTime().then(responseJson => {
+              setTimer(responseJson.rateLimitRemaining)
+            })            
             alert(`Too many auth request from this IP, please try again.`)            
           }
         }

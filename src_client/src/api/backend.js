@@ -17,7 +17,15 @@ class API {
       }),
     });
   };
-
+  getRateLimitWaitTime= () => {
+    return fetch(`http://${PUBLIC_URI}/rateLimitWaitTime`,{
+      method: "get",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      }      
+    }).then(response=>response.json())
+  }
   fetchEla = async () => {
     const response = await this.axios.get("/ela");
     return response.data;
