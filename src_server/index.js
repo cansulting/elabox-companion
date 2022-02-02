@@ -277,6 +277,11 @@ router.get("/rateLimitWaitTime",(req,res)=>{
 })
 router.post("/login",(req, res) => {
   let pwd = req.body.pwd;
+  // is still waiting to finish the security lock
+  if (global.rateLimitRemaining > 0) {
+    res.json({ ok: false, err: global.rateLimitRemaining + " seconds remaining" })
+    return 
+  }
   authenticate(pwd)
     .then( address => {
       resetRateLimit()      

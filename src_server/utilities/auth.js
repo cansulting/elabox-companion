@@ -19,9 +19,6 @@ const authLimiter= (res) =>{
         },1000)
         switch (global.currentWaitTime) {
           case 0.50:
-            global.currentWaitTime=5;
-            break;
-          case 5:
             global.currentWaitTime=15;
             break;
           case 15:
@@ -30,7 +27,7 @@ const authLimiter= (res) =>{
           case 30:
             global.currentWaitTime=60;
             break;
-          case 60:
+          default:
                 global.currentWaitTime=720;        
             break;
         }
