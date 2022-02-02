@@ -48,7 +48,7 @@ function validCharacters(str = "") {
     return !specialChars.test(str);
 }
 
-function changePassword(pwd) {
+function changeSystemPassword(pwd) {
     return new Promise( (resolve, rej) => {
         if (!validCharacters(pwd)) {
             rej(Error('password shouldnt contain special characters with atleas 6 characters.'))
@@ -179,7 +179,7 @@ function authenticate(pwd) {
 
 module.exports = {
     generateKeystore: generateKeystore,
-    changePassword: changePassword,
+    changePassword: changeSystemPassword,
     validCharacters: validCharacters,
     authenticate: authenticate,
     authLimiter: authLimiter,
