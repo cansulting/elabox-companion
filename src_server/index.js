@@ -1,7 +1,7 @@
 const express = require("express");
 const eventhandler = require("./helper/eventHandler");
 const urlExist = require("url-exist");
-const { generateKeystore, changePassword, authenticate } = require("./utilities/auth")
+const { generateKeystore, changePassword, authenticate, authLimiter , resetRateLimit } = require("./utilities/auth")
 // to allow cross-origin request
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -57,7 +57,9 @@ const delay = require("delay");
 require("./watchers");
 
 app.use(logger("dev"));
-app.use(cors());
+app.use(cors({
+  exposedHeaders:['RateLimit-Limit','RateLimit-Remaining','Retry-After','RateLimit-Reset']
+}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(errorHandler({ dumpExceptions: true, showStack: true }));
@@ -69,6 +71,8 @@ const router = express.Router();
 // for mailing
 const postmark = require("postmark");
 const filedownload = require("./helper/filedownload");
+const { route } = require("./utilities/systemcontrol.js");
+const { setTimeout } = require("timers/promises");
 const postMarkMail = new postmark.ServerClient(config.POSTMARK_SERVER_TOKEN);
 
 let elaPath = config.ELA_DIR;
@@ -274,12 +278,26 @@ router.post("/resyncNodeVerification", (req, res) => {
     }
   );
 });
-
-router.post("/login", (req, res) => {
+router.get("/rateLimitWaitTime",(req,res)=>{
+  res.json({rateLimitRemaining: global.rateLimitRemaining})
+})
+router.post("/login",(req, res) => {
   let pwd = req.body.pwd;
+  // is still waiting to finish the security lock
+  if (global.rateLimitRemaining > 0) {
+    res.json({ ok: false, err: global.rateLimitRemaining + " seconds remaining" })
+    return 
+  }
   authenticate(pwd)
-    .then( address => res.json({ ok: true, address: address}))
-    .catch( err => res.json({ ok: false, err: err.message }))
+    .then( address => {
+      resetRateLimit()      
+      res.json({ ok: true, address: address})      
+    })
+    .catch( err => {
+      global.currentRateLimit -=1;
+      authLimiter(res)
+      res.json({ ok: false, err: err.message })
+    })
 });
 
 router.post("/createWallet", (req, res) => {
