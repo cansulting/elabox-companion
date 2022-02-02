@@ -275,7 +275,7 @@ router.post("/resyncNodeVerification", (req, res) => {
 router.get("/rateLimitWaitTime",(req,res)=>{
   res.json({rateLimitRemaining: global.rateLimitRemaining})
 })
-router.post("/login",authLimiter, (req, res) => {
+router.post("/login",(req, res) => {
   let pwd = req.body.pwd;
   authenticate(pwd)
     .then( address => {
@@ -284,6 +284,7 @@ router.post("/login",authLimiter, (req, res) => {
     })
     .catch( err => {
       global.currentRateLimit -=1;
+      authLimiter(res)
       res.json({ ok: false, err: err.message })
     })
 });

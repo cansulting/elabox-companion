@@ -46,7 +46,7 @@ function Login() {
           localStorage.setItem("address", responseJson.address)
           setLoggedIn(true)
         } else {
-          if(responseJson.err!=="Too many auth request from this IP, please try again after 1 min"){
+          if(responseJson.err!=="Too many auth request from this IP"){
             alert("Wrong password")
           }
           else{
