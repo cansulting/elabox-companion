@@ -1,7 +1,50 @@
+const addSeconds=require("date-fns/addSeconds");
+const differenceInSeconds = require('date-fns/differenceInSeconds');
 const syslog = require("../logger");
 const { exec } = require("child_process"); 
 const config = require("../config")
 const maxBufferSize = 10000;
+//limiter
+global.rateLimitRemaining = 0
+global.currentRateLimit = 3;
+global.currentWaitTime = 1;
+const authLimiter= (req,res,next) =>{
+    if(global.currentRateLimit>0){
+        next()
+    }
+    else {
+    global.currentRateLimit=1;                  
+    global.rateLimitRemaining=differenceInSeconds(addSeconds(new Date(),currentWaitTime*60),new Date()) 
+    setInterval(()=>{
+      if(global.rateLimitRemaining>0){
+        global.rateLimitRemaining=global.rateLimitRemaining-1        
+      }
+    },1000)
+    switch (global.currentWaitTime) {
+      case 1:
+        global.currentWaitTime=5;
+        break;
+      case 5:
+        global.currentWaitTime=15;
+        break;
+      case 15:
+        global.currentWaitTime=30;
+        break;
+      case 30:
+        global.currentWaitTime=60;
+        break;
+      case 60:
+            global.currentWaitTime=720;        
+        break;
+    }
+    res.status(429).send( {err:"Too many auth request from this IP, please try again after 1 min",ok:false})        
+    }
+}
+function resetRateLimit(){
+    global.currentWaitTime=1;
+    global.currentRateLimit=3;            
+}
+//end limiter
 
 function validCharacters(str = "") {
     if (!str || str.length <= 5) return false
@@ -145,4 +188,6 @@ module.exports = {
     changePassword: changePassword,
     validCharacters: validCharacters,
     authenticate: authenticate,
+    authLimiter: authLimiter,
+    resetRateLimit: resetRateLimit
 }
