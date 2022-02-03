@@ -51,7 +51,7 @@ function validCharacters(str = "") {
 function changeSystemPassword(pwd) {
     return new Promise( (resolve, rej) => {
         if (!validCharacters(pwd)) {
-            rej(Error('password shouldnt contain special characters with atleas 6 characters.'))
+            rej(Error('Password shouldnt contain special characters and space with atleast 6 characters.'))
             return
         }   
         exec(
@@ -93,7 +93,7 @@ function changeSystemPassword(pwd) {
 function generateKeystore(pwd, replaceOld = false) {
     return new Promise( (resolve, rej) => {
         if (!validCharacters(pwd)) {
-            rej(Error('password shouldnt contain special characters and with atleast 8 characters.'))
+            rej(Error('password shouldnt contain special characters and with atleast 6 characters.'))
             return
         }     
         let cmd = "cd " +
