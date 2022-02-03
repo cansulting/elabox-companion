@@ -152,7 +152,7 @@ router.get("/carrier", async (req, res) => {
 });
 router.get("/feeds", async (req, res) => {
   try {
-    const isRunning = await urlExist(config.FEEDS_URL);
+    const isRunning = await feedsHandler.isRunning()
     return res.status(200).json({ isRunning: isRunning });
   } catch (err) {
     syslog.write(
@@ -756,12 +756,12 @@ const startServer = () => {
           );
         });
     });
+    feedsHandler.runFeeds();
     await mainchain.init();
     mainchain.setOnComplete(async () => {
       await eid.init();
       await eid.setOnComplete(() => esc.init());
     });
-    feedsHandler.runFeeds();
   });
 };
 

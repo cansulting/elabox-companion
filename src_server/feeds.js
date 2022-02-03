@@ -1,6 +1,7 @@
 var shell = require("shelljs");
 const config = require("./config");
 const logger = require("./logger");
+const { isPortTaken } = require("./utilities/isPortTaken")
 
 process
   .on("unhandledRejection", (reason, p) => {
@@ -37,6 +38,12 @@ const runFeeds = () => {
     );
   });
 };
+
+function isRunning() {
+  return isPortTaken(10018)
+}
+
 module.exports = {
   runFeeds,
+  isRunning: isRunning
 };
