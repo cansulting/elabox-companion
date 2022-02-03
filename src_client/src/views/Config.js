@@ -3,7 +3,6 @@ import { Link, Redirect } from 'react-router-dom';
 import { Button, Input, Spinner, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import elaboxLogo from './images/logo-circle-transparent.png'
 import backend from "../api/backend";
-import Divider from '@mui/material/Divider';
 import FileUploader from "./components/FileUploader"
 
 
@@ -208,8 +207,6 @@ function Config() {
               <Input data-testid="password-confirm-input" type="password" id="pwd2" name="pwd2" placeholder="Repeat password" required onChange={(e) => handleChange(e)} style={{ marginTop: '10px' }} />
               <Button data-testid="create-wallet-submit-btn" type="submit" style={{ marginTop: '20px' }}>Create Wallet</Button>
             </form>
-
-            <Divider variant="middle" style={{ color: 'white',  paddingTop: '20px' }} />
 
             <h2 style={{ color: 'white' }}>or</h2>
 
