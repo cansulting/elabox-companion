@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { Link, Redirect } from 'react-router-dom';
+
 import {
   Button,
   Modal,
@@ -48,6 +50,12 @@ class Settings extends Component {
       showOnion: false,
       errormodal: false,
       resyncsuccessmodal: false,
+      importModal: false,
+      prevpwd: "",
+      isPasswordVerified: false,
+      isLoggedIn: true,
+      fileTypeCompatible: true,
+      importStatus: ""
     };
   }
 
@@ -56,8 +64,56 @@ class Settings extends Component {
     this.getOnion();
   }
 
+
+
+  closeImportModal = () => {
+    this.setState({ importModal: false });
+  };
+
+  showImportModal = () => {
+    this.setState({ importModal: true });
+  };
+
+  uploadTemporaryFile = () => {
+    const form = document.getElementById("myForm");
+    const formData = new FormData(form);
+    backend.importKeystoreTemporary(formData).then(response => {
+        if (response.success) {
+          console.log("Temporarily imported keypath file for verification")
+        } else {
+            alert("Unable to upload to temporary path")
+            
+        }
+
+    })
+  };
+
+  handleFile = () => {
+    const form = document.getElementById("myForm");
+    const formData = new FormData(form);
+    backend.importKeystoreTemporary(formData).then(response => {
+        if (response.success) {
+          console.log("Permanently imported keypath file")
+        } else {
+            console.log("Unable to upload to permanent path")
+        }
+
+    })
+  };
+
+  handleImportFileChange = async (event) => {
+    const fileUploaded = event.target.files[0];
+    console.log("FILE UPLOADED:", fileUploaded)
+    if (fileUploaded.name.endsWith("dat")){
+
+    } else{
+      this.setState({importStatus:"Invalid keystore file type" })
+
+    }
+
+  }; 
+
   verifyPassword = () => {
-    // e.preventDefault();
     this.setState({ resyncModal: false });
 
     backend
@@ -77,6 +133,8 @@ class Settings extends Component {
       });
   };
 
+  
+
   handleChange = async (event) => {
     const { target } = event;
     const value = target.type === "checkbox" ? target.checked : target.value;
@@ -85,6 +143,40 @@ class Settings extends Component {
       [name]: value,
     });
   };
+
+  handlePasswordChange = async (event) => {
+    const { target } = event;
+    if (target.id == "prev-pwd") {
+      this.setState({prevpwd: target.value})
+    } 
+  };
+
+  verifyPassword = () => {
+    this.uploadTemporaryFile()
+    if (this.state.prevpwd=='') {
+      alert("You need to provide a password")
+
+    } 
+    else {
+      backend.verifyKeystorePwd(this.state.prevpwd)
+        .then(responseJson => {
+          if (responseJson.ok){
+            alert("Success")
+
+          } else{
+            alert("Invalid previous password!")
+          }
+
+        })
+        .catch(error => {
+          console.error(error);
+        });
+
+    }
+
+  };
+
+
   resyncNode = (node) => {
     this.setState({ resyncModal: false });
 
@@ -134,6 +226,8 @@ class Settings extends Component {
   resyncsuccesstoggle = () => {
     this.setState({ resyncsuccessmodal: false });
   };
+
+
 
   checkUpdate = async () => {
     try {
@@ -227,6 +321,14 @@ class Settings extends Component {
 
   render() {
     const { isMobile } = this.props;
+    
+
+    if (this.state.isPasswordVerified) {
+      this.handleFile()
+      return <Redirect to="/companion" />;
+    } else {
+
+    }
 
     const {
       update,
@@ -254,6 +356,62 @@ class Settings extends Component {
         }}
         className="animated fadeIn w3-container"
       >
+
+
+        <Modal isOpen={this.state.importModal}>
+          <ModalHeader>Import existing keystore</ModalHeader>
+          <ModalBody>
+            <center>
+              You are about to import an existing keystore.
+              <br />
+              Please set enter its password.
+              <br />
+              <br />
+
+              <form id="myForm">
+
+              <input
+                type="file"
+                name="keystore"
+                onChange={this.handleImportFileChange}
+              />
+            </form>
+
+
+              <br />
+              <br />
+
+              <Input
+              type="password"
+              id="prev-pwd"
+              name="prev-pwd"
+              placeholder="Enter previous ELA wallet password"
+              required
+              onChange={(e) => this.handlePasswordChange(e)}
+              />
+              <br />
+              <br />
+
+            </center>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              data-testid="restart-btn"
+              color="success"
+              onClick={this.verifyPassword}
+            >
+              Confirm
+            </Button>
+            <Button 
+            color="danger" 
+            onClick={this.closeImportModal}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
+        </Modal>
+
+
         <Modal isOpen={this.state.restartModal}>
           <ModalHeader>Restart {this.state.nodeLabel}</ModalHeader>
           <ModalBody>
@@ -551,7 +709,24 @@ class Settings extends Component {
               onGreenPress={backend.downloadWallet}
             ></Widget05>
           </Col>
+
+          <Col xs="12" sm="6" lg="4">
+            <Widget05
+              testid="download-wallet-btn"
+              dataBox={() => ({
+                title: "Import existing wallet file",
+                variant: "facebook",
+                Restart: "Import",
+                Resync: "",
+              })}
+              onGreenPress={() =>
+                this.showImportModal()
+              }
+            ></Widget05>
+          </Col>
+
         </Row>
+
 
         <Row>
           <Col>

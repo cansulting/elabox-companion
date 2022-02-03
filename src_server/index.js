@@ -296,6 +296,34 @@ router.post("/login", (req, res) => {
   );
 });
 
+router.post("/verify", (req, res) => {
+  let pwd = req.body.pwd;
+  exec(
+    elaPath +
+      "/ela-cli wallet a -w " +
+      config.KEYSTORE_PATH_TEMP +
+      " -p " +
+      pwd +
+      "",
+    { maxBuffer: 1024 * maxBufferSize },
+    async (err, stdout, stderr) => {
+      if (stdout)
+        syslog.write(syslog.create().debug("/verify request " + stdout));
+      if (err) {
+        syslog.write(
+          syslog
+            .create()
+            .error("Error on /verify. Failed ela cli exec.", err)
+            .addCaller()
+        );
+        res.json({ ok: false });
+      } else {
+        res.json({ ok: true, address: stdout.split("\n")[2].split(" ")[0] });
+      }
+    }
+  );
+});
+
 router.post("/createWallet", (req, res) => {
   let pwd = req.body.pwd;
   exec(

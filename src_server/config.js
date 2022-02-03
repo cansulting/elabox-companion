@@ -4,6 +4,8 @@ const feedsDir = "/home/elabox/apps/ela.feeds"
 const homeapps = "/home/elabox/apps"
 const homeappdata = "/home/elabox/data"
 const eladatadir = homeappdata + "/ela.mainchain"
+const eladatadirtemp = homeappdata + "/ela.mainchain/temp"
+
 let elaPath = homeapps + "/ela.mainchain"
 const cwd = path.join(__dirname, ".")
 const tmpPath = "/tmp/ela"
@@ -26,7 +28,9 @@ module.exports = {
   ESC_DIR: homeapps + "/ela.esc",                     // esc bin path
   EID_DIR: homeapps + "/ela.eid",                     // eid bin path
   ELA_DIR: elaPath,                                   // ela mainchain bin path
-  ELADATA_DIR: eladatadir,                            // where keystore will be saved
+  ELADATA_DIR: eladatadir,     
+  ELADATA_TEMP_DIR: eladatadir + "/temp",                            // where keystore will be saved
+  // where keystore will be saved
   ELABLOCKS_DIR: eladatadir + "/elastos",             // mainchain blocks will be save
   EIDDATA_DIR: homeappdata + "/ela.eid",              // eid data directory
   ESCDATA_DIR: homeappdata + "/ela.esc",
@@ -37,6 +41,8 @@ module.exports = {
   RPC_PORT_ESC: 20637,                                // ESC RPC
   CARRIER_DIR: homeapps + "/ela.carrier", // carrier app directory
   KEYSTORE_PATH: eladatadir + "/keystore.dat", // keystore data path
+  KEYSTORE_PATH_TEMP: eladatadirtemp + "/keystore.dat", // temporary keystore data path for verification
+
   SUPPORT_EMAIL: "contact@elabox.com",
   TMP_PATH: tmpPath,                                  // where files will be temporary save. specifically use for installer
   ELA_SYSTEM_PATH: elaSystemPath,                     // dir where the system apps installed

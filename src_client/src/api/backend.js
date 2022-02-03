@@ -18,6 +18,19 @@ class API {
     }).then((response) => response.json());
   };
 
+  verifyKeystorePwd = (pwd) => {
+    return fetch(`http://${PUBLIC_URI}/verify`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        pwd,
+      }),
+    }).then((response) => response.json());
+  };
+
   fetchEla = async () => {
     const response = await this.axios.get("/ela");
     return response.data;
@@ -62,6 +75,20 @@ class API {
       }),
     }).then((response) => response.json());
   };
+
+  changeWalletPassword = (pwd) => {
+    return fetch(`http://${PUBLIC_URI}/changeWalletPassword`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        pwd,
+      }),
+    }).then((response) => response.json());
+  };
+
 
   serviceStatus = () => {
     return fetch(`http://${PUBLIC_URI}/serviceStatus`).then((response) =>
@@ -194,6 +221,12 @@ class API {
     }).then((response) => response.json());
   };
 
+  importKeystoreTemporary = (data) => {
+    return fetch(`http://${PUBLIC_URI}/import-keystore-temp`, {
+      method: "POST",
+      body: data,
+    }).then((response) => response.json());
+  };
 
   sendTx = (recipient, amount, pwd) => {
     return fetch(`http://${PUBLIC_URI}/sendTx`, {
