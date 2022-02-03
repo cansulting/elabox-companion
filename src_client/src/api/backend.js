@@ -15,9 +15,17 @@ class API {
       body: JSON.stringify({
         pwd,
       }),
-    }).then((response) => response.json());
+    });
   };
-
+  getRateLimitWaitTime= () => {
+    return fetch(`http://${PUBLIC_URI}/rateLimitWaitTime`,{
+      method: "get",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      }      
+    }).then(response=>response.json())
+  }
   fetchEla = async () => {
     const response = await this.axios.get("/ela");
     return response.data;
@@ -240,6 +248,19 @@ class API {
       version_type,
     });
     return data;
+  };
+  restart = async () => {
+    await axios.post(`http://${PUBLIC_URI}/restart`);
+  };  
+  shutdown = async () => {
+    await axios.post(`http://${PUBLIC_URI}/shutdown`);    
+    setTimeout(()=>{
+      window.location.reload()
+    },5000)    
+  }
+  checkElaboxStatus = async () =>{
+    const { data } = await axios.get(`http://${PUBLIC_URI}/check_elabox_status`);  
+    return data  
   };
   downloadWallet = () => {
     const response = {

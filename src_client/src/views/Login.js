@@ -3,27 +3,58 @@ import { Link, Redirect } from 'react-router-dom';
 import { Button, Input, Spinner } from 'reactstrap';
 import elaboxLogo from './images/logo-circle-transparent.png';
 
-import backend from '../api/backend';
+import backend from "../api/backend"
 
 function Login() {
-  const [isLoggedIn, setLoggedIn] = useState(false);
-  const [pwd, setPwd] = useState('');
-  const [isProcessing, setProcessing] = useState(false);
-  useEffect(() => {
-    window.localStorage.removeItem('address');
-  }, []);
+  const [seconds,setTimer]=useState(0)
+  const [isLoggedIn, setLoggedIn] = useState(false)
+  const [pwd, setPwd] = useState("")
+  const [isProcessing, setProcessing] = useState(false)
+  const isBlocked= seconds>0 
+  useEffect(()=>{
+    window.localStorage.removeItem('address');    
+    backend.getRateLimitWaitTime().then(responseJson => {
+      setTimer(responseJson.rateLimitRemaining)
+    })
+  },[])
+  useEffect(()=>{
+    let interval=null
+    if(seconds>0){
+      interval=setInterval(()=>{
+        setTimer(seconds=>seconds-1)
+      },1000)
+    }
+    else{
+      backend.getRateLimitWaitTime().then(responseJson => {
+        setTimer(responseJson.rateLimitRemaining)
+      })      
+      clearInterval(interval)
+    }
+    return ()=>{
+      clearInterval(interval)
+    }
+  },[seconds])
   function login() {
     setProcessing(true);
     backend
       .login(pwd)
-      .then((responseJson) => {
-        console.log('Login', responseJson);
+      .then(async (response) => {
+        const responseJson=await response.json()
+        console.log("Login", responseJson)
         if (responseJson.ok) {
           localStorage.setItem('logedin', true);
           localStorage.setItem('address', responseJson.address);
           setLoggedIn(true);
         } else {
-          alert('Wrong password');
+          if(responseJson.err!=="Too many auth request from this IP"){
+            alert("Wrong password")
+          }
+          else{
+            backend.getRateLimitWaitTime().then(responseJson => {
+              setTimer(responseJson.rateLimitRemaining)
+            })            
+            alert(`Too many auth request from this IP, please try again.`)            
+          }
         }
         setProcessing(false);
       })
@@ -76,19 +107,10 @@ function Login() {
               onChange={(e) => handleChange(e)}
               autoFocus
             />
-            <Button
-              data-testid="sign-in-btn"
-              active={!isProcessing}
-              type="submit"
-              style={{ marginTop: '20px' }}
-            >
-              {!isProcessing && 'Sign In'}
-              {isProcessing && (
-                <>
-                  Please wait
-                  <Spinner size="sm" style={{ margin: '0 5px' }} />
-                </>
-              )}
+            <Button data-testid="sign-in-btn" active={!isProcessing} type="submit" style={{ marginTop: "20px" }} disabled={isBlocked}>
+              {!isProcessing && !isBlocked && "Sign In"} 
+              {isBlocked && !isProcessing && `${new Date(seconds * 1000).toISOString().substr(11, 8)} remaning`}
+              {isProcessing && <>Please wait<Spinner size='sm' style={{margin:"0 5px"}}/></>}
             </Button>
           </form>
         </div>

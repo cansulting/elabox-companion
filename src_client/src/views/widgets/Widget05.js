@@ -62,10 +62,9 @@ class Widget05 extends Component {
         <CardBody>
           <Row style={{ height: "70px" }}>
             <Col style={{ display: "flex", justifyContent: "center" }}>
-              {data.title}
+              {data.title} {data.version?.length>0 ? `v${data.version}`:""}
             </Col>
           </Row>
-
           {vals[3] != "" ? (
             <Row>
               <Col xs="6" style={{ justifyContent: "center", display: "flex" }}>
