@@ -2301,12 +2301,7 @@
     "jest-message-util" "^27.3.1"
     "jest-regex-util" "^27.0.6"
 
-"express-rate-limit@^6.2.0":
-  "integrity" "sha512-q9xfttbPX79HiBsHA4LT3PZEeJR96CJ5/2jloAKSEECMx8XlOOOpjxx6iK/kBw3hFJ8uhx6Q9lCfSGp70yV0tQ=="
-  "resolved" "https://registry.npmjs.org/express-rate-limit/-/express-rate-limit-6.2.0.tgz"
-  "version" "6.2.0"
-
-"express@^4", "express@^4.14.0", "express@^4.17.1":
+"express@^4.14.0", "express@^4.17.1":
   "integrity" "sha512-mHJ9O79RqluphRrcw2X/GTh3k9tVv8YcoyY4Kkh4WDMUYKRZUq0h1o0w2rrrxBqM7VoeUVqgb27xlEMXTnYt4g=="
   "resolved" "https://registry.npmjs.org/express/-/express-4.17.1.tgz"
   "version" "4.17.1"
