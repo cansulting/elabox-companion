@@ -1,11 +1,10 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Link, Redirect } from "react-router-dom"
 import { Button, Input, Spinner } from "reactstrap"
 import {validCharacters} from "../utils/auth"
 import elaboxLogo from "./images/logo-circle-transparent.png"
 
 import backend from "../api/backend"
-import { useEffect } from "react/cjs/react.development"
 
 function Login() {
   const [seconds,setTimer]=useState(0)
