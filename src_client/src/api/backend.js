@@ -269,6 +269,9 @@ class API {
     // now, let's download:
     window.location.href = response.file;
   };
+  uploadKeyStore= () =>{
+
+  };
 }
 
 export default new API();

@@ -554,6 +554,18 @@ class Settings extends Component {
         <Row style={{ marginTop: "20px" }}>
           <Col xs="12" sm="6" lg="4">
             <Widget05
+              testid="keystore-upload-btn"
+              dataBox={() => ({
+                title: "Upload keystore",
+                variant: "facebook",
+                Restart: "Upload",
+                Resync: "",
+              })}
+              onGreenPress={backend.uploadKeyStore}
+            ></Widget05>
+          </Col>          
+          <Col xs="12" sm="6" lg="4">
+            <Widget05
               testid="download-wallet-btn"
               dataBox={() => ({
                 title: "Backup wallet file",
@@ -563,9 +575,8 @@ class Settings extends Component {
               })}
               onGreenPress={backend.downloadWallet}
             ></Widget05>
-          </Col>
+          </Col>          
         </Row>
-
         <Row>
           <Col>
             <Card
