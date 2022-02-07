@@ -5,6 +5,9 @@ const log = require("../logger")
 const tmpWallet = "/tmp/wallet.dat"
 
 // use to upload new keystore
+// @hex the hexadecimal string of keystore data
+// @oldPass the current system pass
+// @newPass new wallet password and new system pass
 function fromHex(hex = "", oldPass = "", newPass = "") {
     return new Promise( async (res, rej) => {
         log.write(log.create().info('uploading new keystore...'))
