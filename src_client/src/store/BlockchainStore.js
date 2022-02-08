@@ -197,11 +197,22 @@ const feeds = types
     });
     return { fetchData, restart };
   });
+  const glide = types
+  .model({
+    isRunning: types.maybeNull(types.boolean, false),
+  })
+  .actions((self) => {
+    const updateStatus = flow(function* () {
+      self.isRunning=true;
+    });
+    return { updateStatus };
+  });  
 const BlockChainStore = types.model({
   ela: Ela,
   eid: eid,
   esc: esc,
   feeds: feeds,
+  glide: glide,
   carrier: Carrier,
 });
 

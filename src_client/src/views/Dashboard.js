@@ -8,13 +8,14 @@ import Widget04 from "./widgets/Widget04"
 import mainchainLogo from "./images/mainchain_white.png"
 import carrierLogo from "./images/carrier_white.png"
 import feedsLogo from "./images/feeds-logo.png"
+import glideLogo from "./images/glide-logo.png"
 import RootStore from "../store"
 import { observer } from "mobx-react"
 import { formatTime } from "../utils/time"
 import { shortifyHash } from "../utils/string"
 
 const Dashboard = ({ isMobile }) => {
-  const { ela, eid, carrier, esc, feeds } = RootStore.blockchain
+  const { ela, eid, carrier, esc, feeds, glide } = RootStore.blockchain
   useEffect(() => {}, [])
 
   var cardChartData1 = {
@@ -244,6 +245,34 @@ const Dashboard = ({ isMobile }) => {
           />
         </Col>
       </Row>
+      <Row style={{ paddingTop: "50px" }}>
+        <Col xs="12" sm="4" lg="4">
+          <Widget02
+            header="Glide"
+            mainText={`${glide.isRunning ? "Running" : "Stopped"}`}
+            icon={glideLogo}
+            color={`${glide.isRunning ? "success" : "danger"}`}
+            variant="1"
+            children={
+              feeds.isRunning && (
+                <Button
+                as="achor"
+                style={{
+                  marginTop: "0.5em",
+                  width: "100%",
+                }}
+                color="success"
+                target="_blank"
+                href={"http://" + window.location.hostname + "/glide"}
+              >
+                Launch
+              </Button>
+
+              )
+            }
+          />
+        </Col>
+      </Row>      
       <Row style={{ paddingTop: "50px" }}>
         <Col xs="12" sm="4" lg="4">
           {carrier.isRunning ? (

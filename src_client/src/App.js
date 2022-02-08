@@ -24,6 +24,7 @@ class App extends React.Component {
       RootStore.blockchain.esc.fetchData();
       RootStore.blockchain.carrier.fetchData();
       RootStore.blockchain.feeds.fetchData();
+      RootStore.blockchain.glide.updateStatus();      
       backend.checkInstallation().then((responseJson) => {
         localStorage.setItem("isconfiged", responseJson.configed.trim());
         this.setState({ loading: false });
