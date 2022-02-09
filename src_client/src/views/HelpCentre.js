@@ -149,11 +149,13 @@ class HelpCentre extends Component {
                         </Row>
 
                       </Form>
+                      <a style={{position:"absolute", bottom: 20,right: 30,color: "white"}} href="https://elabox.com/contact" target="_blank" rel="noopener noreferrer nofollow">
+                        Contact Us
+                      </a>                      
                     </CardBody>
-
                   </Card>
                 </Col>
-              </Row>
+              </Row>              
             </div>
 
           )
