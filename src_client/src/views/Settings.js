@@ -15,12 +15,14 @@ import {
   CardHeader,
   Col,
   Row,
+  Spinner,
 } from "reactstrap";
 import Widget05 from "./widgets/Widget05";
 
 import master from "../api/master";
 import backend from "../api/backend";
-import {validCharacters} from "../utils/auth"
+import { validCharacters } from "../utils/auth"
+import { capitalize } from "../utils/string"
 import RootStore from "../store";
 import errorLogo from "./images/error.png";
 import checkLogo from "./images/check.png";
@@ -35,6 +37,8 @@ class Settings extends Component {
       eidRestartModal: false,
       eidResyncModal: false,
       uploadKeyStoreModal:false,
+      uploadKeyStoreProcessing:false,
+      uploadKeyStoreStatus:{status:"",message:""},      
       carrierRestartModal: false,
       update: false,
       checkUpdateModal: false,
@@ -283,7 +287,7 @@ class Settings extends Component {
           ...prevState.form,
           messages:{
             ...prevState.form.messages,
-            [id]:"this field is required."
+            [id]:"This field is required."
           }
         }}))        
       }
@@ -301,7 +305,7 @@ class Settings extends Component {
             ...prevState.form,
             messages:{
               ...prevState.form.messages,
-              confirmPass:"new password and confirm password does not match."
+              confirmPass:"New wallet password and confirm password does not match."
             }
           }}))      
       }
@@ -322,11 +326,32 @@ class Settings extends Component {
       const {messages,values} = this.state.form
       const isValid=messages.keystore.length===0 && messages.oldPass.length ===0  && messages.newPass.length === 0 && messages.confirmPass.length === 0
       if(isValid){
+      this.setState({uploadKeyStoreProcessing:true});
       backend.uploadKeyStore(values).then(response=>{
-        console.log(response)
+        const {ok}=response;
+        if(ok==="nope"){
+          this.setState({uploadKeyStoreProcessing:false,uploadKeyStoreStatus:{status:"error",message:response.err}})
+        }
+        else{
+          backend
+          .login(values.newPass)
+          .then(async (response) => {
+            const responseJson=await response.json()
+            if (responseJson.ok) {
+              localStorage.setItem('address', responseJson.address);            
+            }
+          })
+          .finally(()=>{
+            this.setState({uploadKeyStoreProcessing:false,uploadKeyStoreStatus:{status:"success",message:""}});                    
+            this.closeUploadKeyStoreModal()            
+          })
+        }
       })
       }
     })
+  }
+  handleUploadKeyStoreStatus=status=>{
+    this.setState({uploadKeyStoreStatus:{status,message:""}})
   }
   render() {
     const { isMobile } = this.props;
@@ -369,6 +394,7 @@ class Settings extends Component {
               <br />
               This process will take a few hours
               <br />
+              
               <br />
             </center>
           </ModalBody>
@@ -390,6 +416,7 @@ class Settings extends Component {
           <ModalBody>
             <center>
               You are about to upload new keystore
+              <br/>
             </center>
             <Form>
             <FormGroup>
@@ -416,7 +443,7 @@ class Settings extends Component {
             </FormGroup>              
             <FormGroup>
               <Label for="new_password">
-                New password
+                Verify wallet password
               </Label>
               <Input id="new_password" name="new_password" type="password" invalid={this.state.form.messages.newPass.length>0} onChange={e=>{
                 this.handleInputChange("newPass",e.target.value.trim())
@@ -443,15 +470,33 @@ class Settings extends Component {
               data-testid="upload-keystore-btn"
               color="success"
               onClick={this.handleSubmitKeyStore}
+              disabled={this.state.uploadKeyStoreProcessing}
             >
-              Confirm
+              {this.state.uploadKeyStoreProcessing ? <Spinner size="sm">Loading...</Spinner>:"Confirm"}
             </Button>
-            <Button color="danger" onClick={this.closeUploadKeyStoreModal}>
+            <Button color="danger" onClick={this.closeUploadKeyStoreModal} disabled={this.state.uploadKeyStoreProcessing}>
               Cancel
             </Button>
           </ModalFooter>
         </Modal>        
-
+        <Modal isOpen={this.state.uploadKeyStoreStatus.status==="success" || this.state.uploadKeyStoreStatus.status==="error"}>
+          <ModalHeader>{capitalize(this.state.uploadKeyStoreStatus.status)}</ModalHeader>
+          <ModalBody>
+            <center>
+              {this.state.uploadKeyStoreStatus.status==="success" ? "Keystore uploaded." : this.state.uploadKeyStoreStatus.message}
+              <br />
+              <br />
+              <img src={ this.state.uploadKeyStoreStatus.status==="success" ? checkLogo : errorLogo} style={{ width: "50px", height: "50px" }} />
+            </center>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={()=>{
+              this.handleUploadKeyStoreStatus("")
+            }}>
+              Close
+            </Button>
+          </ModalFooter>
+        </Modal>
         <Modal isOpen={this.state.errormodal}>
           <ModalHeader>Error</ModalHeader>
           <ModalBody>
