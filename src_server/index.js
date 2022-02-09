@@ -1,6 +1,6 @@
 const express = require("express");
 const eventhandler = require("./helper/eventHandler");
-const urlExist = require("url-exist");
+const urlExist = require("fix-esm").require("url-exist");
 const { generateKeystore, changePassword, authenticate, authLimiter , resetRateLimit } = require("./utilities/auth")
 // to allow cross-origin request
 const cors = require("cors");

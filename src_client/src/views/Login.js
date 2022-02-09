@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Link, Redirect } from 'react-router-dom';
-import { Button, Input, Spinner } from 'reactstrap';
-import elaboxLogo from './images/logo-circle-transparent.png';
+import React, { useState, useEffect } from "react"
+import { Link, Redirect } from "react-router-dom"
+import { Button, Input, Spinner } from "reactstrap"
+import {validCharacters} from "../utils/auth"
+import elaboxLogo from "./images/logo-circle-transparent.png"
 
 import backend from "../api/backend"
 
@@ -35,7 +36,12 @@ function Login() {
     }
   },[seconds])
   function login() {
-    setProcessing(true);
+    setProcessing(true)
+    if(!validCharacters(pwd)){
+      alert("Password shouldnt contain special characters and space with atleast 6 characters.")
+      setProcessing(false)      
+      return;
+    }
     backend
       .login(pwd)
       .then(async (response) => {
@@ -56,12 +62,13 @@ function Login() {
             alert(`Too many auth request from this IP, please try again.`)            
           }
         }
-        setProcessing(false);
       })
       .catch((error) => {
-        console.error(error);
-        setProcessing(false);
-      });
+        console.error(error)
+      })
+      .finally(()=>{
+        setProcessing(false)                
+      })
   }
 
   if (isLoggedIn) {

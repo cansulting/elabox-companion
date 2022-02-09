@@ -8,6 +8,7 @@ import Widget04 from "./widgets/Widget04"
 import mainchainLogo from "./images/mainchain_white.png"
 import carrierLogo from "./images/carrier_white.png"
 import feedsLogo from "./images/feeds-logo.png"
+import glideLogo from "./images/glide-logo.png"
 import RootStore from "../store"
 import { observer } from "mobx-react"
 import { formatTime } from "../utils/time"
@@ -244,6 +245,34 @@ const Dashboard = ({ isMobile }) => {
           />
         </Col>
       </Row>
+      <Row style={{ paddingTop: "50px" }}>
+        <Col xs="12" sm="4" lg="4">
+          <Widget02
+            header="Glide"
+            mainText="Running"
+            icon={glideLogo}
+            color='success'
+            variant="1"
+            children={
+              (
+                <Button
+                as="achor"
+                style={{
+                  marginTop: "0.5em",
+                  width: "100%",
+                }}
+                color="success"
+                target="_blank"
+                href={"http://" + window.location.hostname + "/glide"}
+              >
+                Launch
+              </Button>
+
+              )
+            }
+          />
+        </Col>
+      </Row>      
       <Row style={{ paddingTop: "50px" }}>
         <Col xs="12" sm="4" lg="4">
           {carrier.isRunning ? (
