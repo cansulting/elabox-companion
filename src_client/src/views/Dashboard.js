@@ -15,7 +15,7 @@ import { formatTime } from "../utils/time"
 import { shortifyHash } from "../utils/string"
 
 const Dashboard = ({ isMobile }) => {
-  const { ela, eid, carrier, esc, feeds, glide } = RootStore.blockchain
+  const { ela, eid, carrier, esc, feeds } = RootStore.blockchain
   useEffect(() => {}, [])
 
   var cardChartData1 = {
@@ -249,12 +249,12 @@ const Dashboard = ({ isMobile }) => {
         <Col xs="12" sm="4" lg="4">
           <Widget02
             header="Glide"
-            mainText={`${glide.isRunning ? "Running" : "Stopped"}`}
+            mainText="Running"
             icon={glideLogo}
-            color={`${glide.isRunning ? "success" : "danger"}`}
+            color='success'
             variant="1"
             children={
-              glide.isRunning && (
+              (
                 <Button
                 as="achor"
                 style={{
