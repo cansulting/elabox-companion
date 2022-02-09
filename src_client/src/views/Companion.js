@@ -46,7 +46,7 @@ function Companion({ ota, elaStatus }) {
 
   return (
     <>
-      <Router>
+      <Router basename={process.env.PUBLIC_URL}>
         <div
           style={{
             height: "100vh",
