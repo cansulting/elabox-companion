@@ -254,7 +254,20 @@ class Settings extends Component {
     this.setState({uploadKeyStoreModal:true})
   }
   closeUploadKeyStoreModal = ()=>{
-    this.setState({uploadKeyStoreModal:false})
+    this.setState({uploadKeyStoreModal:false,form:{
+      values:{
+        keystore:"",
+        oldPass:"",
+        newPass:"",
+        confirmPass:""
+      },
+      messages:{
+        keystore:"",
+        oldPass:"",
+        newPass:"",
+        confirmPass:""
+      }
+    }})
   }
   handleInputChange = async (id,value)=>{
     switch (id) {
@@ -265,6 +278,10 @@ class Settings extends Component {
           values:{
             ...this.state.form.values,
             keystore: new Buffer(keyStoreValue).toString('hex')
+          },
+          messages:{
+            ...this.state.form.messages,
+            keystore:""
           }
         }})        
         break;
@@ -454,7 +471,7 @@ class Settings extends Component {
             </FormGroup> 
             <FormGroup>
               <Label for="confirm_password">
-                Confirm password
+                Confirm wallet password
               </Label>
               <Input id="confirm_password" name="confirm_password" type="password" invalid={this.state.form.messages.confirmPass.length>0} onChange={e=>{
                 this.handleInputChange("confirmPass",e.target.value.trim())
