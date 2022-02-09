@@ -23,7 +23,7 @@ class App extends React.Component {
       RootStore.blockchain.eid.fetchData();
       RootStore.blockchain.esc.fetchData();
       RootStore.blockchain.carrier.fetchData();
-      RootStore.blockchain.feeds.fetchData();
+      RootStore.blockchain.feeds.fetchData();    
       backend.checkInstallation().then((responseJson) => {
         localStorage.setItem("isconfiged", responseJson.configed.trim());
         this.setState({ loading: false });
@@ -40,7 +40,7 @@ class App extends React.Component {
   render() {
     if (this.state.loading) {
       return (
-        <Router>
+        <Router basename={process.env.PUBLIC_URL}>
           <div>
             <React.Suspense fallback={loading()}>
               <Switch>
@@ -59,7 +59,7 @@ class App extends React.Component {
       );
     } else {
       return (
-        <Router>
+        <Router basename={process.env.PUBLIC_URL}>
           <Socket>
             <div>
               <React.Suspense fallback={loading()}>

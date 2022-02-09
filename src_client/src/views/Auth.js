@@ -14,7 +14,7 @@ const Login = React.lazy(() => import("./Login"))
 
 function Auth({ ota }) {
   return (
-    <Router>
+    <Router basename={process.env.PUBLIC_URL}>
       <div>
         <React.Suspense fallback={loading()}>
           <Switch>

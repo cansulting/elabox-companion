@@ -13,6 +13,7 @@ function Login() {
   const [isProcessing, setProcessing] = useState(false)
   const isBlocked= seconds>0 
   useEffect(()=>{
+    window.localStorage.removeItem('address');    
     backend.getRateLimitWaitTime().then(responseJson => {
       setTimer(responseJson.rateLimitRemaining)
     })
@@ -47,9 +48,9 @@ function Login() {
         const responseJson=await response.json()
         console.log("Login", responseJson)
         if (responseJson.ok) {
-          localStorage.setItem("logedin", true)
-          localStorage.setItem("address", responseJson.address)
-          setLoggedIn(true)
+          localStorage.setItem('logedin', true);
+          localStorage.setItem('address', responseJson.address);
+          setLoggedIn(true);
         } else {
           if(responseJson.err!=="Too many auth request from this IP"){
             alert("Wrong password")
@@ -71,37 +72,36 @@ function Login() {
   }
 
   if (isLoggedIn) {
-    return <Redirect to="/" />
+    return <Redirect to="/" />;
   }
 
   function handleChange(event) {
-    const { target } = event
-    const value = target.type === "checkbox" ? target.checked : target.value
-    setPwd(value)
+    const { target } = event;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    setPwd(value);
   }
 
   return (
     <div
       style={{
-        backgroundColor: "#272A3D",
-        height: "100vh",
-        width: "100%",
-        justifyContent: "center",
-        display: "flex",
-        alignItems: "center",
+        backgroundColor: '#272A3D',
+        height: '100vh',
+        width: '100%',
+        justifyContent: 'center',
+        display: 'flex',
+        alignItems: 'center',
       }}
     >
       <center>
         <img
           src={elaboxLogo}
-          style={{ width: "200px", height: "200px", paddingRight: "10px" }}
+          style={{ width: '200px', height: '200px', paddingRight: '10px' }}
         />
-        <div style={{ paddingTop: "20px" }}>
+        <div style={{ paddingTop: '20px' }}>
           <form
             onSubmit={(e) => {
-              e.preventDefault()
-              if (!isProcessing)
-                login()
+              e.preventDefault();
+              if (!isProcessing) login();
             }}
           >
             <Input
@@ -126,7 +126,7 @@ function Login() {
         </div>
       </center>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;
