@@ -269,8 +269,12 @@ class API {
     // now, let's download:
     window.location.href = response.file;
   };
-  uploadKeyStore= () =>{
-
+  uploadKeyStore= async (values) =>{
+    const {oldPass,newPass,keystore}=values
+    const {data} =  await axios.post(`http://${PUBLIC_URI}/uploadWallet`,{
+      wallet : keystore, oldpass : oldPass, newpass : newPass
+    })
+    return data 
   };
 }
 

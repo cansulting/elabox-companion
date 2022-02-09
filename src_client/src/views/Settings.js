@@ -6,8 +6,10 @@ import {
   ModalFooter,
   Input,
   ModalHeader,
-  Badge,
-  Line,
+  Form,
+  FormGroup,
+  Label,
+  FormFeedback,
   Card,
   CardBody,
   CardHeader,
@@ -18,6 +20,7 @@ import Widget05 from "./widgets/Widget05";
 
 import master from "../api/master";
 import backend from "../api/backend";
+import {validCharacters} from "../utils/auth"
 import RootStore from "../store";
 import errorLogo from "./images/error.png";
 import checkLogo from "./images/check.png";
@@ -31,6 +34,7 @@ class Settings extends Component {
       mainchainResyncModal: false,
       eidRestartModal: false,
       eidResyncModal: false,
+      uploadKeyStoreModal:false,
       carrierRestartModal: false,
       update: false,
       checkUpdateModal: false,
@@ -48,6 +52,20 @@ class Settings extends Component {
       showOnion: false,
       errormodal: false,
       resyncsuccessmodal: false,
+      form:{
+        values:{
+          keystore:"",
+          oldPass:"",
+          newPass:"",
+          confirmPass:""
+        },
+        messages:{
+          keystore:"",
+          oldPass:"",
+          newPass:"",
+          confirmPass:""
+        }
+      }
     };
   }
 
@@ -228,7 +246,88 @@ class Settings extends Component {
     this.setState({ showOnion: !this.state.showOnion });
     console.log("toggleOnion");
   };
-
+  showUploadKeyStoreModal = ()=>{
+    this.setState({uploadKeyStoreModal:true})
+  }
+  closeUploadKeyStoreModal = ()=>{
+    this.setState({uploadKeyStoreModal:false})
+  }
+  handleInputChange = async (id,value)=>{
+    switch (id) {
+      case "keystore":
+        const keyStoreValue = await value.text()
+        this.setState({ form:{
+          ...this.state.form,
+          values:{
+            ...this.state.form.values,
+            keystore: new Buffer(keyStoreValue).toString('hex')
+          }
+        }})        
+        break;
+      default:
+        this.setState({ form:{
+          ...this.state.form,
+          values:{
+            ...this.state.form.values,
+            [id]: value
+          }
+        }})            
+        break;
+    }
+  }
+  validateUploadKeystoreForm = () => new Promise((resolve,reject)=>{
+    Object.keys(this.state.form.values).forEach((id)=>{
+      const value=this.state.form.values[id];
+      if(value.length === 0 && id === "keystore"){
+        this.setState(prevState=>({form:{
+          ...prevState.form,
+          messages:{
+            ...prevState.form.messages,
+            [id]:"this field is required."
+          }
+        }}))        
+      }
+      else if(!validCharacters(value) && id!=="keystore"){
+        this.setState(prevState=>({form:{
+          ...prevState.form,
+          messages:{
+            ...prevState.form.messages,
+            [id]:"Password shouldnt contain special characters and space with atleast 6 characters."
+          }
+        }}))        
+      }    
+      else if( id==="confirmPass" && this.state.form.values["newPass"] !== value){
+          this.setState(prevState=>({form:{
+            ...prevState.form,
+            messages:{
+              ...prevState.form.messages,
+              confirmPass:"new password and confirm password does not match."
+            }
+          }}))      
+      }
+      else{
+        this.setState(prevState=>({form:{
+          ...prevState.form,
+          messages:{
+            ...prevState.form.messages,
+            [id]:""
+          }
+        }}))
+      }    
+    })
+    resolve(true)
+  })
+  handleSubmitKeyStore=()=>{
+    this.validateUploadKeystoreForm().then(()=>{
+      const {messages,values} = this.state.form
+      const isValid=messages.keystore.length===0 && messages.oldPass.length ===0  && messages.newPass.length === 0 && messages.confirmPass.length === 0
+      if(isValid){
+      backend.uploadKeyStore(values).then(response=>{
+        console.log(response)
+      })
+      }
+    })
+  }
   render() {
     const { isMobile } = this.props;
 
@@ -286,6 +385,72 @@ class Settings extends Component {
             </Button>
           </ModalFooter>
         </Modal>
+        <Modal isOpen={this.state.uploadKeyStoreModal}>
+          <ModalHeader>Upload keystore</ModalHeader>
+          <ModalBody>
+            <center>
+              You are about to upload new keystore
+            </center>
+            <Form>
+            <FormGroup>
+              <Label for="new_keystore">
+                keystore
+              </Label>
+              <Input id="new_keystore" name="new_keystore" type="file" invalid={this.state.form.messages.keystore.length>0} onChange={e=>{
+                this.handleInputChange("keystore",e.target.files[0])
+              }}/>
+              <FormFeedback>
+                {this.state.form.messages.keystore}
+              </FormFeedback>              
+            </FormGroup>                            
+            <FormGroup>
+              <Label for="old_password">
+                Old password
+              </Label>
+              <Input id="old_password" name="old_password" type="password" invalid={this.state.form.messages.oldPass.length>0} onChange={e=>{
+                this.handleInputChange("oldPass",e.target.value.trim())
+              }} />
+              <FormFeedback>
+                {this.state.form.messages.oldPass}
+              </FormFeedback>              
+            </FormGroup>              
+            <FormGroup>
+              <Label for="new_password">
+                New password
+              </Label>
+              <Input id="new_password" name="new_password" type="password" invalid={this.state.form.messages.newPass.length>0} onChange={e=>{
+                this.handleInputChange("newPass",e.target.value.trim())
+              }} />
+              <FormFeedback>
+                {this.state.form.messages.newPass}
+              </FormFeedback>                            
+            </FormGroup> 
+            <FormGroup>
+              <Label for="confirm_password">
+                Confirm password
+              </Label>
+              <Input id="confirm_password" name="confirm_password" type="password" invalid={this.state.form.messages.confirmPass.length>0} onChange={e=>{
+                this.handleInputChange("confirmPass",e.target.value.trim())
+              }} />
+              <FormFeedback>
+                {this.state.form.messages.confirmPass}
+              </FormFeedback>                            
+            </FormGroup>                                      
+            </Form>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              data-testid="upload-keystore-btn"
+              color="success"
+              onClick={this.handleSubmitKeyStore}
+            >
+              Confirm
+            </Button>
+            <Button color="danger" onClick={this.closeUploadKeyStoreModal}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </Modal>        
 
         <Modal isOpen={this.state.errormodal}>
           <ModalHeader>Error</ModalHeader>
@@ -561,7 +726,7 @@ class Settings extends Component {
                 Restart: "Upload",
                 Resync: "",
               })}
-              onGreenPress={backend.uploadKeyStore}
+              onGreenPress={this.showUploadKeyStoreModal}
             ></Widget05>
           </Col>          
           <Col xs="12" sm="6" lg="4">
