@@ -254,7 +254,7 @@ const Dashboard = ({ isMobile }) => {
             color={`${glide.isRunning ? "success" : "danger"}`}
             variant="1"
             children={
-              feeds.isRunning && (
+              glide.isRunning && (
                 <Button
                 as="achor"
                 style={{

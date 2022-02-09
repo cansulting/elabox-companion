@@ -203,7 +203,8 @@ const feeds = types
   })
   .actions((self) => {
     const updateStatus = flow(function* () {
-      self.isRunning=true;
+      const response =  yield API.checkElaboxStatus()
+      self.isRunning = response;
     });
     return { updateStatus };
   });  
