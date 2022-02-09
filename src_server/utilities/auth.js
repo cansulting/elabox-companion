@@ -141,15 +141,18 @@ function generateKeystore(pwd, replaceOld = false) {
     );
 }
 
-function authenticate(pwd) {
+function authenticateWallet(pwd, walletPath = "") {
     return new Promise((resolve, reject) => {
         if (!validCharacters(pwd)) {
             reject(Error('invalid password'))
             return
         }
+        if (!walletPath || walletPath === "") 
+            walletPath = config.KEYSTORE_PATH
+            
         const cmd = config.ELA_DIR +
             "/ela-cli wallet a -w " +
-            config.KEYSTORE_PATH +
+            walletPath +
             " -p " +
             pwd +
             ""
@@ -181,7 +184,7 @@ module.exports = {
     generateKeystore: generateKeystore,
     changePassword: changeSystemPassword,
     validCharacters: validCharacters,
-    authenticate: authenticate,
+    authenticateWallet: authenticateWallet,
     authLimiter: authLimiter,
     resetRateLimit: resetRateLimit
 }

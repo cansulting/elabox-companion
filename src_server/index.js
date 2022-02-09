@@ -1,7 +1,7 @@
 const express = require("express");
 const eventhandler = require("./helper/eventHandler");
 const urlExist = require("fix-esm").require("url-exist");
-const { generateKeystore, changePassword, authenticate, authLimiter , resetRateLimit } = require("./utilities/auth")
+const { generateKeystore, changePassword, authenticateWallet, authLimiter , resetRateLimit } = require("./utilities/auth")
 // to allow cross-origin request
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -10,6 +10,7 @@ const fs = require("fs");
 const config = require("./config");
 const utils = require("./utilities");
 const syslog = require("./logger");
+const keystore = require("./utilities/keystore")
 var errorHandler = require("errorhandler");
 //ota
 const path = require("path");
@@ -288,7 +289,7 @@ router.post("/login",(req, res) => {
     res.json({ ok: false, err: global.rateLimitRemaining + " seconds remaining" })
     return 
   }
-  authenticate(pwd)
+  authenticateWallet(pwd)
     .then( address => {
       resetRateLimit()      
       res.json({ ok: true, address: address})      
@@ -319,6 +320,13 @@ router.post("/createWallet", (req, res) => {
 router.get("/downloadWallet", function (req, res) {
   res.download(config.KEYSTORE_PATH);
 });
+
+router.post("/uploadWallet", function (req, res) {
+  const { wallet, oldpass, newpass} = req.body
+  keystore.uploadFromHex(wallet, oldpass, newpass)
+    .then( _ => res.json({ ok: 'ok'}))
+    .catch( err => res.json({ ok: 'nope', err: err.message}))
+})
 
 router.post("/getBalance", (req, res) => {
   let address = req.body.address;
