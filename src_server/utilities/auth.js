@@ -141,42 +141,47 @@ function generateKeystore(pwd, replaceOld = false) {
     );
 }
 
-function authenticateWallet(pwd, walletPath = "") {
-    return new Promise((resolve, reject) => {
+// function that authenticates the user by checking ubuntu password
+function authenticatePassword(pwd, username = 'elabox') {
+    return new Promise(async (resolve, reject) => {
         if (!validCharacters(pwd)) {
             reject(Error('invalid password'))
             return
         }
-        if (!walletPath || walletPath === "") 
-            walletPath = config.KEYSTORE_PATH
-            
-        const cmd = config.ELA_DIR +
-            "/ela-cli wallet a -w " +
-            walletPath +
-            " -p " +
-            pwd +
-            ""
-        //console.log(cmd)
-        exec(
-            cmd,
-            { maxBuffer: 1024 * maxBufferSize },
-            (err, stdout, stderr) => {
-              //if (stdout)
-              //  syslog.write(syslog.create().debug("/login request " + stdout));
-              if (err || stderr) {
+        try {
+            let result = await executeCommand("cat /etc/shadow | grep " + username, "Login")
+            creds = result.split("$")
+            const salt = creds[2]
+            const hash = result.split(':')[1]
+            //console.log(creds[1], creds[2], hash)
+            const genHash = await executeCommand(`openssl passwd -${creds[1]} -salt ${salt} ${pwd}`)
+            if (genHash.trim() === hash.trim()) {
+                resolve(200)
+            } else {
+                reject(Error('invalid password'))
+            }
+        }catch (e) {
+            reject(e)
+        }
+    })
+}
+
+function executeCommand(cmd, tag = "") { 
+    return new Promise((resolve, reject) => {
+        exec(cmd, { maxBuffer: 1024 * maxBufferSize }, (err, stdout, stderr) => {
+            if (err || stderr) {
                 err = err | stderr
                 syslog.write(
                   syslog
                     .create()
-                    .error("Error on /login. Failed ela cli exec.", err)
+                    .error(tag + " Exec command internal error.", err)
                     .addCaller()
                 );
-                reject(Error('unable to authenticate password.'))
+                reject(err)
               } else {
-                resolve(stdout.split("\n")[2].split(" ")[0]);
+                resolve(stdout)
               }
-            }
-        );
+        })
     })
 }
 
@@ -184,7 +189,7 @@ module.exports = {
     generateKeystore: generateKeystore,
     changePassword: changeSystemPassword,
     validCharacters: validCharacters,
-    authenticateWallet: authenticateWallet,
+    authenticatePassword: authenticatePassword,
     authLimiter: authLimiter,
     resetRateLimit: resetRateLimit
 }

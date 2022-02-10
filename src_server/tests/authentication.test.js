@@ -3,6 +3,19 @@ const { generateKeystore, changePassword, authenticate } = require("../utilities
 jest.setTimeout(100000)
 const validSpecialChars = "!@#%*_+\-=?~"
 
+test("validate password", async () => {
+
+    await authenticatePassword("elabox")
+    .then( (res) => {
+        expect(res).toBe(200)
+    })
+    .catch( err => {
+        console.log(err)
+        expect(err).toBeNull()
+    })
+
+})
+
 test("change password: should accept special characters limited to " + validSpecialChars, async () => {
     for (let index = 0; index < validSpecialChars.length; index++) {
         const character = validSpecialChars[index];
