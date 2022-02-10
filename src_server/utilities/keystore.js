@@ -2,6 +2,9 @@ const fs = require("fs")
 const config = require("../config")
 const auth = require("./auth")
 const log = require("../logger")
+const { exec } = require("child_process"); 
+const syslog = require("../logger");
+
 const tmpWallet = "/tmp/wallet.dat"
 
 // use to upload new keystore
@@ -14,7 +17,7 @@ function fromHex(hex = "", oldPass = "", newPass = "") {
         let wallet = ""
         try {
             // STEP: authenticate pass
-            await auth.authenticateWallet(oldPass)
+            await auth.authenticatePassword(oldPass)
             wallet = Buffer.from(hex, "hex").toString("utf8")
             const pwallet = JSON.parse(wallet)
             // STEP: validate content
@@ -37,7 +40,7 @@ function fromHex(hex = "", oldPass = "", newPass = "") {
             }
             try {
                 // STEP: authenticate new pass
-                await auth.authenticateWallet(newPass, tmpWallet)
+                await authenticateWallet(newPass, tmpWallet)
             } catch (err) {
                 log.write(log.create().error('upload keystore failed. new password is invalid', err))
                 rej(Error('password for new wallet is invalid'))
@@ -62,6 +65,45 @@ function fromHex(hex = "", oldPass = "", newPass = "") {
                     rej(err)
                 })
         })
+    })
+}
+
+function authenticateWallet(pwd, walletPath = "") {
+    return new Promise((resolve, reject) => {
+        if (!auth.validCharacters(pwd)) {
+            reject(Error('invalid password'))
+            return
+        }
+        if (!walletPath || walletPath === "") 
+            walletPath = config.KEYSTORE_PATH
+            
+        const cmd = config.ELA_DIR +
+            "/ela-cli wallet a -w " +
+            walletPath +
+            " -p " +
+            pwd +
+            ""
+        //console.log(cmd)
+        exec(
+            cmd,
+            { maxBuffer: 1024 * maxBufferSize },
+            (err, stdout, stderr) => {
+              //if (stdout)
+              //  syslog.write(syslog.create().debug("/login request " + stdout));
+              if (err || stderr) {
+                err = err | stderr
+                syslog.write(
+                  syslog
+                    .create()
+                    .error("Error on /login. Failed ela cli exec.", err)
+                    .addCaller()
+                );
+                reject(Error('unable to authenticate password.'))
+              } else {
+                resolve(stdout.split("\n")[2].split(" ")[0]);
+              }
+            }
+        );
     })
 }
 

@@ -1,7 +1,7 @@
 const express = require("express");
 const eventhandler = require("./helper/eventHandler");
 const urlExist = require("fix-esm").require("url-exist");
-const { generateKeystore, changePassword, authenticateWallet, authLimiter , resetRateLimit } = require("./utilities/auth")
+const { generateKeystore, changePassword, authenticatePassword, authLimiter , resetRateLimit } = require("./utilities/auth")
 // to allow cross-origin request
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -289,7 +289,7 @@ router.post("/login",(req, res) => {
     res.json({ ok: false, err: global.rateLimitRemaining + " seconds remaining" })
     return 
   }
-  authenticateWallet(pwd)
+  authenticatePassword(pwd)
     .then( address => {
       resetRateLimit()      
       res.json({ ok: true, address: address})      
