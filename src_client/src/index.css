@@ -71,3 +71,7 @@ a:hover {
 .nar-dropdown > .dropdown-item:hover {
   background-color: red;
 }
+
+.modal-header button.close{
+  color: white !important;  
+}
