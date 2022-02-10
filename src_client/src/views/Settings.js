@@ -350,26 +350,30 @@ class Settings extends Component {
       const {messages,values} = this.state.form
       const isValid = messages.keystore.length===0 && messages.oldPass.length ===0  && messages.newPass.length === 0
       if(isValid){
-      this.setState({uploadKeyStoreProcessing:true});
-      backend.uploadKeyStore(values).then(response=>{
-        const {ok}=response;
-        if(ok==="nope"){
-          this.setState({uploadKeyStoreProcessing:false,uploadKeyStoreStatus:{status:"error",message:response.err}})
-        }
-        else{
-          backend
-          .login(values.newPass)
-          .then(async (response) => {
-            const responseJson=await response.json()
-            if (responseJson.ok) {
-              localStorage.setItem('address', responseJson.address);            
-            }
-          })
-          .finally(()=>{
-            this.setState({uploadKeyStoreProcessing:false,uploadKeyStoreStatus:{status:"success",message:""}});                    
-          })
-        }
-      })
+        this.setState({uploadKeyStoreProcessing:true});
+        backend.uploadKeyStore(values).then(response=>{
+          const {ok}=response;
+          if(ok==="nope"){
+            this.setState({uploadKeyStoreProcessing:false,uploadKeyStoreStatus:{status:"error",message:response.err}})
+          }
+          else{
+            backend
+            .login(values.newPass)
+            .then(async (response) => {
+              const responseJson=await response.json()
+              if (responseJson.ok) {
+                localStorage.setItem('address', responseJson.address);            
+              }
+            })
+            .finally(()=>{
+              this.setState({uploadKeyStoreProcessing:false,uploadKeyStoreStatus:{status:"success",message:""}});                    
+            })
+          }
+        })
+        .catch( err => {
+          console.error(err)
+          this.setState({uploadKeyStoreProcessing:false,uploadKeyStoreStatus:{status:"error",message:"Invalid keystore file."}});    
+        })
       }
     })
   }
@@ -470,7 +474,7 @@ class Settings extends Component {
               {this.state.uploadKeyStoreSteps === 1 && this.state.uploadKeyStoreStatus.status ==="" && <>
                 <FormGroup>
               <Label for="old_password">
-                Password
+                Confirm Password
               </Label>
               <Input id="old_password" name="old_password" type="password" invalid={this.state.form.messages.oldPass.length>0} value={this.state.form.values.oldPass.length > 0 ? this.state.form.values.oldPass:""} onChange={e=>{
                 this.handleInputChange("oldPass",e.target.value.trim())
@@ -561,10 +565,10 @@ class Settings extends Component {
           </ModalFooter>
         </Modal>       
         <Modal isOpen={this.state.uploadKeyStoreConsentModal}>
-          <ModalHeader>Notice</ModalHeader>
+          <ModalHeader>Warning</ModalHeader>
           <ModalBody>
             <center>
-              <p>Uploading new keystore will change password for both companion and device</p>
+              <p>Uploading new keystore will update your keystore and device password.</p>
             </center>
           </ModalBody>
           <ModalFooter>
