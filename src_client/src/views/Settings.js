@@ -22,7 +22,6 @@ import Widget05 from "./widgets/Widget05";
 import master from "../api/master";
 import backend from "../api/backend";
 import { validCharacters } from "../utils/auth"
-import { capitalize } from "../utils/string"
 import RootStore from "../store";
 import errorLogo from "./images/error.png";
 import checkLogo from "./images/check.png";
@@ -30,6 +29,7 @@ import checkLogo from "./images/check.png";
 class Settings extends Component {
   constructor(props) {
     super(props);
+    this.uploadKeyStoreRef = React.createRef();
     this.state = {
       pwd: "",
       mainchainRestartModal: false,
@@ -38,6 +38,7 @@ class Settings extends Component {
       eidResyncModal: false,
       uploadKeyStoreModal:false,
       uploadKeyStoreProcessing:false,
+      uploadKeyStoreSteps : 1,
       uploadKeyStoreStatus:{status:"",message:""},      
       carrierRestartModal: false,
       update: false,
@@ -61,13 +62,11 @@ class Settings extends Component {
           keystore:"",
           oldPass:"",
           newPass:"",
-          confirmPass:""
         },
         messages:{
           keystore:"",
           oldPass:"",
           newPass:"",
-          confirmPass:""
         }
       }
     };
@@ -254,20 +253,26 @@ class Settings extends Component {
     this.setState({uploadKeyStoreModal:true})
   }
   closeUploadKeyStoreModal = ()=>{
-    this.setState({uploadKeyStoreModal:false,form:{
-      values:{
-        keystore:"",
-        oldPass:"",
-        newPass:"",
-        confirmPass:""
-      },
-      messages:{
-        keystore:"",
-        oldPass:"",
-        newPass:"",
-        confirmPass:""
-      }
-    }})
+    this.setState({uploadKeyStoreModal:false},()=>{
+      setTimeout(()=>{
+        this.setState({
+          uploadKeyStoreSteps:1,
+          uploadKeyStoreStatus:{status:"",message:""},
+          form:{
+          values:{
+            keystore:"",
+            oldPass:"",
+            newPass:"",
+          },
+          messages:{
+            keystore:"",
+            oldPass:"",
+            newPass:"",
+          }
+        }        
+        })              
+      },2000)
+    })
   }
   handleInputChange = async (id,value)=>{
     switch (id) {
@@ -296,10 +301,15 @@ class Settings extends Component {
         break;
     }
   }
-  validateUploadKeystoreForm = () => new Promise((resolve,reject)=>{
-    Object.keys(this.state.form.values).forEach((id)=>{
+  validateUploadKeystoreForm = (idtoBeValidated="") => new Promise((resolve,reject)=>{
+    Object.keys(this.state.form.values).filter(id=>{
+      if(idtoBeValidated.length>0){
+        return id === idtoBeValidated
+      }
+      return true;
+    }).forEach((id)=>{
       const value=this.state.form.values[id];
-      if(value.length === 0 && id === "keystore"){
+      if(value.length === 0 && (id === "keystore" || id === "oldPass")){
         this.setState(prevState=>({form:{
           ...prevState.form,
           messages:{
@@ -308,7 +318,7 @@ class Settings extends Component {
           }
         }}))        
       }
-      else if(!validCharacters(value) && id!=="keystore"){
+      else if(!validCharacters(value) && (id!=="keystore" || id !== "oldPass")){
         this.setState(prevState=>({form:{
           ...prevState.form,
           messages:{
@@ -317,15 +327,6 @@ class Settings extends Component {
           }
         }}))        
       }    
-      else if( id==="confirmPass" && this.state.form.values["newPass"] !== value){
-          this.setState(prevState=>({form:{
-            ...prevState.form,
-            messages:{
-              ...prevState.form.messages,
-              confirmPass:"New wallet password and confirm password does not match."
-            }
-          }}))      
-      }
       else{
         this.setState(prevState=>({form:{
           ...prevState.form,
@@ -341,7 +342,7 @@ class Settings extends Component {
   handleSubmitKeyStore=()=>{
     this.validateUploadKeystoreForm().then(()=>{
       const {messages,values} = this.state.form
-      const isValid=messages.keystore.length===0 && messages.oldPass.length ===0  && messages.newPass.length === 0 && messages.confirmPass.length === 0
+      const isValid = messages.keystore.length===0 && messages.oldPass.length ===0  && messages.newPass.length === 0
       if(isValid){
       this.setState({uploadKeyStoreProcessing:true});
       backend.uploadKeyStore(values).then(response=>{
@@ -360,7 +361,6 @@ class Settings extends Component {
           })
           .finally(()=>{
             this.setState({uploadKeyStoreProcessing:false,uploadKeyStoreStatus:{status:"success",message:""}});                    
-            this.closeUploadKeyStoreModal()            
           })
         }
       })
@@ -370,6 +370,18 @@ class Settings extends Component {
   handleUploadKeyStoreStatus=status=>{
     this.setState({uploadKeyStoreStatus:{status,message:""}})
   }
+  handleUploadKeyStoreStepsPrev=()=>{
+    this.setState(prevState=>({uploadKeyStoreSteps:prevState.uploadKeyStoreSteps-1}))
+  }
+  handleUploadKeyStoreStepsNext=()=>{
+    this.validateUploadKeystoreForm("oldPass").then(()=>{
+      const {messages}=this.state.form
+      const isValid = messages.keystore.length===0 && messages.oldPass.length ===0  && messages.newPass.length === 0
+      if(isValid){
+        this.setState(prevState=>({uploadKeyStoreSteps:prevState.uploadKeyStoreSteps+1}))
+      }    
+    })
+  }  
   render() {
     const { isMobile } = this.props;
 
@@ -431,23 +443,20 @@ class Settings extends Component {
         <Modal isOpen={this.state.uploadKeyStoreModal}>
           <ModalHeader>Upload keystore</ModalHeader>
           <ModalBody>
-            <center>
+            {this.state.uploadKeyStoreStatus.status === "success" || this.state.uploadKeyStoreStatus.status === "error" ?
+              <center>
+                <img src={ this.state.uploadKeyStoreStatus.status==="success" ? checkLogo : errorLogo} style={{ width: "50px", height: "50px" }} />                
+                <br />
+                <br />                
+                {this.state.uploadKeyStoreStatus.status==="success" ? "Keystore uploaded." : this.state.uploadKeyStoreStatus.message}
+              </center>            
+            : <center>
               You are about to upload new keystore
               <br/>
-            </center>
-            <Form>
-            <FormGroup>
-              <Label for="new_keystore">
-                keystore
-              </Label>
-              <Input id="new_keystore" name="new_keystore" type="file" invalid={this.state.form.messages.keystore.length>0} onChange={e=>{
-                this.handleInputChange("keystore",e.target.files[0])
-              }}/>
-              <FormFeedback>
-                {this.state.form.messages.keystore}
-              </FormFeedback>              
-            </FormGroup>                            
-            <FormGroup>
+            </center>}             
+            <Form onSubmit={e=>e.preventDefault()}>
+              {this.state.uploadKeyStoreSteps === 1 && this.state.uploadKeyStoreStatus.status==="" && <>
+                <FormGroup>
               <Label for="old_password">
                 Old password
               </Label>
@@ -457,8 +466,37 @@ class Settings extends Component {
               <FormFeedback>
                 {this.state.form.messages.oldPass}
               </FormFeedback>              
-            </FormGroup>              
-            <FormGroup>
+            </FormGroup>                      
+              </>}           
+            {this.state.uploadKeyStoreSteps === 2 && this.state.uploadKeyStoreStatus.status==="" && <>
+              <FormGroup disabled={this.state.uploadKeyStoreProcessing}>                 
+                  <Input style={{visibility:"hidden"}} id="new_keystore" name="new_keystore" type="file" innerRef={this.uploadKeyStoreRef} invalid={this.state.form.messages.keystore.length>0} onChange={e=>{
+                    this.handleInputChange("keystore",e.target.files[0])
+                  }}/>
+                  <Button block color={`${this.state.form.values.keystore.length>0 ? "danger":"success"}`} disabled={this.state.uploadKeyStoreProcessing} onClick={()=>{
+                    if(this.state.form.values.keystore.length>0){
+                      this.uploadKeyStoreRef.current.value=""
+                      this.setState(prevState=>({
+                        form:{
+                          ...prevState.form,
+                          values:{
+                            ...prevState.form.values,
+                            keystore:""
+                          }
+                        }
+                      }))
+                    }
+                    else{
+                      this.uploadKeyStoreRef.current.click()
+                    }
+                  }}>
+                    {this.state.form.values.keystore.length>0 ? `${this.uploadKeyStoreRef.current.files[0].name} (click to remove)`:"Upload KeyStore"}
+                  </Button>                  
+                  <FormFeedback>
+                    {this.state.form.messages.keystore}
+                  </FormFeedback>              
+               </FormGroup>               
+               <FormGroup disabled={this.state.uploadKeyStoreProcessing}>
               <Label for="new_password">
                 Verify wallet password
               </Label>
@@ -468,52 +506,39 @@ class Settings extends Component {
               <FormFeedback>
                 {this.state.form.messages.newPass}
               </FormFeedback>                            
-            </FormGroup> 
-            <FormGroup>
-              <Label for="confirm_password">
-                Confirm wallet password
-              </Label>
-              <Input id="confirm_password" name="confirm_password" type="password" invalid={this.state.form.messages.confirmPass.length>0} onChange={e=>{
-                this.handleInputChange("confirmPass",e.target.value.trim())
-              }} />
-              <FormFeedback>
-                {this.state.form.messages.confirmPass}
-              </FormFeedback>                            
-            </FormGroup>                                      
+            </FormGroup>                
+            </>}     
             </Form>
           </ModalBody>
           <ModalFooter>
-            <Button
-              data-testid="upload-keystore-btn"
-              color="success"
-              onClick={this.handleSubmitKeyStore}
-              disabled={this.state.uploadKeyStoreProcessing}
-            >
-              {this.state.uploadKeyStoreProcessing ? <Spinner size="sm">Loading...</Spinner>:"Confirm"}
-            </Button>
-            <Button color="danger" onClick={this.closeUploadKeyStoreModal} disabled={this.state.uploadKeyStoreProcessing}>
-              Cancel
-            </Button>
+            {this.state.uploadKeyStoreSteps < 2 ? <>
+              {this.state.uploadKeyStoreSteps > 1 && <Button data-testid="upload-keystore-prev-btn" onClick={this.handleUploadKeyStoreStepsPrev}>
+              Previous
+            </Button>}                        
+            <Button data-testid="upload-keystore-next-btn" color="success" onClick={this.handleUploadKeyStoreStepsNext}>
+              Next
+            </Button>            
+            </>:<>
+            {this.state.uploadKeyStoreStatus.status==="" ? <>
+              <Button
+                data-testid="upload-keystore-btn"
+                color="success"
+                onClick={this.handleSubmitKeyStore}
+                disabled={this.state.uploadKeyStoreProcessing}
+              >
+                {this.state.uploadKeyStoreProcessing ? <Spinner size="sm">Loading...</Spinner>:"Confirm"}
+              </Button>
+              <Button color="danger" onClick={this.closeUploadKeyStoreModal} disabled={this.state.uploadKeyStoreProcessing}>
+                Cancel
+              </Button>            
+            </>:<>
+            <Button color={this.state.uploadKeyStoreStatus.status==="success" ? "success":"danger"} onClick={this.closeUploadKeyStoreModal}>
+              Ok
+            </Button>            
+            </> }            
+            </>}
           </ModalFooter>
         </Modal>        
-        <Modal isOpen={this.state.uploadKeyStoreStatus.status==="success" || this.state.uploadKeyStoreStatus.status==="error"}>
-          <ModalHeader>{capitalize(this.state.uploadKeyStoreStatus.status)}</ModalHeader>
-          <ModalBody>
-            <center>
-              {this.state.uploadKeyStoreStatus.status==="success" ? "Keystore uploaded." : this.state.uploadKeyStoreStatus.message}
-              <br />
-              <br />
-              <img src={ this.state.uploadKeyStoreStatus.status==="success" ? checkLogo : errorLogo} style={{ width: "50px", height: "50px" }} />
-            </center>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="primary" onClick={()=>{
-              this.handleUploadKeyStoreStatus("")
-            }}>
-              Close
-            </Button>
-          </ModalFooter>
-        </Modal>
         <Modal isOpen={this.state.errormodal}>
           <ModalHeader>Error</ModalHeader>
           <ModalBody>
