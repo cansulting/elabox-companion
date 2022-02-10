@@ -38,6 +38,7 @@ class Settings extends Component {
       mainchainResyncModal: false,
       eidRestartModal: false,
       eidResyncModal: false,
+      uploadKeyStoreConsentModal:false,
       uploadKeyStoreModal:false,
       uploadKeyStoreProcessing:false,
       uploadKeyStoreSteps : 1,
@@ -253,7 +254,7 @@ class Settings extends Component {
     console.log("toggleOnion");
   };
   showUploadKeyStoreModal = ()=>{
-    this.setState({uploadKeyStoreModal:true})
+    this.setState({uploadKeyStoreModal:true,uploadKeyStoreConsentModal:false})
   }
   closeUploadKeyStoreModal = ()=>{
     this.setState({uploadKeyStoreModal:false},()=>{
@@ -386,6 +387,12 @@ class Settings extends Component {
         this.setState(prevState=>({uploadKeyStoreSteps:prevState.uploadKeyStoreSteps+1}))
       }    
     })
+  }  
+  handleShowUploadConsentModal = () =>{
+    this.setState({uploadKeyStoreConsentModal:true})    
+  }
+  handleHideUploadConsentModal = () =>{
+    this.setState({uploadKeyStoreConsentModal:false})    
   }  
   render() {
     const { isMobile } = this.props;
@@ -552,7 +559,23 @@ class Settings extends Component {
             </> }            
             </>}
           </ModalFooter>
-        </Modal>        
+        </Modal>       
+        <Modal isOpen={this.state.uploadKeyStoreConsentModal}>
+          <ModalHeader>Notice</ModalHeader>
+          <ModalBody>
+            <center>
+              <p>Uploading new keystore will change password for both companion and device</p>
+            </center>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="danger" onClick={this.handleHideUploadConsentModal}>
+              No
+            </Button>                        
+            <Button color="success" onClick={this.showUploadKeyStoreModal}>
+              I understand
+            </Button>
+          </ModalFooter>
+        </Modal>         
         <Modal isOpen={this.state.errormodal}>
           <ModalHeader>Error</ModalHeader>
           <ModalBody>
@@ -827,7 +850,7 @@ class Settings extends Component {
                 Restart: "Upload",
                 Resync: "",
               })}
-              onGreenPress={this.showUploadKeyStoreModal}
+              onGreenPress={this.handleShowUploadConsentModal}
             ></Widget05>
           </Col>          
           <Col xs="12" sm="6" lg="4">
