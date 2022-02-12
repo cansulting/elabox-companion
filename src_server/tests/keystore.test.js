@@ -10,19 +10,19 @@ test("wrong keyfile", async ()=>{
     const wallet= Buffer.from("wrong file").toString('hex') 
     await uploadFromHex(wallet, password, password).catch( err => {
         expect(err).not.toBeNull()
-        expect(err.message).toContain("invalid password")
     })
 })
 test("Wrong keystore password",async()=>{
-    const wallet=fsExtra.readFileSync(KEYSTORE_PATH)
+    const wallet = Buffer.from(fsExtra.readFileSync(KEYSTORE_PATH,"utf8")).toString("hex")
     const wrongpass="thisiswrongpassword"
     await uploadFromHex(wallet, password, wrongpass).catch( err => {
         expect(err).not.toBeNull()
-        expect(err.message).toContain("invalid password")
+        expect(err.message).toContain("password for new wallet is invalid")
     })    
 })
 test("success uploading",async ()=>{
-    const wallet = fsExtra.readFileSync(KEYSTORE_PATH)
+    const wallet = Buffer.from(fsExtra.readFileSync(KEYSTORE_PATH,"utf8")).toString("hex")
+    console.log(password)
     await uploadFromHex(wallet, password, password).then(_=>{
         expect(true).toBe(true)
     }).catch( err => {
