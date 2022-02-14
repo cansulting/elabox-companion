@@ -6,6 +6,7 @@ const { exec } = require("child_process");
 const syslog = require("../logger");
 
 const tmpWallet = "/tmp/wallet.dat"
+const maxBufferSize = 10000;
 
 // use to upload new keystore
 // @hex the hexadecimal string of keystore data
@@ -107,6 +108,24 @@ function authenticateWallet(pwd, walletPath = "") {
     })
 }
 
+function readWalletAddress() {
+    return new Promise((resolve, reject) => {
+        fs.readFile(config.KEYSTORE_PATH, (err, data) => {
+            if (err) {
+                reject(err)
+                return
+            }
+            let wallet = JSON.parse(data.toString())
+            if (!wallet || !wallet.Account) {
+                reject(Error('invalid wallet'))
+                return
+            }
+            resolve(wallet.Account[0].Address)
+        })
+    })
+}
+
 module.exports = {
-    uploadFromHex : fromHex
+    uploadFromHex : fromHex,
+    readWalletAddress, readWalletAddress
 }

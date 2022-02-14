@@ -72,8 +72,7 @@ const router = express.Router();
 // for mailing
 const postmark = require("postmark");
 const filedownload = require("./helper/filedownload");
-const { route } = require("./utilities/systemcontrol.js");
-const { setTimeout } = require("timers/promises");
+const { readWalletAddress } = require("./utilities/keystore");
 const postMarkMail = new postmark.ServerClient(config.POSTMARK_SERVER_TOKEN);
 
 let elaPath = config.ELA_DIR;
@@ -259,7 +258,7 @@ router.post("/sendTx", (req, res) => {
 
 router.post("/resyncNodeVerification", (req, res) => {
   let pwd = req.body.pwd;
-  console.log("PASSWORD RECEIVED", pwd, req.body);
+  //console.log("PASSWORD RECEIVED", pwd, req.body);
   exec(
     elaPath +
       "/ela-cli wallet a -w " +
@@ -290,9 +289,13 @@ router.post("/login",(req, res) => {
     return 
   }
   authenticatePassword(pwd)
-    .then( address => {
-      resetRateLimit()      
-      res.json({ ok: true, address: address})      
+    .then( _ => {
+      resetRateLimit()  
+      readWalletAddress.then(address => {
+        res.json({ ok: true, address: address })
+      }).catch(e => {
+        res.json({ ok: false, err: e.message })
+      })   
     })
     .catch( err => {
       global.currentRateLimit -=1;
@@ -318,7 +321,13 @@ router.post("/createWallet", (req, res) => {
 
 // let users download the wallet file
 router.get("/downloadWallet", function (req, res) {
-  res.download(config.KEYSTORE_PATH);
+  const { pass} = req.query;
+  authenticatePassword(pass).then( _ => {
+    res.download(config.KEYSTORE_PATH);
+  }).catch(e => {
+    res.json({ ok: false, err: e.message })
+  })
+  
 });
 
 router.post("/uploadWallet", function (req, res) {
@@ -370,11 +379,6 @@ router.post("/update", (req, res) => {
       );
     }
   );
-});
-
-// let users download the wallet file
-router.get("/downloadWallet", function (req, res) {
-  res.download(config.KEYSTORE_PATH);
 });
 
 const restartCarrier = async (callback) => {

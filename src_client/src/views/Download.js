@@ -12,9 +12,9 @@ function Download() {
   const [downloading, setDownloading] = useState(false)
   const [finished, setFinished] = useState(false)
 
-  function downloadWallet() {
+  function downloadWallet(pass) {
     setDownloading(true);
-    API.downloadWallet();
+    API.downloadWallet(pass);
     setTimeout(() => {
       // if success
       setFinished(true)

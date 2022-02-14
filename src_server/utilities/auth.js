@@ -2,7 +2,7 @@ const addSeconds=require("date-fns/addSeconds");
 const differenceInSeconds = require('date-fns/differenceInSeconds');
 const syslog = require("../logger");
 const { exec } = require("child_process"); 
-const config = require("../config")
+const config = require("../config");
 const maxBufferSize = 10000;
 //limiter
 global.rateLimitRemaining = 0

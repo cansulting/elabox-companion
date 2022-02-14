@@ -444,7 +444,7 @@ class Wallet extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {tx.length ? (
+                    { tx && tx.length ? (
                       tx.map((tx) => (
                         <tr key={tx.Txid}>
                           <td>

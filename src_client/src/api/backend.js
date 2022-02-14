@@ -262,12 +262,27 @@ class API {
     const { data } = await axios.get(`http://${PUBLIC_URI}/check_elabox_status`);  
     return data  
   };
-  downloadWallet = () => {
-    const response = {
-      file: `http://${PUBLIC_URI}/downloadWallet`,
-    };
-    // now, let's download:
-    window.location.href = response.file;
+  downloadWallet = (pass) => {
+    return new Promise((resolve, reject) => {
+      axios({
+        url: `http://${PUBLIC_URI}/downloadWallet?pass=${pass}`, //your url
+        method: 'GET',
+        responseType: 'blob', // important
+      }).then((response) => {
+        console.log(response)
+          if (response.data.type === "application/json") {
+            reject("")
+            return
+          }
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'keystore.dat'); //or any other extension
+          document.body.appendChild(link);
+          link.click();
+          resolve("")
+      });
+    })
   };
   uploadKeyStore= async (values) =>{
     const {oldPass,newPass,keystore}=values

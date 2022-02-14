@@ -49,6 +49,7 @@ class Settings extends Component {
       networkErrorModal: false,
       updateNowModal: false,
       errorUpdateModal: false,
+      dlKeystoreState: 0,
       version: "",
       mainchainVersion:"",
       eidVersion:"",
@@ -204,6 +205,24 @@ class Settings extends Component {
       errorUpdateModal: false,
     });
   };
+
+  setDlKeystoreState = () => {
+    if (this.state.dlKeystoreState === 1) { 
+      this.setState({ dlKeystoreState: 2 });
+      console.log(this.state)
+      backend.downloadWallet(this.state.pwd)
+        .then((_) => {
+          this.setState({ dlKeystoreState: 0 });
+        })
+        .catch((error) => {
+          this.setState({ dlKeystoreState: 3 });
+        });
+    } else if (this.state.dlKeystoreState === 0)
+      this.setState({ dlKeystoreState: 1 });
+    else {
+      this.setState({ dlKeystoreState: 0 });
+    }
+  }
 
   updateNow = async () => {
     this.closeUpdateNowModal();
@@ -407,6 +426,7 @@ class Settings extends Component {
       networkErrorModal,
       updateNowModal,
       errorUpdateModal,
+      dlKeystoreState,
       onion,
       showOnion,
       elaboxVersion,
@@ -692,6 +712,30 @@ class Settings extends Component {
             </Button>
           </ModalFooter>
         </Modal>
+        <Modal isOpen={dlKeystoreState !== 0}>
+          <ModalHeader>Download Keystore</ModalHeader>
+          <ModalBody>
+            {dlKeystoreState === 3 && <center>
+              Password is incorrect
+            </center>}
+            {dlKeystoreState === 2 && <center>
+              Please wait...
+            </center>}
+            {dlKeystoreState === 1 && <Input
+              type="password"
+              id="pwd"
+              name="pwd"
+              placeholder="Password"
+              required
+              onChange={(e) => this.handleChange(e)}
+            />}
+          </ModalBody>
+          {(dlKeystoreState === 1 || dlKeystoreState === 3) && <ModalFooter>
+            <Button color="success" onClick={this.setDlKeystoreState}>
+              OK
+            </Button>
+          </ModalFooter>}
+        </Modal>
         <Modal isOpen={updateNowModal}>
           <ModalHeader>Update Elabox</ModalHeader>
           <ModalBody>
@@ -866,7 +910,7 @@ class Settings extends Component {
                 Restart: "Download",
                 Resync: "",
               })}
-              onGreenPress={backend.downloadWallet}
+              onGreenPress={this.setDlKeystoreState}
             ></Widget05>
           </Col>          
         </Row>
