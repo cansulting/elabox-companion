@@ -9,12 +9,11 @@ import {
 import backend from "./api/backend";
 import RootStore from "./store";
 import Socket from "./Socket";
-const loading = () => (
-  <div className="animated fadeIn pt-3 text-center">Loading...</div>
-);
+import Landing from "./views/components/Landing"
 const Auth = React.lazy(() => import("./views/Auth"));
 const Config = React.lazy(() => import("./views/Config"));
 const Download = React.lazy(() => import("./views/Download"));
+const loading = () => <Landing/>;
 class App extends React.Component {
   constructor(props) {
     super(props);
