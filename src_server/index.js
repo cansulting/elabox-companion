@@ -291,7 +291,7 @@ router.post("/login",(req, res) => {
   authenticatePassword(pwd)
     .then( _ => {
       resetRateLimit()  
-      readWalletAddress.then(address => {
+      readWalletAddress().then(address => {
         res.json({ ok: true, address: address })
       }).catch(e => {
         res.json({ ok: false, err: e.message })
