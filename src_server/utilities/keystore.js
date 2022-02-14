@@ -127,5 +127,5 @@ function readWalletAddress() {
 
 module.exports = {
     uploadFromHex : fromHex,
-    readWalletAddress, readWalletAddress
+    readWalletAddress : readWalletAddress
 }
