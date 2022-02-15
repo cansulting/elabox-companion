@@ -114,18 +114,7 @@ const cardChartOpts4 = (blockdata) => ({
 });
 
 const Previewer = (props) => {
-  const { blockdata, label = 'Node' } = props;
-  // useEffect(() => {
-  //   if (setup) 
-  //     return;
-  //   event_server.on("ela.eid.action.UPDATE", (response) => {
-  //     const params = JSON.parse(response.data).params
-  //     if (params)
-  //       setLatest( params.result)
-  //     console.log("object ", response)
-  //   })
-  //   setup= true;
-  // })
+  const { blockdata, showInfo , label = 'Node' } = props;
   return (
     <div>
       <Row style={{ paddingTop: "50px" }}>
@@ -133,6 +122,7 @@ const Previewer = (props) => {
           {blockdata.isRunning ? (
             <Widget02
               header={label}
+              showInfo={showInfo}
               mainText="Running"
               icon={didLogo}
               color="success"

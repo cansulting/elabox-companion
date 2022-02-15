@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Card, CardBody, CardFooter } from "reactstrap";
+import {AiFillInfoCircle} from "react-icons/ai"
 import classNames from "classnames";
 import { mapToCssModules } from "reactstrap/lib/utils";
 
 const propTypes = {
   header: PropTypes.string,
   mainText: PropTypes.string,
+  showInfo: PropTypes.func,
   icon: PropTypes.string,
   color: PropTypes.string,
   variant: PropTypes.string,
@@ -23,6 +25,7 @@ class Widget02 extends Component {
       className,
       cssModule,
       header,
+      showInfo=()=>{},
       mainText,
       icon,
       color,
@@ -99,7 +102,12 @@ class Widget02 extends Component {
                     fontWeight: "bold",
                   }}
                 >
+                  <span>
                   {header} {initializing ? " (initializing) " : ""}
+                </span>
+                {header==="ESC" && !initializing && <AiFillInfoCircle style={{marginLeft:2 , marginBottom:3, cursor: "pointer"}} onClick={()=>{
+                  showInfo()
+                }}/> }                
                 </p>
                 <br />
                 {children}
@@ -113,7 +121,9 @@ class Widget02 extends Component {
                   fontWeight: "bold",
                 }}
               >
-                {header}
+                <span>
+                  {header}                  
+                </span>
                 {children}
               </p>
             )}
