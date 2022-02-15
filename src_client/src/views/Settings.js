@@ -592,7 +592,7 @@ class Settings extends Component {
             </center>
           </ModalBody>
           <ModalFooter>
-            <Button color="danger" onClick={this.handleHideUploadConsentModal}>
+            <Button color="secondary" onClick={this.handleHideUploadConsentModal}>
               No
             </Button>                        
             <Button color="success" onClick={this.showUploadKeyStoreModal}>
