@@ -17,6 +17,7 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
+  Spinner,
 } from "reactstrap";
 // import BootstrapTable from 'react-bootstrap-table-next';
 import copy from "copy-to-clipboard";
@@ -34,14 +35,8 @@ class Wallet extends Component {
       transfer_fee: 0.001,
       tx_list: "",
       pwd: "",
-      error1modal: false,
-      error2modal: false,
-      error3modal: false,
-      pwdmodal: false,
-      sentmodal: false,
-      errormodal: false,
-      elasendingsuccess: false,
-      pwderrormodal: false,
+      transferState: 0,
+      errMsg: "",
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -76,17 +71,20 @@ class Wallet extends Component {
 
   submitForm = () => {
     // e.preventDefault();
-    this.setState({ pwdmodal: false });
 
     backend
       .sendTx(this.state.recipient, this.state.amount, this.state.pwd)
       .then((responseJson) => {
         console.log(responseJson);
         if (responseJson.ok == "ok") {
-          this.setState({ sentmodal: true });
+          this.transferStateUpdate(3)
         } else {
           setTimeout(function () {}, 2000);
-          this.setState({ errormodal: true });
+          this.transferStateUpdate(4)
+          let msg = "Something went wrong. Please try again later."
+          if (responseJson.reason && responseJson.reason.search("not enough utx") >= 0)
+            msg = "Not enough balance."
+          this.setState({errMsg: msg})
         }
       })
       .catch((error) => {
@@ -96,14 +94,15 @@ class Wallet extends Component {
 
   // Verifies password before calling submitForm which calls /sendTx
   verifyPwd = () => {
+    this.transferStateUpdate(2) 
     backend
       .sendElaPassswordVerification(this.state.pwd)
       .then((responseJson) => {
         if (responseJson.ok) {
-          this.setState({ elasendingsuccess: true });
+          this.transferStateUpdate(6)
           this.submitForm();
         } else {
-          this.setState({ pwderrormodal: true });
+          this.transferStateUpdate(5)
         }
       })
       .catch((error) => {
@@ -115,54 +114,33 @@ class Wallet extends Component {
     let recipient = this.state.recipient;
     let amount = this.state.amount;
     if (recipient.length != 34) {
-      this.setState({ error1modal: true });
+      this.transferStateUpdate(7)
     } else {
       if (amount.length == 0) {
-        this.setState({ error2modal: true });
+        this.transferStateUpdate(8)
       } else {
         if (isNaN(amount)) {
-          this.setState({ error2modal: true });
+          this.transferStateUpdate(8)
         } else {
           if (amount.indexOf(".") > -1) {
             if (amount.toString().split(".")[1].length > 8) {
-              this.setState({ error3modal: true });
+              this.transferStateUpdate(9)
             } else {
-              this.setState({ pwdmodal: true });
+              this.transferStateUpdate(1)
             }
           } else {
-            this.setState({ pwdmodal: true });
+            this.transferStateUpdate(1)
           }
         }
       }
     }
   };
 
-  error1toggle = () => {
-    this.setState({ error1modal: false });
-  };
-  error2toggle = () => {
-    this.setState({ error2modal: false });
-  };
-  error3toggle = () => {
-    this.setState({ error3modal: false });
-  };
-  senttoggle = () => {
-    this.setState({ recipient: "", amount: "", sentmodal: false });
-  };
-  errortoggle = () => {
-    this.setState({ errormodal: false });
-  };
-  pwdmodaltoggle = () => {
-    this.setState({ pwdmodal: false });
-  };
+  transferStateUpdate = (state) => {
+    this.setState({ transferState: state})
+  }
 
-  pwderrormodaltoggle = () => {
-    this.setState({ pwderrormodal: false });
-  };
 
-  elasendingsuccesstoggle = () => {
-    this.setState({ elasendingsuccess: false });
-  };
   render() {
     const { isMobile } = this.props;
     const amountWithFee =
@@ -182,9 +160,9 @@ class Wallet extends Component {
         }}
         className="animated fadeIn w3-container"
       >
-        <Modal isOpen={this.state.pwdmodal}>
+        <Modal isOpen={this.state.transferState === 1 || this.state.transferState === 2}>
           <ModalHeader>Sending ELA</ModalHeader>
-          <ModalBody>
+          {this.state.transferState === 1 && <ModalBody>
             <center>
               You are about to sendTx <br />
               <b>{amountWithFee.toFixed(3)} ELA</b>
@@ -207,8 +185,14 @@ class Wallet extends Component {
               required
               onChange={(e) => this.handleChange(e)}
             />
-          </ModalBody>
+          </ModalBody>}
+          { this.state.transferState === 2 && <ModalBody>
+            <center >
+                <h4 style={{margin: "5px", display:"inline-block"}}>Processing </h4><Spinner size='md' style={{margin:"0 5px", display:"inline-block"}}/>
+            </center>
+          </ModalBody>}
           <ModalFooter>
+          {this.state.transferState === 1 && <>
             <Button
               data-testid="sending-ela-send-btn"
               color="success"
@@ -219,14 +203,15 @@ class Wallet extends Component {
             <Button
               data-testid="sending-ela-cancel-btn"
               color="danger"
-              onClick={this.pwdmodaltoggle}
+              onClick={(_) => this.transferStateUpdate(0) }
             >
               Cancel
             </Button>
+            </>}
           </ModalFooter>
         </Modal>
 
-        <Modal isOpen={this.state.sentmodal}>
+        <Modal isOpen={this.state.transferState === 3}>
           <ModalHeader>Sent</ModalHeader>
           <ModalBody>
             <center>
@@ -234,30 +219,30 @@ class Wallet extends Component {
             </center>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.senttoggle}>
+            <Button color="primary" onClick={(_) => this.transferStateUpdate(0) }>
               Close
             </Button>
           </ModalFooter>
         </Modal>
 
-        <Modal isOpen={this.state.errormodal}>
+        <Modal isOpen={this.state.transferState === 4}>
           <ModalHeader>Error</ModalHeader>
           <ModalBody>
             <center>
-              Something went wrong, please try again
+              {this.state.errMsg}
               <br />
               <br />
               <img src={errorLogo} style={{ width: "50px", height: "50px" }} />
             </center>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.errortoggle}>
+            <Button color="primary" onClick={(_) => this.transferStateUpdate(0)}>
               Close
             </Button>
           </ModalFooter>
         </Modal>
 
-        <Modal isOpen={this.state.pwderrormodal}>
+        <Modal isOpen={this.state.transferState === 5}>
           <ModalHeader>Error</ModalHeader>
           <ModalBody>
             <center>
@@ -268,53 +253,42 @@ class Wallet extends Component {
             </center>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.pwderrormodaltoggle}>
+            <Button color="primary" onClick={(_) => this.transferStateUpdate(0)}>
               Close
             </Button>
           </ModalFooter>
         </Modal>
-
-        <Modal isOpen={this.state.elasendingsuccess}>
+        
+        <Modal isOpen={this.state.transferState === 6}>
           <ModalHeader>Success</ModalHeader>
           <ModalBody>
             <center>
-              Verified! Now sending ELA... <br />
+              Your request is now being processed.
               <br />
               <img src={checkLogo} style={{ width: "50px", height: "50px" }} />
             </center>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.elasendingsuccesstoggle}>
+            <Button color="primary" onClick={(_) => this.transferStateUpdate(0)}>
               Close
             </Button>
           </ModalFooter>
         </Modal>
 
-        <Modal isOpen={this.state.error1modal}>
-          <ModalHeader>Error ELA address</ModalHeader>
-          <ModalBody>Please provide a correct ELA address</ModalBody>
+        <Modal isOpen={this.state.transferState >= 7}>
+          {this.state.transferState === 7 && <>
+            <ModalHeader>Error ELA address</ModalHeader>
+            <ModalBody>Please provide a correct ELA address</ModalBody></>}
+          {this.state.transferState === 8 && <>
+            <ModalHeader>Error amount</ModalHeader>
+            <ModalBody>Please provide amount of ELA to send</ModalBody>
+          </>}
+          {this.state.transferState === 9 && <>
+            <ModalHeader>Error amount</ModalHeader>
+            <ModalBody>Too many decimals</ModalBody>
+          </>}
           <ModalFooter>
-            <Button color="primary" onClick={this.error1toggle}>
-              Ok
-            </Button>
-          </ModalFooter>
-        </Modal>
-
-        <Modal isOpen={this.state.error2modal}>
-          <ModalHeader>Error amount</ModalHeader>
-          <ModalBody>Please provide amount of ELA to send</ModalBody>
-          <ModalFooter>
-            <Button color="primary" onClick={this.error2toggle}>
-              Ok
-            </Button>
-          </ModalFooter>
-        </Modal>
-
-        <Modal isOpen={this.state.error3modal}>
-          <ModalHeader>Error amount</ModalHeader>
-          <ModalBody>Too many decimals</ModalBody>
-          <ModalFooter>
-            <Button color="primary" onClick={this.error3toggle}>
+            <Button color="primary" onClick={(_) => this.transferStateUpdate(0)}>
               Ok
             </Button>
           </ModalFooter>
