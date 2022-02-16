@@ -18,6 +18,7 @@ import {
 import backend from "../../../api/backend";
 const Navbar = ({ logOut, onMenuClick }) => {
   const [isDropDownOpen, setIsDropdownOpen] = useState(false);
+  const [currentSysOperation,setCurrentSysOperation]=useState("")
   const [modalProperties,setModalProperties]=useState({show:false,status:""})  
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const handleDropDownToggle = () => {
@@ -41,18 +42,52 @@ const Navbar = ({ logOut, onMenuClick }) => {
     backend.restart()
   }
   const handleShutDown = () => {
+    setModalProperties({show:true,status:"Shutting down..."})    
     backend.shutdown()
-    setModalProperties({show:true,status:"Shutting down..."})
+  }
+  const handleSysOperation = operation=>{
+    setCurrentSysOperation(operation)    
+  }
+  const handleHideCurrentSysOperationModal=()=>{
+    setCurrentSysOperation("")
+  }
+  const handleSysOperationConfirmation=()=>{
+    switch(currentSysOperation){
+      case "reboot":
+        handleHideCurrentSysOperationModal()        
+        handleRestart()
+        break;
+      case "shut down":
+        handleHideCurrentSysOperationModal()        
+        handleShutDown()
+        break;
+      default:
+        break;
+    }
   }
   return (
     <>
       <NavB fixed="top" style={{ backgroundColor: "#1E1E26" }}>
-      <Modal isOpen={modalProperties.show} centered dark>
+        <Modal isOpen={modalProperties.show} centered dark>
           <ModalHeader>Elabox</ModalHeader>
           <ModalBody>
             Elabox is {modalProperties.status}
           </ModalBody>
-        </Modal>        
+        </Modal> 
+        <Modal isOpen={currentSysOperation?.length>0} centered dark>
+          <ModalHeader>Elabox</ModalHeader>
+          <ModalBody>
+            {currentSysOperation === "logout" ?<p>Are you sure you want to {currentSysOperation}?</p>:<p>Are you sure you want to {currentSysOperation} elabox?</p>}
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={handleHideCurrentSysOperationModal}>
+              No
+            </Button>                        
+            <Button color="success" onClick={handleSysOperationConfirmation}>
+              Yes
+            </Button>
+          </ModalFooter>          
+        </Modal>         
         {isMobile && (
           <FiMenu
             color={"white"}
@@ -83,10 +118,10 @@ const Navbar = ({ logOut, onMenuClick }) => {
             <DropdownItem onClick={logOut}>
               <FiLogOut /> Log Out
             </DropdownItem>
-            <DropdownItem onClick={handleRestart}>
+            <DropdownItem onClick={()=>handleSysOperation("reboot")}>
               <FiRefreshCcw /> Reboot
             </DropdownItem>
-            <DropdownItem onClick={handleShutDown}>
+            <DropdownItem onClick={()=>handleSysOperation("shut down")}>
               <FiPower /> Shut down
             </DropdownItem>
           </DropdownMenu>
