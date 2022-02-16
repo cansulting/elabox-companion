@@ -158,7 +158,7 @@ const Dashboard = ({ isMobile }) => {
                   <Button color="success" style={{marginLeft:3}} size="sm"><AiFillCopy/></Button>
               </CopyToClipboard>              
               </p>
-              <p style={{fontSize: 20}}>port: {esc?.port} <CopyToClipboard text={esc?.port}
+              <p style={{fontSize: 20}}>Port: {esc?.port} <CopyToClipboard text={esc?.port}
                 onCopy={() =>{alert("port copied to clipboard")}}>
                   <Button color="success" style={{marginLeft:3}} size="sm"><AiFillCopy/></Button>
               </CopyToClipboard></p>              
