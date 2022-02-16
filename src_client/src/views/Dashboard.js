@@ -155,16 +155,16 @@ const Dashboard = ({ isMobile }) => {
             <img src={didLogo} style={{ width: "50px", height: "50px",marginBottom: 5 }} />              
             <p style={{fontSize: 20}}>Hostname: {esc?.hostname}<CopyToClipboard text={esc?.hostname}
                 onCopy={() =>{alert("hostname copied to clipboard")}}>
-                  <Button color="success" style={{marginLeft:3}} size="sm"><AiFillCopy/></Button>
+                  <Button color="success" style={{marginLeft:3,padding:5}} size="sm"><AiFillCopy/></Button>
               </CopyToClipboard>              
               </p>
               <p style={{fontSize: 20}}>Port: {esc?.port} <CopyToClipboard text={esc?.port}
                 onCopy={() =>{alert("port copied to clipboard")}}>
-                  <Button color="success" style={{marginLeft:3}} size="sm"><AiFillCopy/></Button>
+                  <Button color="success" style={{marginLeft:3,padding:5}} size="sm"><AiFillCopy/></Button>
               </CopyToClipboard></p>              
               <p style={{fontSize: 20}}>Chain Id: {esc?.chainId} <CopyToClipboard text={esc?.chainId}
                 onCopy={() =>{alert("port copied to clipboard")}}>
-                  <Button color="success" style={{marginLeft:3}} size="sm"><AiFillCopy/></Button>
+                  <Button color="success" style={{marginLeft:3,padding:5}} size="sm"><AiFillCopy/></Button>
               </CopyToClipboard></p>                            
             </center>
           </ModalBody>
