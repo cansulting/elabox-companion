@@ -128,7 +128,7 @@ router.get("/eid", async (req, res) => {
 
 router.get("/esc", async (req, res) => {
   try {
-    esc.getStatus().then((data) => res.status(200).json({...data,hostname: config.HOSTNAME,port: config.ESC_PORT}));
+    esc.getStatus().then((data) => res.status(200).json({...data,hostname: config.HOSTNAME,port: config.RPC_PORT_ESC,chainId:config.ESC_CHAIN_ID}));
   } catch (err) {
     res.status(500).send({ error: err });
   }

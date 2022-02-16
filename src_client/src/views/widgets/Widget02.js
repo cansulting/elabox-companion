@@ -105,9 +105,9 @@ class Widget02 extends Component {
                   <span>
                   {header} {initializing ? " (initializing) " : ""}
                 </span>
-                {header==="ESC" && !initializing && <AiFillInfoCircle style={{marginLeft:2 , marginBottom:3, cursor: "pointer"}} onClick={()=>{
+                {header==="ESC" && !initializing && <span style={{marginLeft:2,fontSize:20 , marginBottom:3,padding:0, cursor: "pointer"}}><AiFillInfoCircle onClick={()=>{
                   showInfo()
-                }}/> }                
+                }}/></span> }                
                 </p>
                 <br />
                 {children}

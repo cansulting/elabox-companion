@@ -35,6 +35,7 @@ module.exports = {
   ESCDATA_DIR: homeappdata + "/ela.esc",
   EID_PORT: 20645,                                    // eid port that can be access for web3 api
   ESC_PORT: 20646,                                    // esc port that can be access for web3 api
+  ESC_CHAIN_ID:20,
   ELA_PORT: 20336,
   RPC_PORT_EID: 20636,                                // EID RPC
   RPC_PORT_ESC: 20637,                                // ESC RPC

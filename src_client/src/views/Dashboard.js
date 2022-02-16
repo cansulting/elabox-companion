@@ -149,7 +149,7 @@ const Dashboard = ({ isMobile }) => {
       className="animated fadeIn w3-container"
     >
         <Modal isOpen={showEscInfoModal}>
-          <ModalHeader>Esc Info</ModalHeader>
+          <ModalHeader>ESC Info</ModalHeader>
           <ModalBody>
             <center>
             <img src={didLogo} style={{ width: "50px", height: "50px",marginBottom: 5 }} />              
@@ -162,6 +162,10 @@ const Dashboard = ({ isMobile }) => {
                 onCopy={() =>{alert("port copied to clipboard")}}>
                   <Button color="success" style={{marginLeft:3}} size="sm"><AiFillCopy/></Button>
               </CopyToClipboard></p>              
+              <p style={{fontSize: 20}}>Chain Id: {esc?.chainId} <CopyToClipboard text={esc?.chainId}
+                onCopy={() =>{alert("port copied to clipboard")}}>
+                  <Button color="success" style={{marginLeft:3}} size="sm"><AiFillCopy/></Button>
+              </CopyToClipboard></p>                            
             </center>
           </ModalBody>
           <ModalFooter>
