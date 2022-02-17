@@ -87,7 +87,10 @@ class Widget02 extends Component {
     return (
       <Card style={{ backgroundColor: "#272A3D", marginBottom: "20px" }}>
         <CardBody>
-          <div style={{ paddingLeft: "20px", color: "white" }}>
+          <div style={{position:"relative", paddingLeft: "20px", color: "white" }}>
+          {header==="ESC" && <p style={{position:"absolute",right:-10,top:-20,marginLeft:2,fontSize:20 , marginBottom:3,padding:0, cursor: "pointer",color:"lightgreen"}}><AiFillInfoCircle onClick={()=>{
+                  showInfo()
+                }}/></p> }                            
             <img
               src={card.icon}
               style={{ widht: "60px", height: "60px", paddingRight: "20px" }}
@@ -98,16 +101,13 @@ class Widget02 extends Component {
                   style={{
                     display: "inline",
                     color: "lightgreen",
-                    fontSize: "4",
+                    fontSize: "14pt",
                     fontWeight: "bold",
                   }}
                 >
                   <span>
                   {header} {initializing ? " (initializing) " : ""}
                 </span>
-                {header==="ESC" && !initializing && <span style={{marginLeft:2,fontSize:20 , marginBottom:3,padding:0, cursor: "pointer"}}><AiFillInfoCircle onClick={()=>{
-                  showInfo()
-                }}/></span> }                
                 </p>
                 <br />
                 {children}
@@ -122,7 +122,7 @@ class Widget02 extends Component {
                 }}
               >
                 <span>
-                  {header}                  
+                  {header}                                                    
                 </span>
                 {children}
               </p>

@@ -4,7 +4,7 @@ import { Button,  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader, } from "reactstrap"
-  import {CopyToClipboard} from 'react-copy-to-clipboard';  
+import copy from "copy-to-clipboard";
 import NodePreview from "./components/NodePreviewer"
 import {AiFillCopy} from "react-icons/ai"
 import { ButtonGroup, CardBody, Col, Row, Card, CardGroup } from "reactstrap"
@@ -153,19 +153,19 @@ const Dashboard = ({ isMobile }) => {
           <ModalBody>
             <center>
             <img src={didLogo} style={{ width: "50px", height: "50px",marginBottom: 5 }} />              
-            <p style={{fontSize: 20}}>Hostname: {esc?.hostname}<CopyToClipboard text={esc?.hostname}
-                onCopy={() =>{alert("Hostname copied to clipboard")}}>
-                  <Button color="success" style={{marginLeft:3,padding:5}} size="sm"><AiFillCopy/></Button>
-              </CopyToClipboard>              
+            <p style={{fontSize: 20}}>Hostname: {esc?.hostname} <Button style={{marginLeft:3,padding:5,background:"transparent",border:"5px solid white"}} size="sm" onClick={()=>{
+              alert("Hostname copied to clipboard.")
+              copy(esc?.hostname)
+              }}><AiFillCopy/></Button> 
               </p>
-              <p style={{fontSize: 20}}>Port: {esc?.port} <CopyToClipboard text={esc?.port}
-                onCopy={() =>{alert("Port copied to clipboard")}}>
-                  <Button color="success" style={{marginLeft:3,padding:5}} size="sm"><AiFillCopy/></Button>
-              </CopyToClipboard></p>              
-              <p style={{fontSize: 20}}>Chain Id: {esc?.chainId} <CopyToClipboard text={esc?.chainId}
-                onCopy={() =>{alert("Chain id copied to clipboard")}}>
-                  <Button color="success" style={{marginLeft:3,padding:5}} size="sm"><AiFillCopy/></Button>
-              </CopyToClipboard></p>                            
+              <p style={{fontSize: 20}}>Port: {esc?.port} <Button color="success" style={{marginLeft:3,padding:5,background:"transparent",border:"5px solid white"}} size="sm" onClick={()=>{
+                alert("Port copied to clipboard.")                
+                copy(esc?.port)
+                }}><AiFillCopy/></Button></p>              
+              <p style={{fontSize: 20}}>Chain Id: {esc?.chainId} <Button color="success" style={{marginLeft:3,padding:5,background:"transparent",border:"5px solid white"}} size="sm" onClick={()=>{
+                alert("Chain Id copied to clipboard.")
+                copy(esc?.chainId)
+                }}><AiFillCopy/></Button></p>                            
             </center>
           </ModalBody>
           <ModalFooter>
