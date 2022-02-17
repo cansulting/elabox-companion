@@ -236,17 +236,17 @@ router.post("/sendTx", (req, res) => {
                           )
                           .addCaller()
                       );
-                      res.json({ ok: "nope" });
+                      res.json({ ok: "nope", reason: stdout });
                     }
                   }
                 );
               } else {
-                res.json({ ok: "nope" });
+                res.json({ ok: "nope", reason: stdout });
               }
             }
           );
         } else {
-          res.json({ ok: "nope" });
+          res.json({ ok: "nope", reason: stdout });
         }
       }
     );
