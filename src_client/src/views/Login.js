@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect ,useRef} from "react"
 import { Link, Redirect } from "react-router-dom"
 import { Button, Input, Spinner } from "reactstrap"
 import {validCharacters} from "../utils/auth"
@@ -11,6 +11,7 @@ function Login() {
   const [isLoggedIn, setLoggedIn] = useState(false)
   const [pwd, setPwd] = useState("")
   const [isProcessing, setProcessing] = useState(false)
+  const inputPasswordRef=useRef(null)
   const isBlocked= seconds>0 
   useEffect(()=>{
     window.localStorage.removeItem('address');    
@@ -52,6 +53,7 @@ function Login() {
           localStorage.setItem('address', responseJson.address);
           setLoggedIn(true);
         } else {
+          inputPasswordRef.current.value=""
           if(responseJson.err!=="Too many auth request from this IP"){
             alert("Wrong password")
           }
@@ -111,6 +113,7 @@ function Login() {
               name="pwd"
               placeholder="********"
               required
+              innerRef={inputPasswordRef}              
               onChange={(e) => handleChange(e)}
               autoFocus
             />
