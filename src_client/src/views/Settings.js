@@ -205,7 +205,11 @@ class Settings extends Component {
       errorUpdateModal: false,
     });
   };
-
+  closeDlKeyStoreModal=()=>{
+    this.setState({
+      dlKeystoreState:0
+    })
+  }
   setDlKeystoreState = () => {
     if (this.state.dlKeystoreState === 1) { 
       this.setState({ dlKeystoreState: 2 });
@@ -733,6 +737,9 @@ class Settings extends Component {
           {(dlKeystoreState === 1 || dlKeystoreState === 3) && <ModalFooter>
             <Button color="success" onClick={this.setDlKeystoreState}>
               OK
+            </Button>            
+            <Button color="danger" onClick={this.closeDlKeyStoreModal}>
+              Cancel
             </Button>
           </ModalFooter>}
         </Modal>
