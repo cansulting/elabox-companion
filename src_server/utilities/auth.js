@@ -145,7 +145,7 @@ function generateKeystore(pwd, replaceOld = false) {
 function authenticatePassword(pwd, username = 'elabox') {
     return new Promise(async (resolve, reject) => {
         if (!validCharacters(pwd)) {
-            reject(Error('invalid password'))
+            reject(Error('Invalid Password'))
             return
         }
         try {
@@ -158,7 +158,7 @@ function authenticatePassword(pwd, username = 'elabox') {
             if (genHash.trim() === hash.trim()) {
                 resolve(200)
             } else {
-                reject(Error('invalid password'))
+                reject(Error('Invalid Password'))
             }
         }catch (e) {
             reject(e)
