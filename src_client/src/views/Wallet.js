@@ -280,11 +280,11 @@ class Wallet extends Component {
             <ModalHeader>Error ELA address</ModalHeader>
             <ModalBody>Please provide a correct ELA address</ModalBody></>}
           {this.state.transferState === 8 && <>
-            <ModalHeader>Error amount</ModalHeader>
+            <ModalHeader>Incorrect Amount</ModalHeader>
             <ModalBody>Please provide amount of ELA to send</ModalBody>
           </>}
           {this.state.transferState === 9 && <>
-            <ModalHeader>Error amount</ModalHeader>
+            <ModalHeader>Incorrect Amount</ModalHeader>
             <ModalBody>Too many decimals</ModalBody>
           </>}
           <ModalFooter>
