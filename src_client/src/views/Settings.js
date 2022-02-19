@@ -333,15 +333,59 @@ class Settings extends Component {
       return id !== "keystoreFileRaw";
     }).forEach((id)=>{
       const value=this.state.form.values[id];
-      console.log(id,value)
-      if(value.length === 0){
+      if(id==="oldPass" && value.length > 0){
+        backend
+        .login(value)
+        .then(async (response) => {
+          const responseJson = await response.json()
+          if (!responseJson.ok) {
+            let message = responseJson.err;
+            if(responseJson.err.includes("seconds remaining")){
+              const seconds= message.replace("seconds remaining","").trim()
+              message =  `keystore upload locked! ${new Date(seconds * 1000).toISOString().substr(11, 8)} remaining before you can upload again.`
+            }
+            this.setState(prevState=>({form:{
+              ...prevState.form,
+              messages:{
+                ...prevState.form.messages,
+                [id]:message
+              }
+            }}))                    
+          }
+          else{
+            this.setState(prevState=>({form:{
+              ...prevState.form,
+              messages:{
+                ...prevState.form.messages,
+                [id]:""
+              }
+            }}),()=>{
+              resolve(true)          
+            })            
+          }
+        })
+        .catch(err=>{
+          this.setState(prevState=>({form:{
+            ...prevState.form,
+            messages:{
+              ...prevState.form.messages,
+              [id]:"There is an error in checking password."
+            }
+          }}))        
+        }).finally(()=>{
+          resolve(true)          
+        })
+      }
+      else if(value.length === 0){
         this.setState(prevState=>({form:{
           ...prevState.form,
           messages:{
             ...prevState.form.messages,
             [id]:"This field is required."
           }
-        }}))        
+        }}),()=>{
+          resolve(true)          
+        })        
       }
       else if(!validCharacters(value) && (id!=="keystore" && id !== "oldPass")){
         this.setState(prevState=>({form:{
@@ -350,7 +394,9 @@ class Settings extends Component {
             ...prevState.form.messages,
             [id]:"Password shouldnt contain special characters and space with atleast 6 characters."
           }
-        }}))        
+        }}),()=>{
+          resolve(true)          
+        })        
       }    
       else{
         this.setState(prevState=>({form:{
@@ -359,10 +405,11 @@ class Settings extends Component {
             ...prevState.form.messages,
             [id]:""
           }
-        }}))
-      }    
+        }}),()=>{
+          resolve(true)          
+        })
+      }              
     })
-    resolve(true)
   })
   handleSubmitKeyStore=()=>{
     this.validateUploadKeystoreForm().then(()=>{
@@ -405,7 +452,7 @@ class Settings extends Component {
   handleUploadKeyStoreStepsNext=()=>{
     this.validateUploadKeystoreForm("oldPass").then(()=>{
       const {messages}=this.state.form
-      const isValid =  messages.oldPass.length ===0 
+      const isValid =  messages.oldPass.length === 0 
       if(isValid){
         this.setState(prevState=>({uploadKeyStoreSteps:prevState.uploadKeyStoreSteps+1}))
       }    
