@@ -28,12 +28,15 @@ import RootStore from "../store";
 import errorLogo from "./images/error.png";
 import checkLogo from "./images/check.png";
 
+let interval=null
+
 class Settings extends Component {
   constructor(props) {
     super(props);
     this.uploadKeyStoreRef = React.createRef();
     this.state = {
       pwd: "",
+      seconds:0,      
       mainchainRestartModal: false,
       mainchainResyncModal: false,
       eidRestartModal: false,
@@ -80,6 +83,29 @@ class Settings extends Component {
   componentWillMount() {
     this.getVersion();
     this.getOnion();
+  }
+  componentDidMount(){
+    this.runTimerLimit()    
+  }
+  componentWillUnmount() {
+    clearInterval(interval);
+ }
+  runTimerLimit = () =>{
+    backend.getRateLimitWaitTime().then(responseJson => {
+      this.setState({seconds:responseJson.rateLimitRemaining})
+    }).finally(()=>{
+      let seconds = this.state.seconds
+      if(seconds > 0){
+        interval = setInterval(()=>{
+          this.setState(prevState=>({ seconds: prevState.seconds-1}))
+        },1000)
+      }
+      else{
+        backend.getRateLimitWaitTime().then(responseJson => {
+          this.setState({seconds:responseJson.rateLimitRemaining})        
+        })      
+      }
+    })
   }
 
   verifyPassword = () => {
@@ -340,9 +366,16 @@ class Settings extends Component {
           const responseJson = await response.json()
           if (!responseJson.ok) {
             let message = responseJson.err;
-            if(responseJson.err.includes("seconds remaining")){
-              const seconds= message.replace("seconds remaining","").trim()
-              message =  `keystore upload locked! ${new Date(seconds * 1000).toISOString().substr(11, 8)} remaining before you can upload again.`
+            if(responseJson.err==="Too many auth request from this IP"){
+              this.runTimerLimit()
+              this.setState(prevState=>({form:{
+                ...prevState.form,
+                messages:{
+                  ...prevState.form.messages,
+                  [id]:"Too many auth request from this IP, please try again."
+                }
+              }}))                    
+              return
             }
             this.setState(prevState=>({form:{
               ...prevState.form,
@@ -483,7 +516,9 @@ class Settings extends Component {
       feedsVersion,
       carrierVersion,
       env,
+      seconds
     } = this.state;
+    const isBlocked= seconds > 0
     console.log("render", showOnion);
     return (
       <div
@@ -610,7 +645,7 @@ class Settings extends Component {
               Previous
             </Button>}            
             {this.state.uploadKeyStoreSteps < 2 ? <>                        
-            <Button data-testid="upload-keystore-next-btn" color="success" onClick={this.handleUploadKeyStoreStepsNext}>
+            <Button data-testid="upload-keystore-next-btn" disabled={isBlocked} color="success" onClick={this.handleUploadKeyStoreStepsNext}>
               Next
             </Button>            
             </>:<>
@@ -942,9 +977,10 @@ class Settings extends Component {
               dataBox={() => ({
                 title: "Upload keystore",
                 variant: "facebook",
-                Restart: "Upload",
+                Restart: `${isBlocked ? `${new Date(seconds * 1000).toISOString().substr(11, 8)} Remaining`:"Upload"}`,
                 Resync: "",
               })}
+              disabledButton={isBlocked}                                
               onGreenPress={this.handleShowUploadConsentModal}
             ></Widget05>
           </Col>          
