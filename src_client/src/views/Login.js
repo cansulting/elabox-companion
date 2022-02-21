@@ -18,6 +18,8 @@ function Login() {
       else{
         setLoggedIn(true)
       }
+    }).catch(err=>{
+      alert(err)
     })
   }
   function handleChange(event) {
