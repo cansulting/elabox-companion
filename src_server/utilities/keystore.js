@@ -72,7 +72,7 @@ function fromHex(hex = "", oldPass = "", newPass = "") {
 function authenticateWallet(pwd, walletPath = "") {
     return new Promise((resolve, reject) => {
         if (!auth.validCharacters(pwd)) {
-            reject(Error('invalid password'))
+            reject(Error('Invalid Password'))
             return
         }
         if (!walletPath || walletPath === "") 
