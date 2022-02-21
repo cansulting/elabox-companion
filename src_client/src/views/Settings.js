@@ -205,22 +205,25 @@ class Settings extends Component {
       errorUpdateModal: false,
     });
   };
-
+  closeDlKeyStoreModal=()=>{
+    this.setState({
+      dlKeystoreState:0
+    })
+  }
   setDlKeystoreState = () => {
     if (this.state.dlKeystoreState === 1) { 
       this.setState({ dlKeystoreState: 2 });
-      console.log(this.state)
       backend.downloadWallet(this.state.pwd)
         .then((_) => {
-          this.setState({ dlKeystoreState: 0 });
+          this.setState({ dlKeystoreState: 0, pwd:"" });
         })
         .catch((error) => {
-          this.setState({ dlKeystoreState: 3 });
+          this.setState({ dlKeystoreState: 3, pwd:"" });
         });
     } else if (this.state.dlKeystoreState === 0)
-      this.setState({ dlKeystoreState: 1 });
+      this.setState({ dlKeystoreState: 1 ,pwd:""});
     else {
-      this.setState({ dlKeystoreState: 0 });
+      this.setState({ dlKeystoreState: 0 , pwd:""});
     }
   }
 
@@ -733,7 +736,10 @@ class Settings extends Component {
           {(dlKeystoreState === 1 || dlKeystoreState === 3) && <ModalFooter>
             <Button color="success" onClick={this.setDlKeystoreState}>
               OK
-            </Button>
+            </Button>            
+            {dlKeystoreState === 1 &&  <Button color="danger" onClick={this.closeDlKeyStoreModal}>
+              Cancel
+            </Button>}
           </ModalFooter>}
         </Modal>
         <Modal isOpen={updateNowModal}>
