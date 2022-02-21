@@ -149,21 +149,21 @@ const Dashboard = ({ isMobile }) => {
       className="animated fadeIn w3-container"
     >
         <Modal isOpen={showEscInfoModal}>
-          <ModalHeader>ESC Info</ModalHeader>
+          <ModalHeader>ESC Access</ModalHeader>
           <ModalBody>
             <center>
-            <img src={didLogo} style={{ width: "50px", height: "50px",marginBottom: 5 }} />              
-            <p style={{fontSize: 20}}>Hostname: {esc?.hostname} <Button style={{marginLeft:3,padding:5,background:"transparent",border:"5px solid white"}} size="sm" onClick={()=>{
-              alert("Hostname copied to clipboard.")
-              copy(esc?.hostname)
-              }}><AiFillCopy/></Button> 
+              <img src={didLogo} style={{ width: "50px", height: "50px",marginBottom: 5 }} />              
+              <p style={{fontSize: 17}}>IP: {esc?.hostname} <Button style={{marginLeft:3,padding:2,background:"transparent",border:"none"}} size="sm" onClick={()=>{
+                // alert("Hostname copied to clipboard.")
+                copy(esc?.hostname)
+                }}><AiFillCopy/></Button> 
               </p>
-              <p style={{fontSize: 20}}>Port: {esc?.port} <Button color="success" style={{marginLeft:3,padding:5,background:"transparent",border:"5px solid white"}} size="sm" onClick={()=>{
-                alert("Port copied to clipboard.")                
+              <p style={{fontSize: 17}}>Port: {esc?.port} <Button color="success" style={{marginLeft:2,padding:5,background:"transparent",border:"none"}} size="sm" onClick={()=>{
+                // alert("Port copied to clipboard.")                
                 copy(esc?.port)
                 }}><AiFillCopy/></Button></p>              
-              <p style={{fontSize: 20}}>Chain Id: {esc?.chainId} <Button color="success" style={{marginLeft:3,padding:5,background:"transparent",border:"5px solid white"}} size="sm" onClick={()=>{
-                alert("Chain Id copied to clipboard.")
+              <p style={{fontSize: 17}}>Chain Id: {esc?.chainId} <Button color="success" style={{marginLeft:3,padding:2,background:"transparent",border:"none"}} size="sm" onClick={()=>{
+                // alert("Chain Id copied to clipboard.")
                 copy(esc?.chainId)
                 }}><AiFillCopy/></Button></p>                            
             </center>

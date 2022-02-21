@@ -132,6 +132,7 @@ const Previewer = (props) => {
           ) : (
             <Widget02
               header={label}
+              showInfo={showInfo}
               mainText="Stopped"
               icon={didLogo}
               color="danger"

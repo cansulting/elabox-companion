@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Card, CardBody, CardFooter } from "reactstrap";
-import {AiFillInfoCircle} from "react-icons/ai"
+import { Card, CardBody } from "reactstrap";
+import {AiOutlineInfoCircle} from "react-icons/ai"
 import classNames from "classnames";
 import { mapToCssModules } from "reactstrap/lib/utils";
 
@@ -25,7 +25,7 @@ class Widget02 extends Component {
       className,
       cssModule,
       header,
-      showInfo=()=>{},
+      showInfo=null,
       mainText,
       icon,
       color,
@@ -58,43 +58,18 @@ class Widget02 extends Component {
     const lead = { style: "h5 mb-0", color: color, classes: "" };
     lead.classes = classNames(lead.style, "text-" + card.color, padding.lead);
 
-    const blockIcon = function (icon) {
-      const classes = classNames(
-        icon,
-        "bg-" + card.color,
-        padding.icon,
-        "font-2xl mr-3 float-left"
-      );
-      return <i className={classes}></i>;
-    };
-
-    const cardFooter = function () {
-      if (footer) {
-        return (
-          <CardFooter className="px-3 py-2">
-            <a
-              className="font-weight-bold font-xs btn-block text-muted"
-              href={link}
-            >
-              View More
-              <i className="fa fa-angle-right float-right font-lg"></i>
-            </a>
-          </CardFooter>
-        );
-      }
-    };
-
     return (
       <Card style={{ backgroundColor: "#272A3D", marginBottom: "20px" }}>
         <CardBody>
           <div style={{position:"relative", paddingLeft: "20px", color: "white" }}>
-          {header==="ESC" && <p style={{position:"absolute",right:-10,top:-20,marginLeft:2,fontSize:20 , marginBottom:3,padding:0, cursor: "pointer",color:"lightgreen"}}><AiFillInfoCircle onClick={()=>{
-                  showInfo()
-                }}/></p> }                            
+            {showInfo && 
+              <p style={{position:"absolute",right:-10,top:-20,marginLeft:2,fontSize:20 , marginBottom:3,padding:0, cursor: "pointer",color:"white"}}>
+                <AiOutlineInfoCircle onClick={()=>{showInfo()}}/>
+              </p> 
+            }                            
             <img
               src={card.icon}
-              style={{ widht: "60px", height: "60px", paddingRight: "20px" }}
-            ></img>
+              style={{ widht: "60px", height: "60px", paddingRight: "20px" }}/>
             {color == "success" ? (
               <>
                 <p
