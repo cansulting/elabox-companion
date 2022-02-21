@@ -28,7 +28,7 @@ import RootStore from "../store";
 import errorLogo from "./images/error.png";
 import checkLogo from "./images/check.png";
 
-let interval=null
+import {withAuth} from "../hooks/UseHook"
 
 class Settings extends Component {
   constructor(props) {
@@ -36,7 +36,6 @@ class Settings extends Component {
     this.uploadKeyStoreRef = React.createRef();
     this.state = {
       pwd: "",
-      seconds:0,      
       mainchainRestartModal: false,
       mainchainResyncModal: false,
       eidRestartModal: false,
@@ -84,30 +83,6 @@ class Settings extends Component {
     this.getVersion();
     this.getOnion();
   }
-  componentDidMount(){
-    this.runTimerLimit()    
-  }
-  componentWillUnmount() {
-    clearInterval(interval);
- }
-  runTimerLimit = () =>{
-    backend.getRateLimitWaitTime().then(responseJson => {
-      this.setState({seconds:responseJson.rateLimitRemaining})
-    }).finally(()=>{
-      let seconds = this.state.seconds
-      if(seconds > 0){
-        interval = setInterval(()=>{
-          this.setState(prevState=>({ seconds: prevState.seconds-1}))
-        },1000)
-      }
-      else{
-        backend.getRateLimitWaitTime().then(responseJson => {
-          this.setState({seconds:responseJson.rateLimitRemaining})        
-        })      
-      }
-    })
-  }
-
   verifyPassword = () => {
     // e.preventDefault();
     this.setState({ resyncModal: false });
@@ -363,28 +338,13 @@ class Settings extends Component {
     }).forEach((id)=>{
       const value=this.state.form.values[id];
       if(id==="oldPass" && value.length > 0){
-        backend
-        .login(value)
-        .then(async (response) => {
-          const responseJson = await response.json()
-          if (!responseJson.ok) {
-            let message = responseJson.err;
-            if(responseJson.err==="Too many auth request from this IP"){
-              this.runTimerLimit()
-              this.setState(prevState=>({form:{
-                ...prevState.form,
-                messages:{
-                  ...prevState.form.messages,
-                  [id]:"Too many auth request from this IP, please try again."
-                }
-              }}))                    
-              return
-            }
+        this.props.auth.handleLogin(value).then(response=>{
+          if (response?.length>0){
             this.setState(prevState=>({form:{
               ...prevState.form,
               messages:{
                 ...prevState.form.messages,
-                [id]:message
+                [id]: response
               }
             }}))                    
           }
@@ -397,10 +357,9 @@ class Settings extends Component {
               }
             }}),()=>{
               resolve(true)          
-            })            
+            })                        
           }
-        })
-        .catch(err=>{
+        }).catch(err=>{
           this.setState(prevState=>({form:{
             ...prevState.form,
             messages:{
@@ -501,7 +460,8 @@ class Settings extends Component {
     this.setState({uploadKeyStoreConsentModal:false})    
   }  
   render() {
-    const { isMobile } = this.props;
+    const { isMobile ,auth} = this.props;
+    const {seconds, isBlocked } = auth ;   
 
     const {
       update,
@@ -519,9 +479,7 @@ class Settings extends Component {
       feedsVersion,
       carrierVersion,
       env,
-      seconds
     } = this.state;
-    const isBlocked= seconds > 0
     console.log("render", showOnion);
     return (
       <div
@@ -1063,4 +1021,4 @@ class Settings extends Component {
     );
   }
 }
-export default Settings;
+export default withAuth(Settings);
