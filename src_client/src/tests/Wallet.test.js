@@ -140,7 +140,7 @@ describe("Wallet", () => {
     fireEvent.change(amountInput, { target: { value: "1" } })
     const sendBtn = screen.getByTestId("send")
     fireEvent.click(sendBtn)  
-    const sendingElaModal = await screen.findByText("Error ELA address")
+    const sendingElaModal = await screen.findByText("Incorrect ELA Address")
     expect(sendingElaModal).toBeInTheDocument()
 
 
