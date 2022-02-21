@@ -41,6 +41,7 @@ class HelpCentre extends Component {
     return (
       <Formik
         initialValues={{ email: '', name: '', problem: '' }}
+        validateOnChange={false}
         onSubmit={async (values) => {
           this.setState({ success: false, failure: false })
           try {
@@ -63,7 +64,6 @@ class HelpCentre extends Component {
         render={({
           values,
           handleChange,
-          handleBlur,
           handleSubmit,
           errors,
         }) => {
