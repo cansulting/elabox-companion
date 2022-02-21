@@ -975,7 +975,7 @@ class Settings extends Component {
             <Widget05
               testid="keystore-upload-btn"
               dataBox={() => ({
-                title: "Upload keystore",
+                title: "Upload Keystore",
                 variant: "facebook",
                 Restart: `${isBlocked ? `${new Date(seconds * 1000).toISOString().substr(11, 8)} Remaining`:"Upload"}`,
                 Resync: "",
