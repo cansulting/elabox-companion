@@ -95,7 +95,7 @@ class HelpCentre extends Component {
                   <Card style={{ backgroundColor: '#272A3D', color: 'white', fontSize: '16px' }}>
                     <CardHeader><center>Need Help or Assistance?</center></CardHeader>
                     <CardBody>
-                      <center>Fill in the details below the Elabox Support Team will reach out to you as soon as possible.</center>
+                      <center>Fill in the required details below. The Elabox Support Team will reach out to you as soon as possible.</center>
                       <br />
                       <Form>
                         <Row><Col>

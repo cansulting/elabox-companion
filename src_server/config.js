@@ -1,4 +1,6 @@
 const path = require("path")
+const os = require("os")
+const networkInterfaces = os.networkInterfaces()
 const feedsUrl = "http://localhost:10018/"
 const feedsDir = "/home/elabox/apps/ela.feeds"
 const homeapps = "/home/elabox/apps"
@@ -22,6 +24,7 @@ console.log("Binaries @" + homeapps)
 
 module.exports = {
   COMPANION_PKID: "ela.companion",                    // current companion package id
+  HOSTNAME: networkInterfaces['eth0'][0]['address'],
   SUPERNODE: homeapps,
   ESC_DIR: homeapps + "/ela.esc",                     // esc bin path
   EID_DIR: homeapps + "/ela.eid",                     // eid bin path
@@ -32,6 +35,7 @@ module.exports = {
   ESCDATA_DIR: homeappdata + "/ela.esc",
   EID_PORT: 20645,                                    // eid port that can be access for web3 api
   ESC_PORT: 20646,                                    // esc port that can be access for web3 api
+  ESC_CHAIN_ID:20,
   ELA_PORT: 20336,
   RPC_PORT_EID: 20636,                                // EID RPC
   RPC_PORT_ESC: 20637,                                // ESC RPC

@@ -277,14 +277,14 @@ class Wallet extends Component {
 
         <Modal isOpen={this.state.transferState >= 7}>
           {this.state.transferState === 7 && <>
-            <ModalHeader>Error ELA address</ModalHeader>
+            <ModalHeader>Incorrect ELA Address</ModalHeader>
             <ModalBody>Please provide a correct ELA address</ModalBody></>}
           {this.state.transferState === 8 && <>
-            <ModalHeader>Error amount</ModalHeader>
+            <ModalHeader>Incorrect Amount</ModalHeader>
             <ModalBody>Please provide amount of ELA to send</ModalBody>
           </>}
           {this.state.transferState === 9 && <>
-            <ModalHeader>Error amount</ModalHeader>
+            <ModalHeader>Incorrect Amount</ModalHeader>
             <ModalBody>Too many decimals</ModalBody>
           </>}
           <ModalFooter>

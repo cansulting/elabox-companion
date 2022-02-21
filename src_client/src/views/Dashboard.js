@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react"
-import { Bar, Line } from "react-chartjs-2"
-import { Button } from "reactstrap"
+import { Line } from "react-chartjs-2"
+import { Button,  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader, } from "reactstrap"
+import copy from "copy-to-clipboard";
 import NodePreview from "./components/NodePreviewer"
+import {AiFillCopy} from "react-icons/ai"
 import { ButtonGroup, CardBody, Col, Row, Card, CardGroup } from "reactstrap"
 import Widget02 from "./widgets/Widget02"
 import Widget04 from "./widgets/Widget04"
 import mainchainLogo from "./images/mainchain_white.png"
+import didLogo from "./images/did_white.png"
 import carrierLogo from "./images/carrier_white.png"
 import feedsLogo from "./images/feeds-logo.png"
 import glideLogo from "./images/glide-logo.png"
@@ -15,6 +21,7 @@ import { formatTime } from "../utils/time"
 import { shortifyHash } from "../utils/string"
 
 const Dashboard = ({ isMobile }) => {
+  const [showEscInfoModal,setShowEscInfoModal]=useState(false)
   const { ela, eid, carrier, esc, feeds } = RootStore.blockchain
   useEffect(() => {}, [])
 
@@ -122,7 +129,12 @@ const Dashboard = ({ isMobile }) => {
       },
     },
   }
-
+  const handleShowInfoModal=()=>{
+    setShowEscInfoModal(true)
+  }
+  const handleCloseEscInfoModal=()=>{
+    setShowEscInfoModal(false)
+  }
   return (
     <div
       id="main"
@@ -136,6 +148,32 @@ const Dashboard = ({ isMobile }) => {
       }}
       className="animated fadeIn w3-container"
     >
+        <Modal isOpen={showEscInfoModal}>
+          <ModalHeader>ESC Access</ModalHeader>
+          <ModalBody>
+            <center>
+              <img src={didLogo} style={{ width: "50px", height: "50px",marginBottom: 5 }} />              
+              <p style={{fontSize: 17}}>IP: {esc?.hostname} <Button style={{marginLeft:3,padding:2,background:"transparent",border:"none"}} size="sm" onClick={()=>{
+                // alert("Hostname copied to clipboard.")
+                copy(esc?.hostname)
+                }}><AiFillCopy/></Button> 
+              </p>
+              <p style={{fontSize: 17}}>Port: {esc?.port} <Button color="success" style={{marginLeft:2,padding:5,background:"transparent",border:"none"}} size="sm" onClick={()=>{
+                // alert("Port copied to clipboard.")                
+                copy(esc?.port)
+                }}><AiFillCopy/></Button></p>              
+              <p style={{fontSize: 17}}>Chain Id: {esc?.chainId} <Button color="success" style={{marginLeft:3,padding:2,background:"transparent",border:"none"}} size="sm" onClick={()=>{
+                // alert("Chain Id copied to clipboard.")
+                copy(esc?.chainId)
+                }}><AiFillCopy/></Button></p>                            
+            </center>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={handleCloseEscInfoModal}>
+              Close
+            </Button>
+          </ModalFooter>
+        </Modal>      
       <Row>
         <Col xs="12" sm="4" lg="4">
           {ela.isRunning ? (
@@ -216,7 +254,7 @@ const Dashboard = ({ isMobile }) => {
         </Col>
       </Row>
       <NodePreview blockdata={eid} label="EID" />
-      <NodePreview blockdata={esc} label="ESC" />
+      <NodePreview blockdata={esc} label="ESC" showInfo={handleShowInfoModal}/>
       <Row style={{ paddingTop: "50px" }}>
         <Col xs="12" sm="4" lg="4">
           <Widget02
