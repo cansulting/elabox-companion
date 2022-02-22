@@ -162,8 +162,8 @@ const Dashboard = ({ isMobile }) => {
                 // alert("Port copied to clipboard.")                
                 copy(esc?.port)
                 }}><AiFillCopy/></Button></p>              
-              <p style={{fontSize: 17}}>Chain Id: {esc?.chainId} <Button color="success" style={{marginLeft:3,padding:2,background:"transparent",border:"none"}} size="sm" onClick={()=>{
-                // alert("Chain Id copied to clipboard.")
+              <p style={{fontSize: 17}}>Chain ID: {esc?.chainId} <Button color="success" style={{marginLeft:3,padding:2,background:"transparent",border:"none"}} size="sm" onClick={()=>{
+                // alert("Chain ID copied to clipboard.")
                 copy(esc?.chainId)
                 }}><AiFillCopy/></Button></p>                            
             </center>
