@@ -1,6 +1,5 @@
 const path = require("path")
-const os = require("os")
-const networkInterfaces = os.networkInterfaces()
+const { getIp } =require("./utilities/ip")
 const feedsUrl = "http://localhost:10018/"
 const feedsDir = "/home/elabox/apps/ela.feeds"
 const homeapps = "/home/elabox/apps"
@@ -24,7 +23,7 @@ console.log("Binaries @" + homeapps)
 
 module.exports = {
   COMPANION_PKID: "ela.companion",                    // current companion package id
-  HOSTNAME: networkInterfaces['eth0'][0]['address'],
+  HOSTNAME: getIp()['eth0'][0],
   SUPERNODE: homeapps,
   ESC_DIR: homeapps + "/ela.esc",                     // esc bin path
   EID_DIR: homeapps + "/ela.eid",                     // eid bin path
