@@ -269,19 +269,21 @@ class API {
         method: 'GET',
         responseType: 'blob', // important
       }).then((response) => {
-        console.log(response)
-          if (response.data.type === "application/json") {
-            reject("")
-            return
-          }
-          const url = window.URL.createObjectURL(new Blob([response.data]));
+        //console.log(response)
+        try {
+          const url  = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement('a');
           link.href = url;
           link.setAttribute('download', 'keystore.dat'); //or any other extension
           document.body.appendChild(link);
           link.click();
           resolve("")
-      });
+        }
+        catch (e) {
+          reject(e)
+        }
+      })
+      .catch((error) => reject(error));
     })
   };
   uploadKeyStore= async (values) =>{
