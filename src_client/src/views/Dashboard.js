@@ -152,16 +152,14 @@ const Dashboard = ({ isMobile }) => {
           <ModalHeader>ESC Access</ModalHeader>
           <ModalBody>
             <center>
-              <img src={didLogo} style={{ width: "50px", height: "50px",marginBottom: 5 }} />              
-              <p style={{fontSize: 17}}>IP: {esc?.hostname} <Button style={{marginLeft:3,padding:2,background:"transparent",border:"none"}} size="sm" onClick={()=>{
-                // alert("Hostname copied to clipboard.")
-                copy(esc?.hostname)
-                }}><AiFillCopy/></Button> 
-              </p>
-              <p style={{fontSize: 17}}>Port: {esc?.port} <Button color="success" style={{marginLeft:2,padding:5,background:"transparent",border:"none"}} size="sm" onClick={()=>{
-                // alert("Port copied to clipboard.")                
-                copy(esc?.port)
-                }}><AiFillCopy/></Button></p>              
+              <img src={didLogo} style={{ width: "50px", height: "50px",marginBottom: 5, padding: "5px" }} />              
+              <p style={{fontSize: 17}}>IP: {'http://' + window.location.hostname + ':' + esc?.port} 
+                <Button style={{marginLeft:3,padding:2,background:"transparent",border:"none"}} 
+                  size="sm"
+                  onClick={()=>{copy('http://' + window.location.hostname + ':' + esc?.port)
+                }}><AiFillCopy/>
+                </Button> 
+              </p>           
               <p style={{fontSize: 17}}>Chain ID: {esc?.chainId} <Button color="success" style={{marginLeft:3,padding:2,background:"transparent",border:"none"}} size="sm" onClick={()=>{
                 // alert("Chain ID copied to clipboard.")
                 copy(esc?.chainId)

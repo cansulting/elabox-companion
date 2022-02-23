@@ -97,7 +97,6 @@ export const eid = types
 
 export const esc = types
   .model({
-    hostname:types.optional(types.string,""),    
     port:types.optional(types.number,0),        
     chainId:types.optional(types.number,0),
     servicesRunning: types.optional(types.boolean, false),
