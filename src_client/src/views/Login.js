@@ -14,6 +14,7 @@ function Login() {
   const inputPasswordRef=useRef(null)
   const isBlocked= seconds>0 
   useEffect(()=>{
+    window.localStorage.removeItem("pass")    
     window.localStorage.removeItem('address');    
     backend.getRateLimitWaitTime().then(responseJson => {
       setTimer(responseJson.rateLimitRemaining)

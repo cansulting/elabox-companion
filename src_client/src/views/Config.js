@@ -33,13 +33,13 @@ function Config() {
         else {
           backend.createWallet(pwd1)
             .then(response => {
-
               setTimeout(() => {
                 console.log(response)
                 // if success
                 setCreating(false)
                 if (response.ok === "ok" ) {
                   // localStorage.setItem('isconfiged', response.stdout.trim())
+                  window.localStorage.setItem("pass",pwd1)                  
                   localStorage.setItem('isconfiged', true)
                   localStorage.setItem('islogedin', true)
                   setConfiged(true);
