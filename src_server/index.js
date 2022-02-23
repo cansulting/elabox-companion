@@ -325,7 +325,7 @@ router.get("/downloadWallet", function (req, res) {
   authenticatePassword(pass).then( _ => {
     res.download(config.KEYSTORE_PATH);
   }).catch(e => {
-    res.json({ ok: false, err: e.message })
+    res.sendStatus(403);
   })
   
 });

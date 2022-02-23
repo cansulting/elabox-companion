@@ -12,11 +12,18 @@ function Download() {
     setDownloading(true);
     const pass=window.localStorage.getItem("pass")
     window.localStorage.removeItem("pass")
-    API.downloadWallet(pass);
-    setTimeout(() => {
-      // if success
-      setFinished(true)
-    }, 3000)
+    API.downloadWallet(pass)
+    .then(_ => {
+      setTimeout(() => {
+        // if success
+        setFinished(true)
+      }, 3000)
+    })
+    .catch( err => {
+      alert(err)
+      setDownloading(false)
+    });
+    
   }
 
   return (

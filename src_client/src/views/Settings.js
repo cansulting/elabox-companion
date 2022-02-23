@@ -28,6 +28,8 @@ import RootStore from "../store";
 import errorLogo from "./images/error.png";
 import checkLogo from "./images/check.png";
 
+import {withAuth} from "../hooks/UseHook"
+
 class Settings extends Component {
   constructor(props) {
     super(props);
@@ -81,7 +83,6 @@ class Settings extends Component {
     this.getVersion();
     this.getOnion();
   }
-
   verifyPassword = () => {
     // e.preventDefault();
     this.setState({ resyncModal: false });
@@ -336,15 +337,50 @@ class Settings extends Component {
       return id !== "keystoreFileRaw";
     }).forEach((id)=>{
       const value=this.state.form.values[id];
-      console.log(id,value)
-      if(value.length === 0){
+      if(id==="oldPass" && value.length > 0){
+        this.props.auth.handleLogin(value).then(response=>{
+          if (response?.length>0){
+            this.setState(prevState=>({form:{
+              ...prevState.form,
+              messages:{
+                ...prevState.form.messages,
+                [id]: response
+              }
+            }}))                    
+          }
+          else{
+            this.setState(prevState=>({form:{
+              ...prevState.form,
+              messages:{
+                ...prevState.form.messages,
+                [id]:""
+              }
+            }}),()=>{
+              resolve(true)          
+            })                        
+          }
+        }).catch(err=>{
+          this.setState(prevState=>({form:{
+            ...prevState.form,
+            messages:{
+              ...prevState.form.messages,
+              [id]:"There is an error in checking password."
+            }
+          }}))        
+        }).finally(()=>{
+          resolve(true)          
+        })
+      }
+      else if(value.length === 0){
         this.setState(prevState=>({form:{
           ...prevState.form,
           messages:{
             ...prevState.form.messages,
             [id]:"This field is required."
           }
-        }}))        
+        }}),()=>{
+          resolve(true)          
+        })        
       }
       else if(!validCharacters(value) && (id!=="keystore" && id !== "oldPass")){
         this.setState(prevState=>({form:{
@@ -353,7 +389,9 @@ class Settings extends Component {
             ...prevState.form.messages,
             [id]:"Password shouldnt contain special characters and space with atleast 6 characters."
           }
-        }}))        
+        }}),()=>{
+          resolve(true)          
+        })        
       }    
       else{
         this.setState(prevState=>({form:{
@@ -362,10 +400,11 @@ class Settings extends Component {
             ...prevState.form.messages,
             [id]:""
           }
-        }}))
-      }    
+        }}),()=>{
+          resolve(true)          
+        })
+      }              
     })
-    resolve(true)
   })
   handleSubmitKeyStore=()=>{
     this.validateUploadKeystoreForm().then(()=>{
@@ -408,7 +447,7 @@ class Settings extends Component {
   handleUploadKeyStoreStepsNext=()=>{
     this.validateUploadKeystoreForm("oldPass").then(()=>{
       const {messages}=this.state.form
-      const isValid =  messages.oldPass.length ===0 
+      const isValid =  messages.oldPass.length === 0 
       if(isValid){
         this.setState(prevState=>({uploadKeyStoreSteps:prevState.uploadKeyStoreSteps+1}))
       }    
@@ -421,7 +460,8 @@ class Settings extends Component {
     this.setState({uploadKeyStoreConsentModal:false})    
   }  
   render() {
-    const { isMobile } = this.props;
+    const { isMobile ,auth} = this.props;
+    const {seconds, isBlocked } = auth ;   
 
     const {
       update,
@@ -566,7 +606,7 @@ class Settings extends Component {
               Previous
             </Button>}            
             {this.state.uploadKeyStoreSteps < 2 ? <>                        
-            <Button data-testid="upload-keystore-next-btn" color="success" onClick={this.handleUploadKeyStoreStepsNext}>
+            <Button data-testid="upload-keystore-next-btn" disabled={isBlocked} color="success" onClick={this.handleUploadKeyStoreStepsNext}>
               Next
             </Button>            
             </>:<>
@@ -899,11 +939,12 @@ class Settings extends Component {
             <Widget05
               testid="keystore-upload-btn"
               dataBox={() => ({
-                title: "Upload keystore",
+                title: "Upload Keystore",
                 variant: "facebook",
-                Restart: "Upload",
+                Restart: `${isBlocked ? `${new Date(seconds * 1000).toISOString().substr(11, 8)} Remaining`:"Upload"}`,
                 Resync: "",
               })}
+              disabledButton={isBlocked}                                
               onGreenPress={this.handleShowUploadConsentModal}
             ></Widget05>
           </Col>          
@@ -980,4 +1021,4 @@ class Settings extends Component {
     );
   }
 }
-export default Settings;
+export default withAuth(Settings);
