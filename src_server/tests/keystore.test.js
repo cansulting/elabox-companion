@@ -17,7 +17,7 @@ test("Wrong keystore password",async()=>{
     const wrongpass="thisiswrongpassword"
     await uploadFromHex(wallet, password, wrongpass).catch( err => {
         expect(err).not.toBeNull()
-        expect(err.message).toContain("password for new wallet is invalid")
+        expect(err.message).toContain("Password for new wallet is invalid")
     })    
 })
 test("success uploading",async ()=>{
