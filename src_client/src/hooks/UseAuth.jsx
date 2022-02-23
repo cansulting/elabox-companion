@@ -34,7 +34,7 @@ export default function UseAuth(clearWindowAddress=false) {
       return new Promise((resolve,reject)=>{
         setProcessing(true)
         if(!validCharacters(pwd)){
-          resolve("Password shouldnt contain special characters and space with atleast 6 characters.")
+          reject("Password shouldnt contain special characters and space with atleast 6 characters.")
           setProcessing(false)      
           return;
         }
@@ -48,13 +48,13 @@ export default function UseAuth(clearWindowAddress=false) {
               resolve("")
             } else {
               if(responseJson.err!=="Too many auth request from this IP"){
-                resolve("Wrong password")
+                reject("Wrong password")
               }
               else{
                 backend.getRateLimitWaitTime().then(responseJson => {
                   setTimer(responseJson.rateLimitRemaining)
                 })            
-                resolve(`Too many auth request from this IP, please try again.`)            
+                reject(`Too many auth request from this IP, please try again.`)            
               }
             }
           })
