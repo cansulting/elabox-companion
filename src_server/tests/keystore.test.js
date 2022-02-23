@@ -27,7 +27,7 @@ test("success uploading",async ()=>{
         expect(true).toBe(true)
     }).catch( err => {
         expect(err).toBeNull()
-    })        
+    })
 })
 test("Restrict download keystore without password",async ()=>{
     const wallet = Buffer.from(fsExtra.readFileSync(KEYSTORE_PATH,"utf8")).toString("hex")

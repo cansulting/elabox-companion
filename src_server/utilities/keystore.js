@@ -44,7 +44,7 @@ function fromHex(hex = "", oldPass = "", newPass = "") {
                 await authenticateWallet(newPass, tmpWallet)
             } catch (err) {
                 log.write(log.create().error('upload keystore failed. new password is invalid', err))
-                rej(Error('password for new wallet is invalid'))
+                rej(Error('Password for new wallet is invalid'))
                 return
             }
 
