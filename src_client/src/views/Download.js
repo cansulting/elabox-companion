@@ -19,10 +19,6 @@ function Download() {
     }, 3000)
   }
 
-  function toDb() {
-    return <Redirect to="/" />;
-  }
-
   return (
     <div style={{ backgroundColor: '#272A3D', height: '100vh', width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
       <center>
