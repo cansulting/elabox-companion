@@ -591,7 +591,7 @@ class Settings extends Component {
               <Label for="new_password">
                 Verify keystore password
               </Label>
-              <Input id="new_password" name="new_password" type="password" invalid={this.state.form.messages.newPass.length>0} value={this.state.form.values.newPass.length > 0 ? this.state.form.values.newPass:""} onChange={e=>{
+              <Input id="new_password" name="new_password" type="password" readOnly={this.state.uploadKeyStoreProcessing} invalid={this.state.form.messages.newPass.length>0} value={this.state.form.values.newPass.length > 0 ? this.state.form.values.newPass:""} onChange={e=>{
                 this.handleInputChange("newPass",e.target.value.trim())
               }} />
               <FormFeedback>
