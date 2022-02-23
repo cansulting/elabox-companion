@@ -5,15 +5,13 @@ import elaboxLogo from './images/logo-circle-transparent.png'
 import API from '../api/backend';
 
 function Download() {
-
-  const [isConfiged, setConfiged] = useState(false);
-  const [pwd1, setPwd1] = useState('qweqweqwe');
-  const [pwd2, setPwd2] = useState('qweqweqwe');
   const [downloading, setDownloading] = useState(false)
   const [finished, setFinished] = useState(false)
 
-  function downloadWallet(pass) {
+  function downloadWallet() {
     setDownloading(true);
+    const pass=window.localStorage.getItem("pass")
+    window.localStorage.removeItem("pass")
     API.downloadWallet(pass);
     setTimeout(() => {
       // if success
