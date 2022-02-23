@@ -14,11 +14,18 @@ function Download() {
 
   function downloadWallet(pass) {
     setDownloading(true);
-    API.downloadWallet(pass);
-    setTimeout(() => {
-      // if success
-      setFinished(true)
-    }, 3000)
+    API.downloadWallet(pass)
+    .then(_ => {
+      setTimeout(() => {
+        // if success
+        setFinished(true)
+      }, 3000)
+    })
+    .catch( err => {
+      alert(err)
+      setDownloading(false)
+    });
+    
   }
 
   function toDb() {

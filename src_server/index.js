@@ -128,7 +128,7 @@ router.get("/eid", async (req, res) => {
 
 router.get("/esc", async (req, res) => {
   try {
-    esc.getStatus().then((data) => res.status(200).json({...data,hostname: config.HOSTNAME,port: config.RPC_PORT_ESC,chainId:config.ESC_CHAIN_ID}));
+    esc.getStatus().then((data) => res.status(200).json({...data, port: config.RPC_PORT_ESC,chainId:config.ESC_CHAIN_ID}));
   } catch (err) {
     res.status(500).send({ error: err });
   }
@@ -325,7 +325,7 @@ router.get("/downloadWallet", function (req, res) {
   authenticatePassword(pass).then( _ => {
     res.download(config.KEYSTORE_PATH);
   }).catch(e => {
-    res.json({ ok: false, err: e.message })
+    res.sendStatus(403);
   })
   
 });
