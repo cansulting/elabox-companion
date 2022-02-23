@@ -152,9 +152,8 @@ const Dashboard = ({ isMobile }) => {
           <ModalBody>      
             <center>
               <img src={didLogo} style={{ width: "50px", height: "50px",marginBottom: 5 }}/>              
-              <Copy id="Ip" label="IP:" data={esc?.hostname}/>
-              <Copy id="Port" label="PORT:" data={esc?.port}/>              
-              <Copy id="ChainId" label="Chain ID:" data={esc?.chainId}/>                            
+              <Copy id="Ip" label="IP" data={`http://${window.location.hostname}:${esc?.port}`}/>
+              <Copy id="ChainId" label="Chain ID" data={esc?.chainId}/>                            
             </center>
           </ModalBody>
           <ModalFooter>

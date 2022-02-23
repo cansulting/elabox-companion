@@ -271,7 +271,7 @@ class API {
       }).then((response) => {
         console.log(response)
           if (response.data.type === "application/json") {
-            reject("")
+            reject("Invalid file type")
             return
           }
           const url = window.URL.createObjectURL(new Blob([response.data]));

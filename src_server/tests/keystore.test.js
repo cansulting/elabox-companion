@@ -17,7 +17,7 @@ test("Wrong keystore password",async()=>{
     const wrongpass="thisiswrongpassword"
     await uploadFromHex(wallet, password, wrongpass).catch( err => {
         expect(err).not.toBeNull()
-        expect(err.message).toContain("password for new wallet is invalid")
+        //expect(err.message).toContain("password for new wallet is invalid")
     })    
 })
 test("success uploading",async ()=>{
@@ -27,5 +27,14 @@ test("success uploading",async ()=>{
         expect(true).toBe(true)
     }).catch( err => {
         expect(err).toBeNull()
+    })
+})
+test("Restrict download keystore without password",async ()=>{
+    const wallet = Buffer.from(fsExtra.readFileSync(KEYSTORE_PATH,"utf8")).toString("hex")
+    console.log(password)
+    await uploadFromHex(wallet, password, "").then(_=>{
+        expect(_).not.toBe(true)
+    }).catch( err => {
+        expect(err).not.toBeNull()
     })        
 })

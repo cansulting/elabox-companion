@@ -580,7 +580,7 @@ class Settings extends Component {
                 {this.state.uploadKeyStoreProcessing ? <Spinner size="sm">Loading...</Spinner>:"Confirm"}
               </Button>
             </>:<>
-            <Button color={this.state.uploadKeyStoreStatus.status==="success" ? "success":"danger"} onClick={this.closeUploadKeyStoreModal}>
+            <Button color="success" onClick={this.closeUploadKeyStoreModal}>
               Ok
             </Button>            
             </> }            
