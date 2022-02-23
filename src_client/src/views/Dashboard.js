@@ -3,10 +3,8 @@ import { Line } from "react-chartjs-2"
 import { Button,  Modal,
   ModalBody,
   ModalFooter,
-  ModalHeader, } from "reactstrap"
-import copy from "copy-to-clipboard";
+  ModalHeader } from "reactstrap"
 import NodePreview from "./components/NodePreviewer"
-import {AiFillCopy} from "react-icons/ai"
 import { ButtonGroup, CardBody, Col, Row, Card, CardGroup } from "reactstrap"
 import Widget02 from "./widgets/Widget02"
 import Widget04 from "./widgets/Widget04"
@@ -19,6 +17,7 @@ import RootStore from "../store"
 import { observer } from "mobx-react"
 import { formatTime } from "../utils/time"
 import { shortifyHash } from "../utils/string"
+import Copy from "./components/Copy"
 
 const Dashboard = ({ isMobile }) => {
   const [showEscInfoModal,setShowEscInfoModal]=useState(false)
@@ -150,20 +149,11 @@ const Dashboard = ({ isMobile }) => {
     >
         <Modal isOpen={showEscInfoModal}>
           <ModalHeader>ESC Access</ModalHeader>
-          <ModalBody>
+          <ModalBody>      
             <center>
-              <img src={didLogo} style={{ width: "50px", height: "50px",marginBottom: 5, padding: "5px" }} />              
-              <p style={{fontSize: 17}}>IP: {'http://' + window.location.hostname + ':' + esc?.port} 
-                <Button style={{marginLeft:3,padding:2,background:"transparent",border:"none"}} 
-                  size="sm"
-                  onClick={()=>{copy('http://' + window.location.hostname + ':' + esc?.port)
-                }}><AiFillCopy/>
-                </Button> 
-              </p>           
-              <p style={{fontSize: 17}}>Chain ID: {esc?.chainId} <Button color="success" style={{marginLeft:3,padding:2,background:"transparent",border:"none"}} size="sm" onClick={()=>{
-                // alert("Chain ID copied to clipboard.")
-                copy(esc?.chainId)
-                }}><AiFillCopy/></Button></p>                            
+              <img src={didLogo} style={{ width: "50px", height: "50px",marginBottom: 5 }}/>              
+              <Copy id="Ip" label="IP" data={`http://${window.location.hostname}:${esc?.port}`}/>
+              <Copy id="ChainId" label="Chain ID" data={esc?.chainId}/>                            
             </center>
           </ModalBody>
           <ModalFooter>
