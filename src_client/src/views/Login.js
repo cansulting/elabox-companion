@@ -10,15 +10,10 @@ function Login() {
   const [isLoggedIn, setLoggedIn] = useState(false)  
   const {seconds,isBlocked,isProcessing, handleLogin } = useAuth(CLEAR_WINDOW_ADDRESS)
   function login() {
-    handleLogin(pwd).then(response=>{
-      if (response?.length>0){
-        setPwd("")
-        alert(response)
-      }
-      else{
-        setLoggedIn(true)
-      }
+    handleLogin(pwd).then(_=>{
+      setLoggedIn(true)
     }).catch(err=>{
+      setPwd("")
       alert(err)
     })
   }
