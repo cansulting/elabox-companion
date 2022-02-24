@@ -19,7 +19,7 @@
     "nodejs-file-downloader": "^4.7.2",
     "onoff": "^6.0.0",
     "postmark": "^2.7.8",
-    "shelljs": "^0.8.4",
+    "shelljs": "^0.8.5",
     "socket.io-client": "^2.4.0",
     "tail": "^2.2.3",
     "url-exist": "2.0.2",
