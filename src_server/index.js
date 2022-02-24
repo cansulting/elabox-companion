@@ -120,7 +120,7 @@ router.get("/ela", async (req, res) => {
 
 router.get("/eid", async (req, res) => {
   try {
-    eid.getStatus().then((data) => res.status(200).json({data}));
+    eid.getStatus().then((data) => res.status(200).json({...data}));
   } catch (err) {
     res.status(500).send({ error: err });
   }
