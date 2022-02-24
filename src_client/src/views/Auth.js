@@ -6,15 +6,14 @@ import {
   Redirect,
 } from "react-router-dom"
 import Ota from "./components/Ota"
-const loading = () => (
-  <div className="animated fadeIn pt-3 text-center">Loading...</div>
-)
+import Landing from "./components/Landing"
+const loading = () => <Landing/>
 const Companion = React.lazy(() => import("./Companion"))
 const Login = React.lazy(() => import("./Login"))
 
 function Auth({ ota }) {
   return (
-    <Router>
+    <Router basename={process.env.PUBLIC_URL}>
       <div>
         <React.Suspense fallback={loading()}>
           <Switch>

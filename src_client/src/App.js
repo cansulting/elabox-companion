@@ -9,12 +9,11 @@ import {
 import backend from "./api/backend";
 import RootStore from "./store";
 import Socket from "./Socket";
-const loading = () => (
-  <div className="animated fadeIn pt-3 text-center">Loading...</div>
-);
+import Landing from "./views/components/Landing"
 const Auth = React.lazy(() => import("./views/Auth"));
 const Config = React.lazy(() => import("./views/Config"));
 const Download = React.lazy(() => import("./views/Download"));
+const loading = () => <Landing/>;
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -23,7 +22,7 @@ class App extends React.Component {
       RootStore.blockchain.eid.fetchData();
       RootStore.blockchain.esc.fetchData();
       RootStore.blockchain.carrier.fetchData();
-      RootStore.blockchain.feeds.fetchData();
+      RootStore.blockchain.feeds.fetchData();    
       backend.checkInstallation().then((responseJson) => {
         localStorage.setItem("isconfiged", responseJson.configed.trim());
         this.setState({ loading: false });
@@ -40,7 +39,7 @@ class App extends React.Component {
   render() {
     if (this.state.loading) {
       return (
-        <Router>
+        <Router basename={process.env.PUBLIC_URL}>
           <div>
             <React.Suspense fallback={loading()}>
               <Switch>
@@ -59,7 +58,7 @@ class App extends React.Component {
       );
     } else {
       return (
-        <Router>
+        <Router basename={process.env.PUBLIC_URL}>
           <Socket>
             <div>
               <React.Suspense fallback={loading()}>

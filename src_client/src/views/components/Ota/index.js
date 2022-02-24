@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { event_server } from "../../../Socket"
 import API from "../../../api/backend"
+import Landing from "../../../views/components/Landing"
 export default function Ota({ children }) {
   const [status, setStatus] = useState("idle")
   const [currentVersionDetails, setCurrentVersionDetails] = useState("")
@@ -96,7 +97,7 @@ export default function Ota({ children }) {
   const isProcessingData = isDownloading
   const disabledButton = isUpdating
   if (isLoading) {
-    return <p>Loading...</p>
+    return <Landing/>
   }
   return (
     <div>

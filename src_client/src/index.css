@@ -1,5 +1,3 @@
-
-
 body {
   margin: 0;
   /* font-family: -apple-system, BlinkMacSystemFont, 'MuliExtraLight', 'Segoe UI', 'Roboto', 'Oxygen',
@@ -17,10 +15,10 @@ body {
     monospace;
 } */
 
-.sidebar{
+.sidebar {
   width: 130px;
   height: calc(100vh - 90px);
-  background-color: 'blue';
+  background-color: "blue";
   position: fixed;
   top: 0;
   left: 0;
@@ -48,18 +46,32 @@ body {
 
 .sidebarMenu {
   height: 70px;
-  width:100%;
+  width: 100%;
   justify-content: center;
   display: flex;
-  flex-direction:column;
-  padding-left: 30px
+  flex-direction: column;
+  padding-left: 30px;
 }
-.modal .modal-content{
+.modal .modal-content {
   background-color: rgb(39, 42, 61) !important;
-  color:white;
-  border:none;
+  color: white;
+  border: none;
 }
-a:hover{
+a:hover {
   text-decoration: none !important;
-  color:white !important;
+  color: white !important;
+}
+.dropdown-item {
+  color: white !important;
+}
+.nar-dropdown > .dropdown-item:hover {
+  text-decoration: none !important;
+  color: white !important;
+}
+.nar-dropdown > .dropdown-item:hover {
+  background-color: red;
+}
+
+.modal-header button.close{
+  color: white !important;  
 }

@@ -5,7 +5,6 @@ const homeapps = "/home/elabox/apps"
 const homeappdata = "/home/elabox/data"
 const eladatadir = homeappdata + "/ela.mainchain"
 let elaPath = homeapps + "/ela.mainchain"
-const cwd = path.join(__dirname, ".")
 const tmpPath = "/tmp/ela"
 const elaSystemPath = "/usr/ela/system/ela.system/"
 const elaSystemInfoPath = path.join(elaSystemPath, "info.json")
@@ -32,6 +31,7 @@ module.exports = {
   ESCDATA_DIR: homeappdata + "/ela.esc",
   EID_PORT: 20645,                                    // eid port that can be access for web3 api
   ESC_PORT: 20646,                                    // esc port that can be access for web3 api
+  ESC_CHAIN_ID:20,
   ELA_PORT: 20336,
   RPC_PORT_EID: 20636,                                // EID RPC
   RPC_PORT_ESC: 20637,                                // ESC RPC
@@ -56,7 +56,7 @@ module.exports = {
   BUILD_MODE: buildMode,
   ELABOX_VERSION: elaboxVersion,                      // current version of elabox
   PACKAGES_URL:
-    buildMode === "RELEASE"
+    buildMode === "RELEASE" || buildMode === 'STAGING'
       ? "https://storage.googleapis.com/elabox/packages"
       : buildMode === "DEBUG"
       ? "https://storage.googleapis.com/elabox-debug/packages"

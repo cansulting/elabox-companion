@@ -3,7 +3,7 @@ const processhelper = require("./helper");
 const delay = require("delay");
 //const WebSocket = require("ws")
 const Web3 = require("web3");
-const isPortReachable = require("is-port-reachable");
+const { isPortTaken } = require("./utilities/isPortTaken");
 const syslog = require("./logger")
 //const GETHWS_RECON = 5000;
 const maxBufferSize = 10000;
@@ -16,7 +16,7 @@ class NodeHandler {
   // @wsport: port where ws api is accessible
   constructor(options = { binaryName: "", cwd: "", dataPath: "", wsport: 0, rpcport: 0, }) {
     this.options = options;
-    this.wspath = "ws://localhost:" + options.wsport;
+    this.wspath = "ws://127.0.0.1:" + options.wsport;
   }
   async init() {
     await this.start((response) => {
@@ -65,7 +65,7 @@ class NodeHandler {
     ) {
       syslog.write(syslog.create().info(`Starting ${this.options.binaryName}`).addCategory(this.options.binaryName))
       await processhelper.requestSpawn(
-        `echo "\n" | ./${this.options.binaryName} --datadir ${this.options.dataPath} --syncmode "full" --rpc --rpcport ${this.options.rpcport} --ws --wsport ${this.options.wsport} --wsapi eth,web3 > /dev/null 2>output &`,
+        `echo "\n" | ./${this.options.binaryName} --datadir ${this.options.dataPath} --syncmode "full" --rpc --rpcport ${this.options.rpcport} --ws --wsport ${this.options.wsport} --wsapi eth,web3 --rpccorsdomain "*" --rpcaddr "0.0.0.0" --rpcapi admin,db,eth,miner,web3,net,personal,txpool --allow-insecure-unlock > /dev/null 2>output &`,
         callback,
         {
           maxBuffer: 1024 * maxBufferSize,
@@ -115,9 +115,7 @@ class NodeHandler {
       const isRunning = await processhelper.checkProcessingRunning(
         this.options.binaryName
       );
-      let servicesRunning = await isPortReachable(this.options.wsport, {
-        host: "localhost",
-      });
+      let servicesRunning = await isPortTaken(this.options.wsport);
       //console.log(await isSyncing())
       if (!isRunning || !servicesRunning) {
         return { isRunning, servicesRunning };
@@ -125,6 +123,7 @@ class NodeHandler {
       this._initWeb3();
 
       // get last 10 latest blocks
+      await delay(1000)
       let latestBlock = await this.web3.eth.getBlock("latest");
       const latestBlockN = latestBlock.number;
       const blockSizeList = [];
@@ -172,9 +171,7 @@ class NodeHandler {
       }
       return;
     }
-    let servicesRunning = await isPortReachable(this.options.wsport, {
-      host: "localhost",
-    });
+    let servicesRunning = await isPortTaken(this.options.wsport);
     if (!servicesRunning) {
       setTimeout(() => {
         this.setOnComplete(callback);

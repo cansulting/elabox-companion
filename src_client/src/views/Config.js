@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, Redirect } from 'react-router-dom';
 import { Button, Input, Spinner } from "reactstrap";
+import {validCharacters} from "../utils/auth"
 import elaboxLogo from './images/logo-circle-transparent.png'
 import backend from "../api/backend";
 
@@ -20,9 +21,9 @@ function Config() {
       setCreating(false)
     }
     else {
-      if (pwd1.length < 8) {
-        alert("Password has to be at least 8 characters long")
-        setCreating(false)
+      if(!validCharacters(pwd1)){
+        alert("Password shouldnt contain special characters and space with atleast 6 characters.")
+        setCreating(false)      
       }
       else {
         if (pwd1 != pwd2) {
@@ -31,16 +32,20 @@ function Config() {
         }
         else {
           backend.createWallet(pwd1)
-            .then(responseJson => {
-
+            .then(response => {
               setTimeout(() => {
-                console.log(responseJson)
+                console.log(response)
                 // if success
                 setCreating(false)
-                // localStorage.setItem('isconfiged', responseJson.stdout.trim())
-                localStorage.setItem('isconfiged', true)
-                localStorage.setItem('islogedin', true)
-                setConfiged(true);
+                if (response.ok === "ok" ) {
+                  // localStorage.setItem('isconfiged', response.stdout.trim())
+                  window.localStorage.setItem("pass",pwd1)                  
+                  localStorage.setItem('isconfiged', true)
+                  localStorage.setItem('islogedin', true)
+                  setConfiged(true);
+                } else {
+                  alert(response.err)
+                }
               }, 3000)
 
             })

@@ -15,9 +15,17 @@ class API {
       body: JSON.stringify({
         pwd,
       }),
-    }).then((response) => response.json());
+    });
   };
-
+  getRateLimitWaitTime= () => {
+    return fetch(`http://${PUBLIC_URI}/rateLimitWaitTime`,{
+      method: "get",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      }      
+    }).then(response=>response.json())
+  }
   fetchEla = async () => {
     const response = await this.axios.get("/ela");
     return response.data;
@@ -241,12 +249,49 @@ class API {
     });
     return data;
   };
-  downloadWallet = () => {
-    const response = {
-      file: `http://${PUBLIC_URI}/downloadWallet`,
-    };
-    // now, let's download:
-    window.location.href = response.file;
+  restart = async () => {
+    await axios.post(`http://${PUBLIC_URI}/restart`);
+  };  
+  shutdown = async () => {
+    await axios.post(`http://${PUBLIC_URI}/shutdown`);    
+    setTimeout(()=>{
+      window.location.reload()
+    },5000)    
+  }
+  checkElaboxStatus = async () =>{
+    const { data } = await axios.get(`http://${PUBLIC_URI}/check_elabox_status`);  
+    return data  
+  };
+  downloadWallet = (pass) => {
+    return new Promise((resolve, reject) => {
+      axios({
+        url: `http://${PUBLIC_URI}/downloadWallet?pass=${pass}`, //your url
+        method: 'GET',
+        responseType: 'blob', // important
+      }).then((response) => {
+        //console.log(response)
+        try {
+          const url  = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'keystore.dat'); //or any other extension
+          document.body.appendChild(link);
+          link.click();
+          resolve("")
+        }
+        catch (e) {
+          reject(e)
+        }
+      })
+      .catch((error) => reject(error));
+    })
+  };
+  uploadKeyStore= async (values) =>{
+    const {oldPass,newPass,keystore}=values
+    const {data} =  await axios.post(`http://${PUBLIC_URI}/uploadWallet`,{
+      wallet : keystore, oldpass : oldPass, newpass : newPass
+    })
+    return data 
   };
 }
 

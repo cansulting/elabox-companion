@@ -1,68 +1,52 @@
-import React, { useState } from "react"
-import { Link, Redirect } from "react-router-dom"
+import React, { useState ,useRef} from "react"
+import { Redirect } from "react-router-dom"
 import { Button, Input, Spinner } from "reactstrap"
+import useAuth from "../hooks/UseAuth"
 import elaboxLogo from "./images/logo-circle-transparent.png"
 
-import backend from "../api/backend"
-
+const CLEAR_WINDOW_ADDRESS = true
 function Login() {
-  const [isLoggedIn, setLoggedIn] = useState(false)
-  const [pwd, setPwd] = useState("")
-  const [isProcessing, setProcessing] = useState(false)
-
+  const [pwd,setPwd]=useState("")
+  const [isLoggedIn, setLoggedIn] = useState(false)  
+  const {seconds,isBlocked,isProcessing, handleLogin } = useAuth(CLEAR_WINDOW_ADDRESS)
   function login() {
-    setProcessing(true)
-    backend
-      .login(pwd)
-      .then((responseJson) => {
-        console.log("Login", responseJson)
-        if (responseJson.ok) {
-          localStorage.setItem("logedin", true)
-          localStorage.setItem("address", responseJson.address)
-          setLoggedIn(true)
-        } else {
-          alert("Wrong password")
-        }
-        setProcessing(false)
-      })
-      .catch((error) => {
-        console.error(error)
-        setProcessing(false)
-      })
+    handleLogin(pwd).then(_=>{
+      setLoggedIn(true)
+    }).catch(err=>{
+      setPwd("")
+      alert(err)
+    })
   }
-
-  if (isLoggedIn) {
-    return <Redirect to="/" />
-  }
-
   function handleChange(event) {
-    const { target } = event
-    const value = target.type === "checkbox" ? target.checked : target.value
-    setPwd(value)
+    const { target } = event;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    setPwd(value);
   }
+  if (isLoggedIn) {
+    return <Redirect to="/" />;
+  }  
 
   return (
     <div
       style={{
-        backgroundColor: "#272A3D",
-        height: "100vh",
-        width: "100%",
-        justifyContent: "center",
-        display: "flex",
-        alignItems: "center",
+        backgroundColor: '#272A3D',
+        height: '100vh',
+        width: '100%',
+        justifyContent: 'center',
+        display: 'flex',
+        alignItems: 'center',
       }}
     >
       <center>
         <img
           src={elaboxLogo}
-          style={{ width: "200px", height: "200px", paddingRight: "10px" }}
+          style={{ width: '200px', height: '200px', paddingRight: '10px' }}
         />
-        <div style={{ paddingTop: "20px" }}>
+        <div style={{ paddingTop: '20px' }}>
           <form
             onSubmit={(e) => {
-              e.preventDefault()
-              if (!isProcessing)
-                login()
+              e.preventDefault();
+              if (!isProcessing) login();
             }}
           >
             <Input
@@ -72,18 +56,23 @@ function Login() {
               name="pwd"
               placeholder="********"
               required
+              value={pwd}
               onChange={(e) => handleChange(e)}
               autoFocus
             />
-            <Button data-testid="sign-in-btn" active={!isProcessing} type="submit" style={{ marginTop: "20px" }}>
-              {!isProcessing && "Sign In"} 
+            <Button data-testid="sign-in-btn" active={!isProcessing} type="submit" style={{ marginTop: "20px" }} disabled={isBlocked}>
+              {!isProcessing && !isBlocked && "Sign In"} 
+              {isBlocked && !isProcessing && `${new Date(seconds * 1000).toISOString().substr(11, 8)} remaning`}
               {isProcessing && <>Please wait<Spinner size='sm' style={{margin:"0 5px"}}/></>}
             </Button>
           </form>
+          <a style={{position:"absolute", bottom: 20,right: 30,color: "white"}} href="https://elabox.com/contact" target="_blank" rel="noopener noreferrer nofollow">
+          Contact Us
+          </a>
         </div>
       </center>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;

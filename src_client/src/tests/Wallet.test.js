@@ -140,7 +140,7 @@ describe("Wallet", () => {
     fireEvent.change(amountInput, { target: { value: "1" } })
     const sendBtn = screen.getByTestId("send")
     fireEvent.click(sendBtn)  
-    const sendingElaModal = await screen.findByText("Error ELA address")
+    const sendingElaModal = await screen.findByText("Incorrect ELA Address")
     expect(sendingElaModal).toBeInTheDocument()
 
 
@@ -220,7 +220,7 @@ test("Send ELA doesnt accept amount with comma(e.g 1,000)", async () => {
   const sendBtn = screen.getByTestId("send")
   fireEvent.click(sendBtn)  
 
-  const sendingElaModal = await screen.findByText("Error amount")
+  const sendingElaModal = await screen.findByText("Incorrect Amount")
   expect(sendingElaModal).toBeInTheDocument()
 
 })

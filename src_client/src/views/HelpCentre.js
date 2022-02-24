@@ -41,6 +41,7 @@ class HelpCentre extends Component {
     return (
       <Formik
         initialValues={{ email: '', name: '', problem: '' }}
+        validateOnChange={false}
         onSubmit={async (values) => {
           this.setState({ success: false, failure: false })
           try {
@@ -62,14 +63,9 @@ class HelpCentre extends Component {
         validationSchema={Schema}
         render={({
           values,
-          touched,
           handleChange,
-          handleBlur,
           handleSubmit,
-          handleReset,
           errors,
-          isValid,
-          isSubmitting
         }) => {
 
           const { success, failure } = this.state
@@ -95,14 +91,13 @@ class HelpCentre extends Component {
                   <Card style={{ backgroundColor: '#272A3D', color: 'white', fontSize: '16px' }}>
                     <CardHeader><center>Need Help or Assistance?</center></CardHeader>
                     <CardBody>
-                      <center>Fill in the details below the Elabox Support Team will reach out to you as soon as possible.</center>
+                      <center>Fill in the required details below. The Elabox Support Team will reach out to you as soon as possible.</center>
                       <br />
                       <Form>
                         <Row><Col>
                           <FormGroup>
                             <Label for="name">Full Name</Label>
                             <Input data-testid="name" type="text" name="name" id="name" placeholder="John Doe" onChange={handleChange}
-                              onBlur={handleBlur}
                               value={values.name}
                               invalid={errors.name ? true : false}
                             />
@@ -116,7 +111,6 @@ class HelpCentre extends Component {
                               <Label for="email">Email</Label>
                               <Input data-testid="email" type="email" name="email" id="email" placeholder="john@doe.com"
                                 onChange={handleChange}
-                                onBlur={handleBlur}
                                 value={values.email}
                                 invalid={errors.email ? true : false}
 
@@ -132,7 +126,6 @@ class HelpCentre extends Component {
                             <Label for="problem">Problem</Label>
                             <Input data-testid="problem" type="textarea" name="problem" id="problem" placeholder="Describe your problem"
                               onChange={handleChange}
-                              onBlur={handleBlur}
                               value={values.problem}
                               invalid={errors.problem ? true : false}
 
@@ -149,11 +142,13 @@ class HelpCentre extends Component {
                         </Row>
 
                       </Form>
+                      <a style={{position:"absolute", bottom: 20,right: 30,color: "white", textDecoration: "underline"}} href="https://elabox.com/contact" target="_blank" rel="noopener noreferrer nofollow">
+                        or reach us here
+                      </a>                      
                     </CardBody>
-
                   </Card>
                 </Col>
-              </Row>
+              </Row>              
             </div>
 
           )
