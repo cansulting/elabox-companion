@@ -483,6 +483,7 @@ router.post("/version_info", async (req, res) => {
       const info = await getVersionInfo(latestVersion);
       res.send({
         version: info.version,
+        description:info.description,
         env: config.BUILD_MODE,
         name: info.name,
         mainchainVersion: mainchainInfo.info,
@@ -494,6 +495,7 @@ router.post("/version_info", async (req, res) => {
     } catch (e) {
       res.send({
         version: currentVersion,
+        description:"",
         env: config.BUILD_MODE,
         name: "",
         mainchainVersion: "",
