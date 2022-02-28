@@ -7,6 +7,7 @@ const { isPortTaken } = require("./utilities/isPortTaken");
 const syslog = require("./logger")
 //const GETHWS_RECON = 5000;
 const maxBufferSize = 10000;
+const fs = require('fs')
 
 // class that manages nodes( ESC, EID and other related nodes) 
 class NodeHandler {
@@ -16,7 +17,7 @@ class NodeHandler {
   // @wsport: port where ws api is accessible
   constructor(options = { binaryName: "", cwd: "", dataPath: "", wsport: 0, rpcport: 0, }) {
     this.options = options;
-    this.wspath = "ws://127.0.0.1:" + options.wsport;
+    this.wspath = "ws://localhost:" + options.wsport;
   }
   async init() {
     await this.start((response) => {
@@ -56,16 +57,26 @@ class NodeHandler {
   //     })
   // }
   _initWeb3() {
-    if (!this.web3) this.web3 = new Web3(this.wspath);
+    if (this.web3) return
+    this.web3 = new Web3(this.wspath);
+  //   var filter = this.web3.eth.subscribe('newBlockHeaders')
+  // .on("connected", function(subscriptionId){
+  //     console.log(subscriptionId);
+  // })
+  // .on("data", function(blockHeader){
+  //     //console.log(blockHeader);
+  // })
+  // .on("error", console.error);
   }
 
   async start(callback = () => {}) {
     if (
       !(await processhelper.checkProcessingRunning(this.options.binaryName))
     ) {
+      this.web3 = null;
       syslog.write(syslog.create().info(`Starting ${this.options.binaryName}`).addCategory(this.options.binaryName))
       await processhelper.requestSpawn(
-        `echo "\n" | ./${this.options.binaryName} --datadir ${this.options.dataPath} --syncmode "full" --rpc --rpcport ${this.options.rpcport} --ws --wsport ${this.options.wsport} --wsapi eth,web3 --rpccorsdomain "*" --rpcaddr "0.0.0.0" --rpcapi admin,db,eth,miner,web3,net,personal,txpool --allow-insecure-unlock > /dev/null 2>output &`,
+        `nohup ./${this.options.binaryName} --datadir ${this.options.dataPath} --syncmode "full" --rpc --rpcport ${this.options.rpcport} --ws --wsport ${this.options.wsport} --wsapi eth,web3 > /dev/null 2>output &`,
         callback,
         {
           maxBuffer: 1024 * maxBufferSize,
@@ -83,7 +94,7 @@ class NodeHandler {
     syslog.write(syslog.create().info(`Restarting ${this.options.binaryName}`).addCategory(this.options.binaryName))
     this.web3 = null;
     await processhelper.killProcess(this.options.binaryName, true);
-    await delay(5000);
+    await delay(3000);
     await this.start(callback);
   }
   isSyncing() {
@@ -94,20 +105,11 @@ class NodeHandler {
     syslog.write(syslog.create().info(`Resyncing ${this.options.binaryName}`).addCategory(this.options.binaryName))
     this.web3 = null;
     await processhelper.killProcess(this.options.binaryName);
-    await delay(1000);
-    await processhelper.requestSpawn(
-      `yes | ./${this.options.binaryName} removedb --datadir ${this.options.dataPath} > /dev/null 2>output &`,
-      async () => {
-        await delay(2000);
-        await this.start(callback);
-      },
-      {
-        maxBuffer: 1024 * maxBufferSize,
-        detached: true,
-        shell: true,
-        cwd: this.options.cwd,
-      }
-    );
+    await delay(2000);
+    if (fs.existsSync(this.options.dataPath)) {
+      fs.rmdirSync(this.options.dataPath, { maxRetries: 3, force: true, recursive: true} )
+    }
+    await this.start(callback)
   }
   // get the current status of eid. this returns the state and blocks
   async getStatus() {

@@ -22,7 +22,7 @@ const execShell = (cmd, opts) => {
 const killProcess = async (process, all = false) => {
   try {
     if (all) {
-      await execShell(`pkill ${process}`);
+      await execShell(`pkill -9 ${process}`);
       return
     }
     const processID = await execShell(`pidof -zx ${process}`);

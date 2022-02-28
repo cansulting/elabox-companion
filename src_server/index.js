@@ -120,7 +120,7 @@ router.get("/ela", async (req, res) => {
 
 router.get("/eid", async (req, res) => {
   try {
-    eid.getStatus().then((data) => res.status(200).json({data}));
+    eid.getStatus().then((data) => res.status(200).json({...data}));
   } catch (err) {
     res.status(500).send({ error: err });
   }
@@ -483,6 +483,7 @@ router.post("/version_info", async (req, res) => {
       const info = await getVersionInfo(latestVersion);
       res.send({
         version: info.version,
+        description:info.description,
         env: config.BUILD_MODE,
         name: info.name,
         mainchainVersion: mainchainInfo.info,
@@ -494,6 +495,7 @@ router.post("/version_info", async (req, res) => {
     } catch (e) {
       res.send({
         version: currentVersion,
+        description:"",
         env: config.BUILD_MODE,
         name: "",
         mainchainVersion: "",
@@ -644,21 +646,17 @@ async function runInstaller(version) {
 async function checkVersion() {
   const currentVersion = await getCurrentBuild();
   const latestVersion = await checkLatestBuild(currentVersion);
-  const response = {
-    current: currentVersion,
-    latest: latestVersion,
-  };
-  if (currentVersion === latestVersion) {
-    return {
-      ...response,
-      new_update: false,
-      count: 0,
-    };
+  let newUpdate = true;
+  let count = 1;
+  if (!config.isDebug && currentVersion === latestVersion) {
+    newUpdate = false;
+    count = 0;
   }
   return {
-    ...response,
-    new_update: true,
-    count: 1,
+    current: currentVersion,
+    latest: latestVersion,
+    new_update: newUpdate,
+    count: count,
   };
 }
 function downloadElaFile(destinationPath, version, extension = "box") {

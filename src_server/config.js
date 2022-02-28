@@ -56,7 +56,7 @@ module.exports = {
   BUILD_MODE: buildMode,
   ELABOX_VERSION: elaboxVersion,                      // current version of elabox
   PACKAGES_URL:
-    buildMode === "RELEASE" || buildMode === 'STAGING'
+    buildMode === "RELEASE"
       ? "https://storage.googleapis.com/elabox/packages"
       : buildMode === "DEBUG"
       ? "https://storage.googleapis.com/elabox-debug/packages"
@@ -67,5 +67,6 @@ module.exports = {
   FEEDS_URL: feedsUrl,
   FEEDS_DIR: feedsDir,
   PORT: process.env.PORT || 3001,                     // where companion server port will listen to
-  LOG_FILE: "/var/log/elabox.log"                     // the log file
+  LOG_FILE: "/var/log/elabox.log",                    // the log file
+  isDebug: buildMode === "DEBUG"
 }
