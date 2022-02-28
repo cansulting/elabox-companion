@@ -131,11 +131,7 @@ class Settings extends Component {
     node
       .restart()
       .then((responseJson) => {
-        if (responseJson.success) {
-          // RootStore.blockchain.ela.fetchData();
-        } else {
-          node.fetchData();
-        }
+        node.fetchData();
       })
       .catch((error) => {
         console.error(error);
