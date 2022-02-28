@@ -76,7 +76,7 @@ class NodeHandler {
       this.web3 = null;
       syslog.write(syslog.create().info(`Starting ${this.options.binaryName}`).addCategory(this.options.binaryName))
       await processhelper.requestSpawn(
-        `echo "\n" | ./${this.options.binaryName} --datadir ${this.options.dataPath} --syncmode "full" --rpc --rpcport ${this.options.rpcport} --ws --wsport ${this.options.wsport} --wsapi eth,web3 --rpccorsdomain "*" --rpcaddr "0.0.0.0" --rpcvhosts "*" --rpcapi admin,db,eth,miner,web3,net,personal,txpool > /dev/null 2>output &`,
+        `nohup ./${this.options.binaryName} --datadir ${this.options.dataPath} --syncmode "full" --rpc --rpcport ${this.options.rpcport} --ws --wsport ${this.options.wsport} --wsapi eth,web3 > /dev/null 2>output &`,
         callback,
         {
           maxBuffer: 1024 * maxBufferSize,
