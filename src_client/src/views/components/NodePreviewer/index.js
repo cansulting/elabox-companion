@@ -141,7 +141,7 @@ const Previewer = (props) => {
           )}
         </Col>
       </Row>
-      { blockdata.isRunning && blockdata.servicesRunning  &&
+      { blockdata.servicesRunning  &&
       <div>
         <CardGroup className="mb-4">
           <Widget04 icon="fa fa-gears" header={blockdata.blockCount.toString()}>
