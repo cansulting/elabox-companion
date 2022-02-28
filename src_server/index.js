@@ -646,21 +646,17 @@ async function runInstaller(version) {
 async function checkVersion() {
   const currentVersion = await getCurrentBuild();
   const latestVersion = await checkLatestBuild(currentVersion);
-  const response = {
-    current: currentVersion,
-    latest: latestVersion,
-  };
-  if (currentVersion === latestVersion) {
-    return {
-      ...response,
-      new_update: false,
-      count: 0,
-    };
+  let newUpdate = true;
+  let count = 1;
+  if (!config.isDebug && currentVersion === latestVersion) {
+    newUpdate = false;
+    count = 0;
   }
   return {
-    ...response,
-    new_update: true,
-    count: 1,
+    current: currentVersion,
+    latest: latestVersion,
+    new_update: newUpdate,
+    count: count,
   };
 }
 function downloadElaFile(destinationPath, version, extension = "box") {
