@@ -6,7 +6,7 @@ const config = require("./config")
 const maxBufferSize = 10000
 const syslog = require("./logger");
 const { isPortTaken } = require("./utilities/isPortTaken");
-
+const binaryName = "ela.mainchain"
 // contains procedures that manages the mainchain process 
 class MainchainHandler {
     async init() {
@@ -54,9 +54,9 @@ class MainchainHandler {
     }
 
     async start(callback = () => {}) {
-        if ( !await processhelper.checkProcessingRunning('ela')) {
+        if ( !await processhelper.checkProcessingRunning(binaryName)) {
             syslog.write(syslog.create().info(`Start spawning mainchain`).addCategory("mainchain"))
-            await processhelper.requestSpawn(`nohup ./ela --datadir ${config.ELABLOCKS_DIR} > /dev/null 2>output &`, callback, {
+            await processhelper.requestSpawn(`nohup ./${binaryName} --datadir ${config.ELABLOCKS_DIR} > /dev/null 2>output &`, callback, {
                 maxBuffer: 1024 * maxBufferSize,
                 detached: true,
                 shell: true,
@@ -69,21 +69,26 @@ class MainchainHandler {
     // use to close and open the node again
     async restart(callback) {
         syslog.write(syslog.create().info("Restarting mainchain...").addCategory("mainchain"))
-        await processhelper.killProcess('ela')
-        await delay(5000)
+        await this.stop()
         await this.start(callback)
     }
     // close the node and resync
     async resync(callback) {
         syslog.write(syslog.create().info("Resyncing mainchain...").addCategory("mainchain"))
-        await processhelper.killProcess('ela')
-        await delay(1000)
+        await this.stop()
         fs.rmdirSync(config.ELABLOCKS_DIR, { maxRetries: 3, force: true, recursive: true} )
         await this.start(callback)
     }
+    async stop() {
+      await processhelper.killProcess(binaryName, true, true);
+      // wait while process is not killed
+      while (await processhelper.checkProcessingRunning(binaryName)) {
+        await delay(1000);
+      }
+    }
     // get the current status of eid. this returns the state and blocks
     async getStatus() {
-        const isRunning = await processhelper.checkProcessingRunning('ela')
+        const isRunning = await processhelper.checkProcessingRunning(binaryName)
         const servicesRunning = await isPortTaken(config.ELA_PORT)
 
         if (!isRunning || !servicesRunning ) {

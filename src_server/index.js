@@ -620,7 +620,7 @@ async function runInstaller(version) {
       spawn("chmod", ["+x", config.ELA_SYSTEM_TMP_INSTALLER]);
       spawn(
         `${config.ELA_SYSTEM_TMP_INSTALLER}`,
-        [`${config.TMP_PATH}/${version}.box`, "-s", "-l"],
+        [`${config.TMP_PATH}/${version}.box`, "-s", "-l", "-r"],
         { detached: true, stdio: "ignore" }
       ).unref();
       spawn("ebox", ["terminate"]);
