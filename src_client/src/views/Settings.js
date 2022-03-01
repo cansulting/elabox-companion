@@ -476,7 +476,6 @@ class Settings extends Component {
       carrierVersion,
       env,
     } = this.state;
-    console.log("render", showOnion);
     return (
       <div
         id="main"
