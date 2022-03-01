@@ -9,6 +9,13 @@ const syslog = require("./logger")
 const maxBufferSize = 10000;
 const fs = require('fs')
 
+// NODE STATES
+const STARTING = 0;
+const STARTED = 1;
+const STOPPING = 2;
+const STOPPED = 3;
+const ERROR = 4;
+
 // class that manages nodes( ESC, EID and other related nodes) 
 class NodeHandler {
   // @binaryName: name of binary to be executed
@@ -18,11 +25,10 @@ class NodeHandler {
   constructor(options = { binaryName: "", cwd: "", dataPath: "", wsport: 0, rpcport: 0, }) {
     this.options = options;
     this.wspath = "ws://localhost:" + options.wsport;
+    this.status = STOPPED;
   }
   async init() {
-    await this.start((response) => {
-      syslog.write(syslog.create().debug(`${this.options.binaryName} start response ${response}`).addCategory(this.options.binaryName))
-    });
+    await this.start();
     //setupWS()
   }
 
@@ -73,17 +79,37 @@ class NodeHandler {
     if (
       !(await processhelper.checkProcessingRunning(this.options.binaryName))
     ) {
+      this.status = STARTING;
       this.web3 = null;
       syslog.write(syslog.create().info(`Starting ${this.options.binaryName}`).addCategory(this.options.binaryName))
+      // callback when response received from node
+      const _callback = (response) => {
+        if (response.success) {
+          syslog.write(syslog.create().debug(`${this.options.binaryName} started.`).addCategory(this.options.binaryName))
+          this.status = STARTED;
+        } else {
+          syslog.write(
+            syslog.create()
+            .error(`${this.options.binaryName} failed to start.`, response.error)
+            .addCategory(this.options.binaryName)
+          )
+          this.status = ERROR;
+        } 
+        callback(response);
+      }
+      // start the node
       await processhelper.requestSpawn(
         `nohup ./${this.options.binaryName} --datadir ${this.options.dataPath} --syncmode "full" --rpc --rpcport ${this.options.rpcport} --ws --wsport ${this.options.wsport} --wsapi eth,web3 > /dev/null 2>output &`,
-        callback,
+        _callback,
         {
           maxBuffer: 1024 * maxBufferSize,
           detached: true,
           shell: true,
           cwd: this.options.cwd,
-        }
+          //stdio: "ignore"
+        },
+        0,
+        //[`--datadir`, `${this.options.dataPath}`, `--syncmode`, `full`, `--rpc`, `--rpcport`, `${this.options.rpcport}`, `--ws`, `--wsport`, `${this.options.wsport}`, `--wsapi`, `eth,web3`]
       );
     } else {
       syslog.write(syslog.create().info(`${this.options.binaryName} already started`).addCategory(this.options.binaryName))
@@ -92,9 +118,7 @@ class NodeHandler {
   // use to close and open the node again
   async restart(callback) {
     syslog.write(syslog.create().info(`Restarting ${this.options.binaryName}`).addCategory(this.options.binaryName))
-    this.web3 = null;
-    await processhelper.killProcess(this.options.binaryName, true);
-    await delay(3000);
+    await this.stop();
     await this.start(callback);
   }
   isSyncing() {
@@ -103,20 +127,35 @@ class NodeHandler {
   // close the node and resync
   async resync(callback) {
     syslog.write(syslog.create().info(`Resyncing ${this.options.binaryName}`).addCategory(this.options.binaryName))
-    this.web3 = null;
-    await processhelper.killProcess(this.options.binaryName);
-    await delay(2000);
+    await this.stop();
     if (fs.existsSync(this.options.dataPath)) {
       fs.rmdirSync(this.options.dataPath, { maxRetries: 3, force: true, recursive: true} )
     }
     await this.start(callback)
   }
+
+  async stop() {
+    this.web3 = null;
+    this.status = STOPPING;
+    await processhelper.killProcess(this.options.binaryName, true, false);
+    let retries = 0
+    // wait while process is not killed
+    while (await processhelper.checkProcessingRunning(this.options.binaryName)) {
+      await delay(1000);
+      retries++;
+      if (retries > 20) 
+        break;
+    }
+    this.status = STOPPED;
+  }
   // get the current status of eid. this returns the state and blocks
   async getStatus() {
     try {
-      const isRunning = await processhelper.checkProcessingRunning(
+      let isRunning = await processhelper.checkProcessingRunning(
         this.options.binaryName
       );
+      if (!isRunning && this.status !== STOPPED) 
+        isRunning = true;
       let servicesRunning = await isPortTaken(this.options.wsport);
       //console.log(await isSyncing())
       if (!isRunning || !servicesRunning) {
