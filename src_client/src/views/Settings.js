@@ -586,11 +586,7 @@ class Settings extends Component {
               <Label for="new_password">
                 Verify keystore password
               </Label>
-              <Input id="new_password" name="new_password" type="password" 
-              readOnly={this.state.uploadKeyStoreProcessing} 
-              invalid={this.state.form.messages.newPass.length>0} 
-              value={this.state.form.values.newPass.length > 0 ? this.state.form.values.newPass:""} 
-              onChange={e=>{
+              <Input id="new_password" name="new_password" type="password" invalid={this.state.form.messages.newPass.length>0} value={this.state.form.values.newPass.length > 0 ? this.state.form.values.newPass:""} onChange={e=>{
                 this.handleInputChange("newPass",e.target.value.trim())
               }} />
               <FormFeedback>
@@ -601,17 +597,11 @@ class Settings extends Component {
             </Form>
           </ModalBody>
           <ModalFooter>
-            {this.state.uploadKeyStoreSteps > 1 && 
-            this.state.uploadKeyStoreStatus.status === "" && 
-            !this.state.uploadKeyStoreProcessing  && 
-            <Button data-testid="upload-keystore-prev-btn" onClick={this.handleUploadKeyStoreStepsPrev}>
+            {this.state.uploadKeyStoreSteps > 1 && this.state.uploadKeyStoreStatus.status === "" && !this.state.uploadKeyStoreProcessing  && <Button data-testid="upload-keystore-prev-btn" onClick={this.handleUploadKeyStoreStepsPrev}>
               Previous
             </Button>}            
             {this.state.uploadKeyStoreSteps < 2 ? <>                        
-            <Button 
-            data-testid="upload-keystore-next-btn" 
-            disabled={isBlocked} color="success" 
-            onClick={this.handleUploadKeyStoreStepsNext}>
+            <Button data-testid="upload-keystore-next-btn" disabled={isBlocked} color="success" onClick={this.handleUploadKeyStoreStepsNext}>
               Next
             </Button>            
             </>:<>

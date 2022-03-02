@@ -139,17 +139,16 @@ export default function Updates({ isMobile, ota }) {
             <CardHeader>{headerLabel}</CardHeader>
             <CardBody>
               {showNewDownload ? (
-                <Row md="2">
-                  <Col md="10">{body}</Col>
+                <Row>
+                  <Col>{body}</Col>
                   {!isProcessingData && (
                     <Col
                       className="d-flex justify-content-center flex-column"
-                      md="2"
-                      >
+                      xs="2"
+                    >
                       <Button
                         data-testid="download-btn"
                         color="success"
-                        block={isMobile}
                         disabled={disabledButton}
                         onClick={() => {
                           if (hasNewDownload) {
