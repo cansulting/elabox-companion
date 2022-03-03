@@ -21,9 +21,7 @@ export default function Copy({id,label,data}) {
             >
               Copied
             </Tooltip>                  
-            <p style={{fontSize: 17,wordBreak:"break-word"}}>{label}: {data} <Button id={id} color="success" style={{marginLeft:3,padding:5,background:"transparent",border:"none"}} size="sm" onClick={()=>{
-                handleCopy()
-            }}><AiFillCopy/></Button> 
+            <p style={{fontSize: 17,wordBreak:"break-word"}}>{label}: {data} <Button id={id} color="success" style={{marginLeft:3,padding:5,background:"transparent",border:"none"}} size="sm" onClick={handleCopy}><AiFillCopy/></Button> 
       </p>            
       </>
   )
