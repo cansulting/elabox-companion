@@ -2,7 +2,7 @@ import React from "react"
 import { Link } from "react-router-dom"
 import * as Icon from "react-feather"
 import { useMediaQuery } from "react-responsive"
-import { Badge } from "reactstrap"
+import { Badge, Button } from "reactstrap"
 
 // import elaboxLogo from "./images/logo-wht.png";
 import dashboardLogo from "../../images/dashboard_white.png"
@@ -25,16 +25,18 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
         ...(isMobile && { display: "none" }),
         ...(isMobile &&
           isOpen && {
-            display: "block",
-            zIndex: 1,
-            width: "100%",
-            backgroundColor: "rgb(0, 0, 0, 0.3)",
-          }),
+          display: "block",
+          zIndex: 1,
+          width: "100%",
+          backgroundColor: "rgb(0, 0, 0, 0.3)",
+        }),
       }}
       onClick={isMobile ? onClose : undefined}
     >
       <div
         style={{
+          display: "flex",
+          flexDirection: "column",
           width: isMobile ? "70%" : "90%",
           maxWidth: isMobile ? "400px" : undefined,
           height: "100%",
@@ -152,8 +154,9 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
                 Help Center
               </Link>
             </div>
-          </li>{" "}
+          </li>
         </ul>
+        <Link type="primary" style={{ textAlign: "center", position: "relative", top: "20vh" }} to="/activation">Activate Elabox</Link>
       </div>
     </div>
   )
