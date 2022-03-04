@@ -29,7 +29,7 @@ export default function Activation({ isMobile }) {
             },
             ...(isMobile && { paddingLeft: undefined }),
         }}>
-            <div style={{ textAlign: "center", width: `${isMobile ? "80vw" : "40vw"}` }}>
+            <div style={{ textAlign: "center", width: `${isMobile ? "80vw" : "45vw"}` }}>
                 {currentPage === 0 ? <ActivatePage handleNextPage={handleNextPage} /> : <PurchasePage handlePrevPage={handlePrevPage} />}
             </div>
 
@@ -87,8 +87,8 @@ const PurchasePage = ({ handlePrevPage }) => {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 100 }}>
             <div style={{ display: "inline-block", cursor: "pointer" }} onClick={() => handlePrevPage()}> <Icon.ArrowLeft /> Back</div>
             <div>
-                <Button style={{ padding: 10, width: 100, marginRight: 5 }} size="sm" onClick={() => { handlePrevPage("/") }}>Later</Button>
-                <Button style={{ padding: 10, width: 100 }} color="success" size="sm">Purchase Now</Button>
+                <Button style={{ padding: 10, width: 120, marginRight: 5 }} size="sm" onClick={() => { handlePrevPage("/") }}>Later</Button>
+                <Button style={{ padding: 10, width: 120 }} color="success" size="sm">Purchase Now</Button>
             </div>
 
         </div>
