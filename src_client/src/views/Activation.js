@@ -8,11 +8,8 @@ export default function Activation({ isMobile }) {
     const handleNextPage = () => {
         setCurrentPage(currentPage + 1)
     }
-    const handlePrevPage = (path = "") => {
+    const handlePrevPage = () => {
         setCurrentPage(currentPage - 1)
-        if (path?.length > 0) {
-            history.push(path)
-        }
     }
     return (
         <div style={{
@@ -40,7 +37,7 @@ const ActivatePage = ({ handleNextPage }) => {
     return <>
         <h2>Activating Elabox</h2>
         <p>Unlock rewards and premium support</p>
-        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: 40 }}>
             <Link to="/">
                 <Button style={{ padding: 10, width: 100 }} size="sm">Skip</Button>
             </Link>
@@ -85,9 +82,11 @@ const PurchasePage = ({ handlePrevPage }) => {
             </tbody>
         </Table>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 100 }}>
-            <div style={{ display: "inline-block", cursor: "pointer" }} onClick={() => handlePrevPage()}> <Icon.ArrowLeft /> Back</div>
+            <div style={{ display: "inline-block", cursor: "pointer" }} onClick={handlePrevPage}> <Icon.ArrowLeft /> Back</div>
             <div>
-                <Button style={{ padding: 10, width: 120, marginRight: 5 }} size="sm" onClick={() => { handlePrevPage("/") }}>Later</Button>
+                <Link to="/">
+                    <Button style={{ padding: 10, width: 120, marginRight: 5 }} size="sm">Later</Button>
+                </Link>
                 <Button style={{ padding: 10, width: 120 }} color="success" size="sm">Purchase Now</Button>
             </div>
 
