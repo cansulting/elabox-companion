@@ -88,7 +88,7 @@ const PurchasePage = ({ handlePrevPage }) => {
             <div style={{ display: "inline-block", cursor: "pointer" }} onClick={() => handlePrevPage()}> <Icon.ArrowLeft /> Back</div>
             <div>
                 <Button style={{ padding: 10, width: 100, marginRight: 5 }} size="sm" onClick={() => { handlePrevPage("/") }}>Later</Button>
-                <Button style={{ padding: 10, width: 100 }} color="success" size="sm">Activate Now</Button>
+                <Button style={{ padding: 10, width: 100 }} color="success" size="sm">Purchase Now</Button>
             </div>
 
         </div>
