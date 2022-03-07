@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
-import { Link, useHistory } from "react-router-dom"
+import { Link } from "react-router-dom"
 import * as Icon from "react-feather"
 import { Button, Table } from "reactstrap"
 export default function Activation({ isMobile }) {
     const [currentPage, setCurrentPage] = useState(0)
-    const history = useHistory();
     const handleNextPage = () => {
         setCurrentPage(currentPage + 1)
     }
@@ -12,24 +11,27 @@ export default function Activation({ isMobile }) {
         setCurrentPage(currentPage - 1)
     }
     return (
-        <div style={{
-            ...{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "center",
-                paddingLeft: "18%",
-                width: "100%",
-                height: "90vh",
-                backgroundColor: "#1E1E26",
-                color: "white"
-            },
-            ...(isMobile && { paddingLeft: undefined }),
-        }}>
+        <div
+            style={{
+                ...{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingLeft: "18%",
+                    width: "100%",
+                    height: "90vh",
+                    backgroundColor: "#1E1E26",
+                    color: "white"
+                },
+                ...(isMobile && { paddingLeft: undefined }),
+            }}
+            id="main"
+            classname="animated fadeIn w3-container"
+        >
             <div style={{ textAlign: "center", width: `${isMobile ? "80vw" : "45vw"}` }}>
                 {currentPage === 0 ? <ActivatePage handleNextPage={handleNextPage} /> : <PurchasePage handlePrevPage={handlePrevPage} />}
             </div>
-
         </div >
     )
 }
