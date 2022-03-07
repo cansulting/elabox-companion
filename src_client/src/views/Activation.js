@@ -26,8 +26,6 @@ export default function Activation({ isMobile }) {
                 },
                 ...(isMobile && { paddingLeft: undefined }),
             }}
-            id="main"
-            className="animated fadeIn w3-container"
         >
             <div style={{ textAlign: "center", width: `${isMobile ? "80vw" : "45vw"}` }}>
                 {currentPage === 0 ? <ActivatePage handleNextPage={handleNextPage} /> : <PurchasePage handlePrevPage={handlePrevPage} />}
@@ -36,7 +34,7 @@ export default function Activation({ isMobile }) {
     )
 }
 const ActivatePage = ({ handleNextPage }) => {
-    return <>
+    return <div className="animated fadeIn w3-container">
         <h2>Activating Elabox</h2>
         <p>Unlock rewards and premium support</p>
         <div style={{ display: "flex", justifyContent: "center", gap: 40 }}>
@@ -45,10 +43,10 @@ const ActivatePage = ({ handleNextPage }) => {
             </Link>
             <Button style={{ padding: 10, width: 100 }} color="success" size="sm" onClick={handleNextPage} >Activate Now</Button>
         </div>
-    </>
+    </div>
 }
 const PurchasePage = ({ handlePrevPage }) => {
-    return <>
+    return <div className="animated fadeIn w3-container">
         <Table style={{ color: "white" }} size="sm" borderless >
             <thead>
                 <th></th>
@@ -93,5 +91,5 @@ const PurchasePage = ({ handlePrevPage }) => {
             </div>
 
         </div>
-    </>
+    </div>
 }
