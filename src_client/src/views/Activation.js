@@ -27,7 +27,7 @@ export default function Activation({ isMobile }) {
                 ...(isMobile && { paddingLeft: undefined }),
             }}
             id="main"
-            classname="animated fadeIn w3-container"
+            className="animated fadeIn w3-container"
         >
             <div style={{ textAlign: "center", width: `${isMobile ? "80vw" : "45vw"}` }}>
                 {currentPage === 0 ? <ActivatePage handleNextPage={handleNextPage} /> : <PurchasePage handlePrevPage={handlePrevPage} />}
