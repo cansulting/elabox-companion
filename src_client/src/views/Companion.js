@@ -19,7 +19,6 @@ const Settings = React.lazy(() => import("./Settings"))
 const Dashboard = React.lazy(() => import("./Dashboard"))
 const HelpCentre = React.lazy(() => import("./HelpCentre"))
 const Updates = React.lazy(() => import("./Updates"))
-const Activation = React.lazy(() => import("./Activation"))
 
 function Companion({ ota, elaStatus }) {
   // const [isLoggedIn, setLoggedIn] = useState(false);
@@ -76,9 +75,6 @@ function Companion({ ota, elaStatus }) {
               </Route>
               <Route path="/updates">
                 <Updates isMobile={isMobile} ota={ota} elaStatus={elaStatus} />
-              </Route>
-              <Route path="/activation">
-                <Activation isMobile={isMobile} />
               </Route>
               <Route path="*">
                 <Dashboard isMobile={isMobile} />

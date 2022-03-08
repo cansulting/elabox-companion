@@ -1,17 +1,24 @@
-import React from "react"
+import React,{useState} from "react"
 import { Link } from "react-router-dom"
 import * as Icon from "react-feather"
 import { useMediaQuery } from "react-responsive"
-import { Badge, Button } from "reactstrap"
+import { Badge } from "reactstrap"
 
 // import elaboxLogo from "./images/logo-wht.png";
 import dashboardLogo from "../../images/dashboard_white.png"
 import walletLogo from "../../images/wallet_white.png"
 import settingsLogo from "../../images/settings_white.png"
+const Activation = React.lazy(()=>import("../../Activation"))
 
 export default function SideBar({ updatesCount, isOpen, onClose }) {
+  const [showActivation,setShowActivation]=useState(false)
   const isMobile = useMediaQuery({ maxWidth: 767 })
-
+  const handleShowActivation= () =>{
+    setShowActivation(true)
+  }
+  const handleCloseActivation= () =>{
+    setShowActivation(false)
+  }
   return (
     <div
       className="w3-sidebar w3-bar-block w3-animate-left"
@@ -33,6 +40,7 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
       }}
       onClick={isMobile ? onClose : undefined}
     >
+      <Activation isOpen={showActivation} closeActivation={handleCloseActivation}/>      
       <div
         style={{
           display: "flex",
@@ -156,7 +164,9 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
             </div>
           </li>
         </ul>
-        <Link type="primary" style={{ textAlign: "center", position: "relative", top: "20vh" }} to="/activation">Activate Elabox</Link>
+        <p 
+        style={{ textAlign: "center", position: "relative", top: "20vh", cursor: "pointer" }} 
+        onClick={handleShowActivation}>Activate Elabox</p>
       </div>
     </div>
   )
