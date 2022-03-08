@@ -8,7 +8,7 @@ import { Badge } from "reactstrap"
 import dashboardLogo from "../../images/dashboard_white.png"
 import walletLogo from "../../images/wallet_white.png"
 import settingsLogo from "../../images/settings_white.png"
-const Activation = React.lazy(()=>import("../../Activation"))
+import Activation from "../../Activation"
 
 export default function SideBar({ updatesCount, isOpen, onClose }) {
   const [showActivation,setShowActivation]=useState(false)
