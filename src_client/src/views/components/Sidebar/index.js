@@ -28,6 +28,7 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
           width: "18%",
           display: "block",
           backgroundColor: "#1E1E26",
+          position:"relative"
         },
         ...(isMobile && { display: "none" }),
         ...(isMobile &&
@@ -164,10 +165,10 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
             </div>
           </li>
         </ul>
-        <p 
-        style={{ textAlign: "center", position: "relative", top: "20vh", cursor: "pointer" }} 
-        onClick={handleShowActivation}>Activate Elabox</p>
       </div>
+      <p 
+        style={{color:"white",left:"5vw", position: "absolute", top: "83vh", cursor: "pointer" }} 
+        onClick={handleShowActivation}>Activate Elabox</p>      
     </div>
   )
 }
