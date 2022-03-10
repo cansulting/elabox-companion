@@ -97,7 +97,7 @@ function Config() {
             <h5 style={{ color: 'white' }}>Choose a secure password to protect your Elabox and wallet</h5>
             <div style={{ color: 'white', padding:5, margin:5}}>
               <Validation label="Atleast 6 characters" validation={atleast6Characters} src={pwd1}/>
-              <Validation label="Does not contains special characters" validation={doesNotContainsSpecialCharacters} src={pwd1}/>              
+              <Validation label="Does not contains unix special characters" validation={doesNotContainsSpecialCharacters} src={pwd1}/>              
               <Validation label="Does not contains space" validation={doesNotContainsSpace} src={pwd1}/>                            
               <Validation label="Password and Confirm Password is the same" validation={()=>{
                 return doesPasswordAndConfirmPasswordMatched(pwd1,pwd2)
