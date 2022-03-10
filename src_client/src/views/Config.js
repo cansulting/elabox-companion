@@ -101,10 +101,10 @@ function Config() {
             <Spinner type="grow" color="light" />
           </div>
           :
-          <div style={{ paddingTop: '5px',textAlign: "left" }}>
+          <div style={{ paddingTop: '5px'}}>
             <h1 style={{ color: 'white' }}>Welcome to Elabox</h1>
             <h5 style={{ color: 'white' }}>Choose a secure password to protect your Elabox and wallet</h5>
-            <div style={{ color: 'white', padding:5, margin:5}}>
+            <div style={{ color: 'white', padding:5, margin:5, textAlign: "left"}}>
               <Validation label="Atleast 6 characters" validation={atleast6Characters} src={pwd1}/>
               <Validation label="Does not contains unix special characters" validation={doesNotContainsSpecialCharacters} src={pwd1}/>              
               <Validation label="Does not contains space" validation={doesNotContainsSpace} src={pwd1}/>                            
