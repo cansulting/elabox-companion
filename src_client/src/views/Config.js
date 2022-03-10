@@ -14,7 +14,7 @@ function Config() {
   const [isConfiged, setConfiged] = useState(false);
   const [pwd1, setPwd1] = useState('');
   const [pwd2, setPwd2] = useState('');
-  const [allowWalletCreation,setAllowWalletCreation]=useState(false)
+  const [allowWalletCreation,setAllowWalletCreation] = useState(false)
   const [creating, setCreating] = useState(false)
   useEffect(()=>{
     const isValid = atleast6Characters(pwd1) &&  doesNotContainsSpecialCharacters(pwd1) && doesNotContainsSpace(pwd1) && doesPasswordAndConfirmPasswordMatched(pwd1,pwd2)
@@ -101,7 +101,7 @@ function Config() {
             <Spinner type="grow" color="light" />
           </div>
           :
-          <div style={{ paddingTop: '5px' }}>
+          <div style={{ paddingTop: '5px',textAlign: "left" }}>
             <h1 style={{ color: 'white' }}>Welcome to Elabox</h1>
             <h5 style={{ color: 'white' }}>Choose a secure password to protect your Elabox and wallet</h5>
             <div style={{ color: 'white', padding:5, margin:5}}>
