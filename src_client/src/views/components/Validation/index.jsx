@@ -10,6 +10,6 @@ export default function Validation({label, validation =()=>{},src}) {
   },Array.isArray(src) ? src:[src])
   const icon = isValid ? <Icon.CheckCircle color="green"/>:<Icon.XCircle color="red"/>
   return (
-    <p>{icon} {label}</p>
+    <p style={{fontSize:12}}>{icon} {label}</p>
   )
 }
