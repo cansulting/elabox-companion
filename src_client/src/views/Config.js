@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, Redirect } from 'react-router-dom';
+import React, { useState,useEffect } from "react";
+import { Redirect } from 'react-router-dom';
 import { Button, Input, Spinner } from "reactstrap";
 import {validCharacters, 
   atleast6Characters, 
@@ -14,8 +14,17 @@ function Config() {
   const [isConfiged, setConfiged] = useState(false);
   const [pwd1, setPwd1] = useState('');
   const [pwd2, setPwd2] = useState('');
+  const [allowWalletCreation,setAllowWalletCreation]=useState(false)
   const [creating, setCreating] = useState(false)
-
+  useEffect(()=>{
+    const isValid = atleast6Characters(pwd1) &&  doesNotContainsSpecialCharacters(pwd1) && doesNotContainsSpace(pwd1) && doesPasswordAndConfirmPasswordMatched(pwd1,pwd2)
+    if (isValid){
+      setAllowWalletCreation(true)
+    }
+    else{
+      setAllowWalletCreation(false)
+    }
+  },[pwd1,pwd2])
   function createWallet() {
     //console.log(pwd1)
     //console.log(pwd2)
@@ -106,7 +115,7 @@ function Config() {
             <form style={{marginTop:"-2em"}} onSubmit={createWallet}>
               <Input data-testid="password-input" type="password" id="pwd1" name="pwd1" placeholder="Password" required onChange={(e) => handleChange(e)} style={{ marginTop: '30px' }} />
               <Input data-testid="password-confirm-input" type="password" id="pwd2" name="pwd2" placeholder="Repeat password" required onChange={(e) => handleChange(e)} style={{ marginTop: '10px' }} />
-              <Button data-testid="create-wallet-submit-btn" type="submit" style={{ marginTop: '20px' }}>Create Wallet</Button>
+              <Button data-testid="create-wallet-submit-btn" type="submit" style={{ marginTop: '20px' }} disabled={!allowWalletCreation}>Create Wallet</Button>
             </form>
 
           </div>
