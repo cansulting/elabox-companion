@@ -32,7 +32,8 @@ export default function Activation({ isMobile, isOpen, closeActivation }) {
                     ...(isMobile && { paddingLeft: undefined }),
                 }}>
                     <div style={{ textAlign: "center", width: `${isMobile ? "80vw" : "45vw"}` }}>
-                        {currentPage === 0 ? <ActivatePage handleNextPage={handleNextPage} handleCloseActivation={handleCloseActivation} /> : <PurchasePage handlePrevPage={handlePrevPage} handleCloseActivation={handleCloseActivation} />}
+                        {currentPage === 0 ? <ActivatePage handleNextPage={handleNextPage} handleCloseActivation={handleCloseActivation} /> 
+                            : <PurchasePage handlePrevPage={handlePrevPage} handleCloseActivation={handleCloseActivation} />}
                     </div>
                 </div >
             </ModalBody>
@@ -44,8 +45,12 @@ const ActivatePage = ({ handleNextPage, handleCloseActivation }) => {
         <h2>Activating Elabox</h2>
         <p>Unlock rewards and premium support</p>
         <div style={{ display: "flex", justifyContent: "center", gap: 40 }}>
-            <Button style={{ padding: 10, width: 100 }} size="sm" onClick={handleCloseActivation}>Skip</Button>
-            <Button style={{ padding: 10, width: 100 }} color="success" size="sm" onClick={handleNextPage} >Activate Now</Button>
+            <Button style={{ padding: 10, width: 100 }} size="sm" onClick={handleCloseActivation}>
+                Skip
+            </Button>
+            <Button style={{ padding: 10, width: 100 }} color="success" size="sm" onClick={handleNextPage} >
+                Activate Now
+            </Button>
         </div>
     </div>
 }
@@ -88,8 +93,12 @@ const PurchasePage = ({ handlePrevPage , handleCloseActivation }) => {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 100 }}>
             <div style={{ display: "inline-block", cursor: "pointer" }} onClick={handlePrevPage}> <Icon.ArrowLeft /> Back</div>
             <div>
-                <Button style={{ padding: 10, width: 120, marginRight: 5 }} size="sm" onClick={handleCloseActivation}>Later</Button>
-                <Button style={{ padding: 10, width: 120 }} color="success" size="sm">Purchase Now</Button>
+                <Button style={{ padding: 10, width: 120, marginRight: 5 }} size="sm" onClick={handleCloseActivation}>
+                    Later
+                </Button>
+                <Button style={{ padding: 10, width: 120 }} color="success" size="sm">
+                    Purchase Now
+                </Button>
             </div>
 
         </div>
