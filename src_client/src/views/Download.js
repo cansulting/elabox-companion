@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from "reactstrap";
 import elaboxLogo from './images/logo-circle-transparent.png'
 import API from '../api/backend';
-import Activation from "./Activation"
+import Activation from "./components/Activation"
 function Download() {
   const [downloading, setDownloading] = useState(false)
   const [finished, setFinished] = useState(false)
