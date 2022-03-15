@@ -24,7 +24,7 @@ import Widget05 from "./widgets/Widget05";
 import master from "../api/master";
 import backend from "../api/backend";
 import { validCharacters } from "../utils/auth"
-import { eidSettings } from "../utils/services"
+import { ENABLE_EID } from "../config"
 import RootStore from "../store";
 import errorLogo from "./images/error.png";
 import checkLogo from "./images/check.png";
@@ -846,7 +846,7 @@ class Settings extends Component {
               }
             ></Widget05>
           </Col>
-          {!eidSettings.isDisabled && <Col xs="12" sm="6" lg="4">
+          {ENABLE_EID && <Col xs="12" sm="6" lg="4">
             <Widget05
               testid="eid-btn"
               dataBox={() => ({

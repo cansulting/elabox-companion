@@ -17,7 +17,7 @@ import RootStore from "../store"
 import { observer } from "mobx-react"
 import { formatTime } from "../utils/time"
 import { shortifyHash } from "../utils/string"
-import { eidSettings } from "../utils/services"
+import { ENABLE_EID } from "../config"
 import Copy from "./components/Copy"
 
 const Dashboard = ({ isMobile }) => {
@@ -242,7 +242,7 @@ const Dashboard = ({ isMobile }) => {
           </Card>
         </Col>
       </Row>
-      {!eidSettings.isDisabled && <NodePreview blockdata={eid} label="EID" /> }
+      {ENABLE_EID && <NodePreview blockdata={eid} label="EID" /> }
       <NodePreview blockdata={esc} label="ESC" showInfo={handleShowInfoModal}/>
       <Row style={{ paddingTop: "50px" }}>
         <Col xs="12" sm="4" lg="4">
