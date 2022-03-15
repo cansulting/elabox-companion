@@ -24,6 +24,7 @@ import Widget05 from "./widgets/Widget05";
 import master from "../api/master";
 import backend from "../api/backend";
 import { validCharacters } from "../utils/auth"
+import { eidSettings } from "../utils/services"
 import RootStore from "../store";
 import errorLogo from "./images/error.png";
 import checkLogo from "./images/check.png";
@@ -845,8 +846,7 @@ class Settings extends Component {
               }
             ></Widget05>
           </Col>
-
-          <Col xs="12" sm="6" lg="4">
+          {!eidSettings.isDisabled && <Col xs="12" sm="6" lg="4">
             <Widget05
               testid="eid-btn"
               dataBox={() => ({
@@ -863,7 +863,7 @@ class Settings extends Component {
                 this.showResync("EID", RootStore.blockchain.eid)
               }
             ></Widget05>
-          </Col>
+          </Col> }
           <Col xs="12" sm="6" lg="4">
             <Widget05
               testid="esc-btn"
