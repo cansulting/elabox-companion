@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Link, Redirect } from 'react-router-dom';
-import { Button, Input, Spinner } from "reactstrap";
+import { Link } from 'react-router-dom';
+import { Button } from "reactstrap";
 import elaboxLogo from './images/logo-circle-transparent.png'
 import API from '../api/backend';
-
+import Activation from "./components/Activation"
 function Download() {
   const [downloading, setDownloading] = useState(false)
   const [finished, setFinished] = useState(false)
-
+  const [showActivation,setShowActivation]=useState(false)
   function downloadWallet() {
     setDownloading(true);
     const pass=window.localStorage.getItem("pass")
@@ -17,14 +17,17 @@ function Download() {
       setTimeout(() => {
         // if success
         setFinished(true)
+        setShowActivation(true)
       }, 3000)
     })
     .catch( err => {
       alert(err)
       setDownloading(false)
     });
-    
   }
+  const handleCloseActivation= () =>{
+    setShowActivation(false)
+  }  
 
   return (
     <div style={{ backgroundColor: '#272A3D', height: '100vh', width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
@@ -34,6 +37,7 @@ function Download() {
         {finished
           ?
           <div style={{ paddingTop: '20px' }}>
+            <Activation isOpen={showActivation} closeActivation={handleCloseActivation}/>      
             <h1 style={{ color: 'white' }}>All set up</h1>
             <h3 style={{ color: 'white' }}>Enjoy your Elabox</h3>
             <Button style={{ marginTop: '20px' }}><Link to="/dashboard" style={{ textDecoration: 'none', color: 'white' }}> Dashboard</Link></Button>

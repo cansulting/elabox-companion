@@ -85,37 +85,6 @@ function Companion({ ota, elaStatus }) {
       </Router>
     </>
   )
-  // }
 }
 
-// function SideBar() {
-//   return (
-//     <div className="w3-sidebar w3-bar-block w3-animate-left" id="mySidebar" style={{ width: '18%', display: 'block', backgroundColor: '#1E1E26' }}>
-//       <div style={{ width: '90%', height: '90%', backgroundColor: '#2C71F6', margin: 'auto', borderRadius: 10, color: 'white' }}>
-//         <ul style={{ listStyle: 'none', paddingTop: '20px', paddingLeft: '0' }}>
-//           <li>
-//             <div className="sidebarMenu">
-//               <Link to="/dashboard" style={{ textDecoration: 'none', color: 'white', fontSize: '18px' }}> <img src={dashboardLogo} style={{ widht: '30px', height: '30px', paddingRight: '10px' }} /> Dashboard</Link>
-//             </div>
-//           </li>
-//           <li>
-//             <div className="sidebarMenu">
-//               <Link to="/wallet" style={{ textDecoration: 'none', color: 'white', fontSize: '18px' }}> <img src={walletLogo} style={{ widht: '30px', height: '30px', paddingRight: '10px' }} />Wallet</Link>
-//             </div>
-//           </li>
-//           <li>
-//             <div className="sidebarMenu">
-//               <Link to="/settings" style={{ textDecoration: 'none', color: 'white', fontSize: '18px' }}> <img src={settingsLogo} style={{ widht: '30px', height: '30px', paddingRight: '10px' }} />Settings</Link>
-//             </div>
-//           </li>
-//           <li>
-//             <div className="sidebarMenu">
-//               <Link to="/help" style={{ textDecoration: 'none', color: 'white', fontSize: '18px' }}> <img src={settingsLogo} style={{ widht: '30px', height: '30px', paddingRight: '10px' }} />Help Center</Link>
-//             </div>
-//           </li>
-//         </ul>
-//       </div>
-//     </div>
-//   );
-// }
 export default observer(Companion)
