@@ -1,3 +1,6 @@
+
+// this displays the license activation page
+
 import React, { useState } from 'react'
 import * as Icon from "react-feather"
 import { Button, Table, Modal , ModalHeader , ModalBody } from "reactstrap"
@@ -12,8 +15,8 @@ export default function Activation({ isMobile, isOpen, closeActivation }) {
     const handleCloseActivation=()=>{
         setCurrentPage(0)
         closeActivation()
-    }
-    return (
+    } 
+    return ( 
         <Modal isOpen={isOpen} centered>
             <ModalHeader>
                 Activating Elabox
