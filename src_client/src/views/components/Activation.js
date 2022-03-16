@@ -35,7 +35,7 @@ export default function Activation({ isMobile, isOpen, closeActivation }) {
                     ...(isMobile && { paddingLeft: undefined }),
                 }}>
                     <div style={{ textAlign: "center", width: `${isMobile ? "80vw" : "45vw"}` }}>
-                        {currentPage === 0 ? <ActivatePage handleNextPage={handleNextPage} handleCloseActivation={handleCloseActivation} /> 
+                        {currentPage === 0 ? <ActivatePage handleNextPage={handleNextPage}/> 
                             : <PurchasePage handlePrevPage={handlePrevPage} handleCloseActivation={handleCloseActivation} />}
                     </div>
                 </div >
@@ -43,15 +43,15 @@ export default function Activation({ isMobile, isOpen, closeActivation }) {
         </Modal>
     )
 }
-const ActivatePage = ({ handleNextPage, handleCloseActivation }) => {
+const ActivatePage = ({ handleNextPage }) => {
     return <div className="animated fadeIn w3-container">
         <h2>Activating Elabox</h2>
         <p>Unlock rewards and premium support</p>
         <div style={{ display: "flex", justifyContent: "center", gap: 40 }}>
-            <Button style={{ padding: 10, width: 100 }} size="sm" onClick={handleCloseActivation}>
+            <Button style={{ padding: 10, width: 100 }} size="sm" onClick={handleNextPage}>
                 Skip
             </Button>
-            <Button style={{ padding: 10, width: 100 }} color="success" size="sm" onClick={handleNextPage} >
+            <Button style={{ padding: 10, width: 100 }} color="success" size="sm">
                 Activate Now
             </Button>
         </div>
