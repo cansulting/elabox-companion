@@ -4,7 +4,7 @@
 import React, { useState } from 'react'
 import * as Icon from "react-feather"
 import { Button, Table, Modal , ModalHeader , ModalBody } from "reactstrap"
-export default function Activation({ isMobile, isOpen, closeActivation }) {
+export default function Activation({ isMobile, isOpen, closeActivation , isModal = true}) {
     const [currentPage, setCurrentPage] = useState(0)
     const handleNextPage = () => {
         setCurrentPage(currentPage + 1)
@@ -16,32 +16,42 @@ export default function Activation({ isMobile, isOpen, closeActivation }) {
         setCurrentPage(0)
         closeActivation()
     } 
+    if(!isModal){
+        return <ActivationBody isMobile={isMobile} handleNextPage={handleNextPage}
+                handlePrevPage={handlePrevPage}handleCloseActivation={handleCloseActivation}
+                currentPage={currentPage} />            
+    }
     return ( 
         <Modal isOpen={isOpen} centered>
             <ModalHeader>
                 Activating Elabox
             </ModalHeader>
             <ModalBody>
-                <div
-                style={{
-                    ...{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: "100%",
-                        color: "white"
-                    },
-                    ...(isMobile && { paddingLeft: undefined }),
-                }}>
-                    <div style={{ textAlign: "center", width: `${isMobile ? "80vw" : "45vw"}` }}>
-                        {currentPage === 0 ? <ActivatePage handleNextPage={handleNextPage}/> 
-                            : <PurchasePage handlePrevPage={handlePrevPage} handleCloseActivation={handleCloseActivation} />}
-                    </div>
-                </div >
+                <ActivationBody isMobile={isMobile} handleNextPage={handleNextPage}
+                handlePrevPage={handlePrevPage}handleCloseActivation={handleCloseActivation}
+                currentPage={currentPage} />
             </ModalBody>
         </Modal>
     )
+}
+const ActivationBody=({isMobile,handleNextPage,handlePrevPage,handleCloseActivation,currentPage})=>{
+    return <div
+    style={{
+        ...{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            color: "white"
+        },
+        ...(isMobile && { paddingLeft: undefined }),
+    }}>
+        <div style={{ textAlign: "center", width: `${isMobile ? "80vw" : "45vw"}` }}>
+            {currentPage === 0 ? <ActivatePage handleNextPage={handleNextPage}/> 
+                : <PurchasePage handlePrevPage={handlePrevPage} handleCloseActivation={handleCloseActivation} />}
+        </div>
+    </div >    
 }
 const ActivatePage = ({ handleNextPage }) => {
     return <div className="animated fadeIn w3-container">
