@@ -4,6 +4,7 @@ import { Button } from "reactstrap";
 import elaboxLogo from './images/logo-circle-transparent.png'
 import API from '../api/backend';
 import Activation from "./components/Activation"
+import { ENABLE_ACTIVATION } from "../config"
 function Download() {
   const [downloading, setDownloading] = useState(false)
   const [finished, setFinished] = useState(false)
@@ -37,7 +38,8 @@ function Download() {
         {finished
           ?
           <div style={{ paddingTop: '20px' }}>
-            <Activation isOpen={showActivation} closeActivation={handleCloseActivation}/>      
+            {ENABLE_ACTIVATION && 
+            <Activation isOpen={showActivation} closeActivation={handleCloseActivation}/>}
             <h1 style={{ color: 'white' }}>All set up</h1>
             <h3 style={{ color: 'white' }}>Enjoy your Elabox</h3>
             <Button style={{ marginTop: '20px' }}><Link to="/dashboard" style={{ textDecoration: 'none', color: 'white' }}> Dashboard</Link></Button>
