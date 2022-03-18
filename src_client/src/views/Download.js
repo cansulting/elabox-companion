@@ -8,7 +8,7 @@ import { ENABLE_ACTIVATION } from "../config"
 function Download() {
   const [downloading, setDownloading] = useState(false)
   const [finished, setFinished] = useState(false)
-  const [showActivation,setShowActivation]=useState(true)
+  const [showActivation,setShowActivation]=useState(ENABLE_ACTIVATION)
   function downloadWallet() {
     setDownloading(true);
     const pass=window.localStorage.getItem("pass")
