@@ -9,6 +9,7 @@ import dashboardLogo from "../../images/dashboard_white.png"
 import walletLogo from "../../images/wallet_white.png"
 import settingsLogo from "../../images/settings_white.png"
 import Activation from "../Activation"
+import { ENABLE_ACTIVATION } from "../../../config"
 
 export default function SideBar({ updatesCount, isOpen, onClose }) {
   const [showActivation,setShowActivation]=useState(false)
@@ -166,9 +167,14 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
           </li>
         </ul>
       </div>
+      {
+      ENABLE_ACTIVATION && 
       <p 
-        style={{color:"white",left:"5vw", position: "absolute", top: "83vh", cursor: "pointer" }} 
-        onClick={handleShowActivation}>Activate Elabox</p>      
+        style={{color:"white",left:"5vw", 
+        position: "absolute", top: "83vh", 
+        cursor: "pointer" }} 
+        onClick={handleShowActivation}>Activate Elabox</p>       
+      }
     </div>
   )
 }
