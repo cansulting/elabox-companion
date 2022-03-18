@@ -8,7 +8,7 @@ import { ENABLE_ACTIVATION } from "../config"
 function Download() {
   const [downloading, setDownloading] = useState(false)
   const [finished, setFinished] = useState(false)
-  const [showActivation,setShowActivation]=useState(false)
+  const [showActivation,setShowActivation]=useState(ENABLE_ACTIVATION)
   function downloadWallet() {
     setDownloading(true);
     const pass=window.localStorage.getItem("pass")
@@ -18,7 +18,6 @@ function Download() {
       setTimeout(() => {
         // if success
         setFinished(true)
-        setShowActivation(true)
       }, 3000)
     })
     .catch( err => {
@@ -29,12 +28,13 @@ function Download() {
   const handleCloseActivation= () =>{
     setShowActivation(false)
   }  
-
   return (
     <div style={{ backgroundColor: '#272A3D', height: '100vh', width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
       <center>
         <img src={elaboxLogo} style={{ width: '200px', height: '200px', paddingRight: '10px' }} />
-
+        {showActivation ? 
+        <Activation isOpen={showActivation} closeActivation={handleCloseActivation} isModal={false}/>:
+        <>
         {finished
           ?
           <div style={{ paddingTop: '20px' }}>
@@ -52,10 +52,8 @@ function Download() {
 
             <Button disabled={downloading} onClick={downloadWallet} style={{ marginTop: '20px' }}> {downloading ? "Downloading..." : "Download keystore.dat"} </Button>
           </div>
-        }
-
-
-
+        }        
+        </> }
       </center>
     </div>
   );

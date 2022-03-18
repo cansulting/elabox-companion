@@ -23,14 +23,14 @@ event_server.on("connect", () => {
   )
   event_server.emit(
     SERVICE_ID,
-    { id: "ela.system.SUBSCRIBE", data: "ela.installer" },
+    { id: "ela.system.SUBSCRIBE", packageId: "ela.installer" },
     (response) => {
       console.log(response)
     }
   )
   event_server.emit(
     SERVICE_ID,
-    { id: "ela.system.SUBSCRIBE", data: "ela.eid"},
+    { id: "ela.system.SUBSCRIBE", packageId: "ela.eid"},
     (response) => {
       console.log(response)
     }
