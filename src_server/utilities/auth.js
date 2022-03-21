@@ -4,6 +4,7 @@ const syslog = require("../logger");
 const { exec } = require("child_process"); 
 const config = require("../config");
 const maxBufferSize = 10000;
+const specialChars = /[`^$&()\'\"\[\]{};:\\|,.<>\/]/; // characters that are considered invalid
 //limiter
 global.rateLimitRemaining = 0
 global.currentRateLimit = 3;
@@ -44,7 +45,6 @@ function validCharacters(str = "") {
     if (!str || str.length <= 5) return false
     if (str.search(' ') >= 0) return false;
 
-    const specialChars = /[`^$&()\'\"\[\]{};:\\|,.<>\/]/;
     return !specialChars.test(str);
 }
 

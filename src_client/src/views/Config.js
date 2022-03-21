@@ -1,16 +1,30 @@
-import React, { useState } from "react";
-import { Link, Redirect } from 'react-router-dom';
+import React, { useState,useEffect } from "react";
+import { Redirect } from 'react-router-dom';
 import { Button, Input, Spinner } from "reactstrap";
-import {validCharacters} from "../utils/auth"
+import {validCharacters, 
+  atleast6Characters, 
+  doesNotContainsSpecialCharacters , 
+  doesNotContainsSpace, 
+  doesPasswordAndConfirmPasswordMatched} from "../utils/auth"
+import Validation from "./components/Validation"
 import elaboxLogo from './images/logo-circle-transparent.png'
 import backend from "../api/backend";
 
 function Config() {
   const [isConfiged, setConfiged] = useState(false);
-  const [pwd1, setPwd1] = useState('qweqweqwe');
-  const [pwd2, setPwd2] = useState('qweqweqwe');
+  const [pwd1, setPwd1] = useState('');
+  const [pwd2, setPwd2] = useState('');
+  const [allowWalletCreation,setAllowWalletCreation] = useState(false)
   const [creating, setCreating] = useState(false)
-
+  useEffect(()=>{
+    const isValid = atleast6Characters(pwd1) &&  doesNotContainsSpecialCharacters(pwd1) && doesNotContainsSpace(pwd1) && doesPasswordAndConfirmPasswordMatched(pwd1,pwd2)
+    if (isValid){
+      setAllowWalletCreation(true)
+    }
+    else{
+      setAllowWalletCreation(false)
+    }
+  },[pwd1,pwd2])
   function createWallet() {
     //console.log(pwd1)
     //console.log(pwd2)
@@ -77,7 +91,7 @@ function Config() {
   return (
     <div style={{ backgroundColor: '#272A3D', height: '100vh', width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
       <center>
-        <img src={elaboxLogo} style={{ width: '200px', height: '200px', paddingRight: '10px' }} />
+        <img src={elaboxLogo} style={{ width: '180px', height: '180px', paddingRight: '10px' }} />
 
         {creating
           ?
@@ -87,13 +101,21 @@ function Config() {
             <Spinner type="grow" color="light" />
           </div>
           :
-          <div style={{ paddingTop: '20px' }}>
+          <div style={{ paddingTop: '5px'}}>
             <h1 style={{ color: 'white' }}>Welcome to Elabox</h1>
             <h5 style={{ color: 'white' }}>Choose a secure password to protect your Elabox and wallet</h5>
-            <form onSubmit={createWallet}>
+            <div style={{ color: 'white', padding:5, margin:5, textAlign: "left"}}>
+              <Validation label="Atleast 6 characters" validation={atleast6Characters} src={pwd1}/>
+              <Validation label="Does not contains unix special characters" validation={doesNotContainsSpecialCharacters} src={pwd1}/>              
+              <Validation label="Does not contains space" validation={doesNotContainsSpace} src={pwd1}/>                            
+              <Validation label="Password and Confirm Password is the same" validation={()=>{
+                return doesPasswordAndConfirmPasswordMatched(pwd1,pwd2)
+              }} src={[pwd1,pwd2]}/>                            
+            </div>            
+            <form style={{marginTop:"-2em"}} onSubmit={createWallet}>
               <Input data-testid="password-input" type="password" id="pwd1" name="pwd1" placeholder="Password" required onChange={(e) => handleChange(e)} style={{ marginTop: '30px' }} />
               <Input data-testid="password-confirm-input" type="password" id="pwd2" name="pwd2" placeholder="Repeat password" required onChange={(e) => handleChange(e)} style={{ marginTop: '10px' }} />
-              <Button data-testid="create-wallet-submit-btn" type="submit" style={{ marginTop: '20px' }}>Create Wallet</Button>
+              <Button data-testid="create-wallet-submit-btn" type="submit" style={{ marginTop: '20px' }} disabled={!allowWalletCreation}>Create Wallet</Button>
             </form>
 
           </div>

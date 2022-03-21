@@ -8,7 +8,7 @@ process
   })
   .on("uncaughtException", (err) => {
     logger.write(logger.create().error("Uncaught Exception thrown", err).addCaller())
-    process.exit(1);
+    //process.exit(1);
   });
 
 shell.exec(

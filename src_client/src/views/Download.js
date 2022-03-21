@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { Link, Redirect } from 'react-router-dom';
-import { Button, Input, Spinner } from "reactstrap";
+import { Link } from 'react-router-dom';
+import { Button } from "reactstrap";
 import elaboxLogo from './images/logo-circle-transparent.png'
 import API from '../api/backend';
-
+import Activation from "./components/Activation"
+import { ENABLE_ACTIVATION } from "../config"
 function Download() {
   const [downloading, setDownloading] = useState(false)
   const [finished, setFinished] = useState(false)
-
+  const [showActivation,setShowActivation]=useState(ENABLE_ACTIVATION)
   function downloadWallet() {
     setDownloading(true);
     const pass=window.localStorage.getItem("pass")
@@ -23,17 +24,22 @@ function Download() {
       alert(err)
       setDownloading(false)
     });
-    
   }
-
+  const handleCloseActivation= () =>{
+    setShowActivation(false)
+  }  
   return (
     <div style={{ backgroundColor: '#272A3D', height: '100vh', width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
       <center>
         <img src={elaboxLogo} style={{ width: '200px', height: '200px', paddingRight: '10px' }} />
-
+        {showActivation ? 
+        <Activation isOpen={showActivation} closeActivation={handleCloseActivation} isModal={false}/>:
+        <>
         {finished
           ?
           <div style={{ paddingTop: '20px' }}>
+            {ENABLE_ACTIVATION && 
+            <Activation isOpen={showActivation} closeActivation={handleCloseActivation}/>}
             <h1 style={{ color: 'white' }}>All set up</h1>
             <h3 style={{ color: 'white' }}>Enjoy your Elabox</h3>
             <Button style={{ marginTop: '20px' }}><Link to="/dashboard" style={{ textDecoration: 'none', color: 'white' }}> Dashboard</Link></Button>
@@ -46,10 +52,8 @@ function Download() {
 
             <Button disabled={downloading} onClick={downloadWallet} style={{ marginTop: '20px' }}> {downloading ? "Downloading..." : "Download keystore.dat"} </Button>
           </div>
-        }
-
-
-
+        }        
+        </> }
       </center>
     </div>
   );

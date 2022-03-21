@@ -32,7 +32,7 @@ module.exports = {
   EID_PORT: 20645,                                    // eid port that can be access for web3 api
   ESC_PORT: 20646,                                    // esc port that can be access for web3 api
   ESC_CHAIN_ID:20,
-  ELA_PORT: 20336,
+  ELA_PORT: 20336,                                    // mainchain rpc port
   RPC_PORT_EID: 20636,                                // EID RPC
   RPC_PORT_ESC: 20637,                                // ESC RPC
   CARRIER_DIR: homeapps + "/ela.carrier", // carrier app directory
@@ -56,7 +56,7 @@ module.exports = {
   BUILD_MODE: buildMode,
   ELABOX_VERSION: elaboxVersion,                      // current version of elabox
   PACKAGES_URL:
-    buildMode === "RELEASE" || buildMode === 'STAGING'
+    buildMode === "RELEASE"
       ? "https://storage.googleapis.com/elabox/packages"
       : buildMode === "DEBUG"
       ? "https://storage.googleapis.com/elabox-debug/packages"
@@ -67,5 +67,6 @@ module.exports = {
   FEEDS_URL: feedsUrl,
   FEEDS_DIR: feedsDir,
   PORT: process.env.PORT || 3001,                     // where companion server port will listen to
-  LOG_FILE: "/var/log/elabox.log"                     // the log file
+  LOG_FILE: "/var/log/elabox.log",                    // the log file
+  isDebug: buildMode === "DEBUG"
 }

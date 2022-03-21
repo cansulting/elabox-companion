@@ -1,4 +1,4 @@
-import React from "react"
+import React,{useState} from "react"
 import { Link } from "react-router-dom"
 import * as Icon from "react-feather"
 import { useMediaQuery } from "react-responsive"
@@ -8,10 +8,18 @@ import { Badge } from "reactstrap"
 import dashboardLogo from "../../images/dashboard_white.png"
 import walletLogo from "../../images/wallet_white.png"
 import settingsLogo from "../../images/settings_white.png"
+import Activation from "../Activation"
+import { ENABLE_ACTIVATION } from "../../../config"
 
 export default function SideBar({ updatesCount, isOpen, onClose }) {
+  const [showActivation,setShowActivation]=useState(false)
   const isMobile = useMediaQuery({ maxWidth: 767 })
-
+  const handleShowActivation= () =>{
+    setShowActivation(true)
+  }
+  const handleCloseActivation= () =>{
+    setShowActivation(false)
+  }
   return (
     <div
       className="w3-sidebar w3-bar-block w3-animate-left"
@@ -21,20 +29,24 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
           width: "18%",
           display: "block",
           backgroundColor: "#1E1E26",
+          position:"relative"
         },
         ...(isMobile && { display: "none" }),
         ...(isMobile &&
           isOpen && {
-            display: "block",
-            zIndex: 1,
-            width: "100%",
-            backgroundColor: "rgb(0, 0, 0, 0.3)",
-          }),
+          display: "block",
+          zIndex: 1,
+          width: "100%",
+          backgroundColor: "rgb(0, 0, 0, 0.3)",
+        }),
       }}
       onClick={isMobile ? onClose : undefined}
     >
+      <Activation isOpen={showActivation} closeActivation={handleCloseActivation}/>      
       <div
         style={{
+          display: "flex",
+          flexDirection: "column",
           width: isMobile ? "70%" : "90%",
           maxWidth: isMobile ? "400px" : undefined,
           height: "100%",
@@ -152,9 +164,17 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
                 Help Center
               </Link>
             </div>
-          </li>{" "}
+          </li>
         </ul>
       </div>
+      {
+      ENABLE_ACTIVATION && 
+      <p 
+        style={{color:"white",left:"5vw", 
+        position: "absolute", top: "83vh", 
+        cursor: "pointer" }} 
+        onClick={handleShowActivation}>Activate Elabox</p>       
+      }
     </div>
   )
 }

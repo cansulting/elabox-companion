@@ -24,6 +24,7 @@ import Widget05 from "./widgets/Widget05";
 import master from "../api/master";
 import backend from "../api/backend";
 import { validCharacters } from "../utils/auth"
+import { ENABLE_EID } from "../config"
 import RootStore from "../store";
 import errorLogo from "./images/error.png";
 import checkLogo from "./images/check.png";
@@ -131,11 +132,7 @@ class Settings extends Component {
     node
       .restart()
       .then((responseJson) => {
-        if (responseJson.success) {
-          // RootStore.blockchain.ela.fetchData();
-        } else {
-          node.fetchData();
-        }
+        node.fetchData();
       })
       .catch((error) => {
         console.error(error);
@@ -480,7 +477,6 @@ class Settings extends Component {
       carrierVersion,
       env,
     } = this.state;
-    console.log("render", showOnion);
     return (
       <div
         id="main"
@@ -591,7 +587,11 @@ class Settings extends Component {
               <Label for="new_password">
                 Verify keystore password
               </Label>
-              <Input id="new_password" name="new_password" type="password" invalid={this.state.form.messages.newPass.length>0} value={this.state.form.values.newPass.length > 0 ? this.state.form.values.newPass:""} onChange={e=>{
+              <Input id="new_password" name="new_password" type="password" 
+              readOnly={this.state.uploadKeyStoreProcessing} 
+              invalid={this.state.form.messages.newPass.length>0} 
+              value={this.state.form.values.newPass.length > 0 ? this.state.form.values.newPass:""} 
+              onChange={e=>{
                 this.handleInputChange("newPass",e.target.value.trim())
               }} />
               <FormFeedback>
@@ -602,11 +602,17 @@ class Settings extends Component {
             </Form>
           </ModalBody>
           <ModalFooter>
-            {this.state.uploadKeyStoreSteps > 1 && this.state.uploadKeyStoreStatus.status === "" && !this.state.uploadKeyStoreProcessing  && <Button data-testid="upload-keystore-prev-btn" onClick={this.handleUploadKeyStoreStepsPrev}>
+            {this.state.uploadKeyStoreSteps > 1 && 
+            this.state.uploadKeyStoreStatus.status === "" && 
+            !this.state.uploadKeyStoreProcessing  && 
+            <Button data-testid="upload-keystore-prev-btn" onClick={this.handleUploadKeyStoreStepsPrev}>
               Previous
             </Button>}            
             {this.state.uploadKeyStoreSteps < 2 ? <>                        
-            <Button data-testid="upload-keystore-next-btn" disabled={isBlocked} color="success" onClick={this.handleUploadKeyStoreStepsNext}>
+            <Button 
+            data-testid="upload-keystore-next-btn" 
+            disabled={isBlocked} color="success" 
+            onClick={this.handleUploadKeyStoreStepsNext}>
               Next
             </Button>            
             </>:<>
@@ -840,8 +846,7 @@ class Settings extends Component {
               }
             ></Widget05>
           </Col>
-
-          <Col xs="12" sm="6" lg="4">
+          {ENABLE_EID && <Col xs="12" sm="6" lg="4">
             <Widget05
               testid="eid-btn"
               dataBox={() => ({
@@ -858,7 +863,7 @@ class Settings extends Component {
                 this.showResync("EID", RootStore.blockchain.eid)
               }
             ></Widget05>
-          </Col>
+          </Col> }
           <Col xs="12" sm="6" lg="4">
             <Widget05
               testid="esc-btn"

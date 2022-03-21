@@ -19,10 +19,12 @@ const execShell = (cmd, opts) => {
 // use to kill process
 // @process name
 // @all, if true kill all process and subprocess with the process name
-const killProcess = async (process, all = false) => {
+const killProcess = async (process, all = false, force = false) => {
   try {
     if (all) {
-      await execShell(`pkill ${process}`);
+      let forceStr = ''
+      if (force) forceStr = '-9'
+      await execShell(`pkill ${forceStr} ${process}`);
       return
     }
     const processID = await execShell(`pidof -zx ${process}`);
@@ -50,12 +52,13 @@ const requestSpawn = async (
   command, 
   callback, 
   options, 
-  delayValue = 1000) => {
+  delayValue = 1000,
+  args = []) => {
   try {
     if (delayValue > 0)
       await delay(delayValue)
 
-    const spawn_instance = spawn(command, options)
+    const spawn_instance = spawn(command, args, options)
     spawn_instance.unref()
     if (spawn_instance.stdout) {
       spawn_instance.stdout.on("data", (data) => {
@@ -64,11 +67,12 @@ const requestSpawn = async (
     }
     if (spawn_instance.stderr) {
       spawn_instance.stderr.on("data", (data) => {
+        data = data.toString()
         syslog.write(syslog.create().error(`Spawn ${command} error`, data).addCaller())
       })
     }
     spawn_instance.on("exit", (code, signal) => {
-      if (!code) callback({ success: true })
+      if (!code) callback({ success: true, process: spawn_instance })
       else callback({ success: false, error: signal })
     })
   } catch (err) {

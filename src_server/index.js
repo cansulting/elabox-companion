@@ -120,7 +120,7 @@ router.get("/ela", async (req, res) => {
 
 router.get("/eid", async (req, res) => {
   try {
-    eid.getStatus().then((data) => res.status(200).json({data}));
+    eid.getStatus().then((data) => res.status(200).json({...data}));
   } catch (err) {
     res.status(500).send({ error: err });
   }
@@ -259,24 +259,13 @@ router.post("/sendTx", (req, res) => {
 router.post("/resyncNodeVerification", (req, res) => {
   let pwd = req.body.pwd;
   //console.log("PASSWORD RECEIVED", pwd, req.body);
-  exec(
-    elaPath +
-      "/ela-cli wallet a -w " +
-      config.KEYSTORE_PATH +
-      " -p " +
-      pwd +
-      "",
-    { maxBuffer: 1024 * maxBufferSize },
-    async (err, stdout, stderr) => {
-      console.log("err", err);
-      console.log("stdout", stdout);
-      if (err) {
-        res.json({ ok: false });
-      } else {
-        res.json({ ok: true, address: stdout.split("\n")[2].split(" ")[0] });
-      }
+  authenticatePassword(pwd)
+    .then( _ => {
+      res.json({ ok: true });
     }
-  );
+  ).catch(err => {
+    res.json({ ok: false });
+  });
 });
 router.get("/rateLimitWaitTime",(req,res)=>{
   res.json({rateLimitRemaining: global.rateLimitRemaining})
@@ -483,6 +472,7 @@ router.post("/version_info", async (req, res) => {
       const info = await getVersionInfo(latestVersion);
       res.send({
         version: info.version,
+        description:info.description,
         env: config.BUILD_MODE,
         name: info.name,
         mainchainVersion: mainchainInfo.info,
@@ -494,6 +484,7 @@ router.post("/version_info", async (req, res) => {
     } catch (e) {
       res.send({
         version: currentVersion,
+        description:"",
         env: config.BUILD_MODE,
         name: "",
         mainchainVersion: "",
@@ -629,7 +620,7 @@ async function runInstaller(version) {
       spawn("chmod", ["+x", config.ELA_SYSTEM_TMP_INSTALLER]);
       spawn(
         `${config.ELA_SYSTEM_TMP_INSTALLER}`,
-        [`${config.TMP_PATH}/${version}.box`, "-s", "-l"],
+        [`${config.TMP_PATH}/${version}.box`, "-s", "-l", "-r"],
         { detached: true, stdio: "ignore" }
       ).unref();
       spawn("ebox", ["terminate"]);
@@ -644,21 +635,17 @@ async function runInstaller(version) {
 async function checkVersion() {
   const currentVersion = await getCurrentBuild();
   const latestVersion = await checkLatestBuild(currentVersion);
-  const response = {
-    current: currentVersion,
-    latest: latestVersion,
-  };
-  if (currentVersion === latestVersion) {
-    return {
-      ...response,
-      new_update: false,
-      count: 0,
-    };
+  let newUpdate = true;
+  let count = 1;
+  if (!config.isDebug && currentVersion === latestVersion) {
+    newUpdate = false;
+    count = 0;
   }
   return {
-    ...response,
-    new_update: true,
-    count: 1,
+    current: currentVersion,
+    latest: latestVersion,
+    new_update: newUpdate,
+    count: count,
   };
 }
 function downloadElaFile(destinationPath, version, extension = "box") {
