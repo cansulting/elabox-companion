@@ -4,6 +4,7 @@
 import React, { useState } from 'react'
 import * as Icon from "react-feather"
 import { Button, Table, Modal , ModalHeader , ModalBody } from "reactstrap"
+import { activateLicense } from '../../utils/license'
 export default function Activation({ isMobile, isOpen, closeActivation , isModal = true}) {
     const [currentPage, setCurrentPage] = useState(0)
     const handleNextPage = () => {
@@ -16,25 +17,40 @@ export default function Activation({ isMobile, isOpen, closeActivation , isModal
         setCurrentPage(0)
         closeActivation()
     } 
+    const handleActivate=()=>{
+        activateLicense()
+    }
     if(!isModal){
-        return <ActivationBody isMobile={isMobile} handleNextPage={handleNextPage}
-                handlePrevPage={handlePrevPage}handleCloseActivation={handleCloseActivation}
+        return <ActivationBody 
+                isMobile={isMobile} 
+                handleNextPage={handleNextPage}
+                handlePrevPage={handlePrevPage}
+                handleCloseActivation={handleCloseActivation}
+                handleActivate={handleActivate}
                 currentPage={currentPage} />            
     }
     return ( 
         <Modal isOpen={isOpen} centered>
-            <ModalHeader>
-                Activating Elabox
-            </ModalHeader>
-            <ModalBody>
-                <ActivationBody isMobile={isMobile} handleNextPage={handleNextPage}
-                handlePrevPage={handlePrevPage}handleCloseActivation={handleCloseActivation}
-                currentPage={currentPage} />
+            <ModalBody style={{padding:"60px"}}>
+                <ActivationBody 
+                    isMobile={isMobile} 
+                    handleNextPage={handleNextPage}
+                    handlePrevPage={handlePrevPage}
+                    handleCloseActivation={handleCloseActivation}
+                    handleActivate={handleActivate}
+                    currentPage={currentPage} />
             </ModalBody>
         </Modal>
     )
 }
-const ActivationBody=({isMobile,handleNextPage,handlePrevPage,handleCloseActivation,currentPage})=>{
+const ActivationBody=({
+    isMobile,
+    handleNextPage,
+    handlePrevPage,
+    handleCloseActivation,
+    currentPage, 
+    handleActivate,
+})=>{
     return <div
     style={{
         ...{
@@ -48,20 +64,22 @@ const ActivationBody=({isMobile,handleNextPage,handlePrevPage,handleCloseActivat
         ...(isMobile && { paddingLeft: undefined }),
     }}>
         <div style={{ textAlign: "center", width: `${isMobile ? "80vw" : "45vw"}` }}>
-            {currentPage === 0 ? <ActivatePage handleNextPage={handleNextPage}/> 
-                : <PurchasePage handlePrevPage={handlePrevPage} handleCloseActivation={handleCloseActivation} />}
+            {currentPage === 0 ? 
+                <ActivatePage handleNextPage={handleNextPage} handleActivate={handleActivate}/> 
+                : 
+                <PurchasePage handlePrevPage={handlePrevPage} handleCloseActivation={handleCloseActivation} />}
         </div>
     </div >    
 }
-const ActivatePage = ({ handleNextPage }) => {
+const ActivatePage = ({ handleNextPage, handleActivate }) => {
     return <div className="animated fadeIn w3-container">
-        <h2>Activating Elabox</h2>
+        <h2>Activate Elabox</h2>
         <p>Unlock rewards and premium support</p>
         <div style={{ display: "flex", justifyContent: "center", gap: 40 }}>
             <Button style={{ padding: 10, width: 100 }} size="sm" onClick={handleNextPage}>
                 Skip
             </Button>
-            <Button style={{ padding: 10, width: 100 }} color="success" size="sm">
+            <Button style={{ padding: 10, width: 100 }} color="success" size="sm" onClick={handleActivate}>
                 Activate Now
             </Button>
         </div>
@@ -71,7 +89,7 @@ const PurchasePage = ({ handlePrevPage , handleCloseActivation }) => {
     return <div className="animated fadeIn w3-container">
         <Table style={{ color: "white" }} size="sm" borderless >
             <thead>
-                <th></th>
+                <th> </th>
                 <th>Free</th>
                 <th>Premium</th>
             </thead>

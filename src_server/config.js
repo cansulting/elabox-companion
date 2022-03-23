@@ -48,7 +48,8 @@ module.exports = {
   ELA_SYSTEM: "ela.system",
   ELA_EID: "ela.eid",
   ELA_EID_UPDATE_ACTION: "ela.eid.action.UPDATE",     // action id for updating system
-  ELA_SYSTEM_BROADCAST: "ela.system.BROADCAST",       // id for broadcasting message to system
+  ELA_SYSTEM_BROADCAST: "ela.system.BROADCAST",       // action id for broadcasting message to system
+  ELA_SYSTEM_RPC: "ela.system.RPC",                   // action id for rpc message to system
   INSTALLER_PK_ID: "ela.installer",
   ELA_SYSTEM_BROADCAST_ID_INSTALLER: "ela.installer.PROGRESS", // installer action id that tells the companion front end it is in progress
   ELA_INSTALLER_BROADCAST_INSTALL_DONE: "ela.installer.INSTALL_DONE",
