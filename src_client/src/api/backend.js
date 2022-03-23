@@ -165,7 +165,19 @@ class API {
       body: JSON.stringify({
         address,
       }),
-    }).then((response) => response.json());
+    }).then(async (response) => {
+      const {balance} = await response.json()
+      let data={balance}
+      if(isNaN(balance)){
+        await fetch(`https://node1.elaphant.app/api/v1/asset/balances/${address}`).then( async response=>{
+          const { Result } = await response.json()
+          if (Result !=="0") {             
+            data.balance=parseFloat(Result);            
+          }
+        })
+      }
+      return data;
+    });
   };
 
   sendElaPassswordVerification = (pwd) => {
