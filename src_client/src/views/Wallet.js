@@ -26,6 +26,18 @@ import errorLogo from "./images/error.png";
 import backend from "../api/backend";
 var QRCode = require("qrcode.react");
 
+// STATES
+const STATE_NONE = 0
+const STATE_START_SEND = 1
+const STATE_PROCESSING = 2
+const STATE_SUCCESS = 3
+const STATE_ERROR1 = 4
+const STATE_ERROR_PASS = 5
+const STATE_REQUEST_PROCESS = 6
+const STATE_NOADDRESS = 7
+const STATE_NOAMOUNT = 8
+const STATE_INVALIDAMOUNT = 9
+
 class Wallet extends Component {
   constructor(props) {
     super(props);
@@ -35,7 +47,7 @@ class Wallet extends Component {
       transfer_fee: 0.001,
       tx_list: "",
       pwd: "",
-      transferState: 0,
+      transferState: STATE_NONE,
       errMsg: "",
     };
 
@@ -77,10 +89,10 @@ class Wallet extends Component {
       .then((responseJson) => {
         console.log(responseJson);
         if (responseJson.ok == "ok") {
-          this.transferStateUpdate(3);
+          this.transferStateUpdate(STATE_SUCCESS);
         } else {
           setTimeout(function () {}, 2000);
-          this.transferStateUpdate(4);
+          this.transferStateUpdate(STATE_ERROR1);
           let msg = "Something went wrong. Please try again later.";
           if (
             responseJson.reason &&
@@ -97,15 +109,15 @@ class Wallet extends Component {
 
   // Verifies password before calling submitForm which calls /sendTx
   verifyPwd = () => {
-    this.transferStateUpdate(2);
+    this.transferStateUpdate(STATE_PROCESSING);
     backend
       .sendElaPassswordVerification(this.state.pwd)
       .then((responseJson) => {
         if (responseJson.ok) {
-          this.transferStateUpdate(6);
+          this.transferStateUpdate(STATE_REQUEST_PROCESS);
           this.submitForm();
         } else {
-          this.transferStateUpdate(5);
+          this.transferStateUpdate(STATE_ERROR_PASS);
         }
       })
       .catch((error) => {
@@ -117,22 +129,22 @@ class Wallet extends Component {
     let recipient = this.state.recipient;
     let amount = this.state.amount;
     if (recipient.length != 34) {
-      this.transferStateUpdate(7);
+      this.transferStateUpdate(STATE_NOADDRESS);
     } else {
       if (amount.length == 0) {
-        this.transferStateUpdate(8);
+        this.transferStateUpdate(STATE_NOAMOUNT);
       } else {
         if (isNaN(amount)) {
-          this.transferStateUpdate(8);
+          this.transferStateUpdate(STATE_NOAMOUNT);
         } else {
           if (amount.indexOf(".") > -1) {
             if (amount.toString().split(".")[1].length > 8) {
-              this.transferStateUpdate(9);
+              this.transferStateUpdate(STATE_INVALIDAMOUNT);
             } else {
-              this.transferStateUpdate(1);
+              this.transferStateUpdate(STATE_START_SEND);
             }
           } else {
-            this.transferStateUpdate(1);
+            this.transferStateUpdate(STATE_START_SEND);
           }
         }
       }
@@ -164,11 +176,11 @@ class Wallet extends Component {
       >
         <Modal
           isOpen={
-            this.state.transferState === 1 || this.state.transferState === 2
+            this.state.transferState === STATE_START_SEND || this.state.transferState === STATE_PROCESSING 
           }
         >
           <ModalHeader>Sending ELA</ModalHeader>
-          {this.state.transferState === 1 && (
+          {this.state.transferState === STATE_START_SEND && (
             <ModalBody>
               <center>
                 You are about to sendTx <br />
@@ -196,7 +208,7 @@ class Wallet extends Component {
               />
             </ModalBody>
           )}
-          {this.state.transferState === 2 && (
+          {this.state.transferState === STATE_PROCESSING && (
             <ModalBody>
               <center>
                 <h4 style={{ margin: "5px", display: "inline-block" }}>
@@ -210,7 +222,7 @@ class Wallet extends Component {
             </ModalBody>
           )}
           <ModalFooter>
-            {this.state.transferState === 1 && (
+            {this.state.transferState === STATE_START_SEND && (
               <>
                 <Button
                   data-testid="sending-ela-send-btn"
@@ -222,7 +234,7 @@ class Wallet extends Component {
                 <Button
                   data-testid="sending-ela-cancel-btn"
                   color="danger"
-                  onClick={(_) => this.transferStateUpdate(0)}
+                  onClick={(_) => this.transferStateUpdate(STATE_NONE)}
                 >
                   Cancel
                 </Button>
@@ -231,7 +243,7 @@ class Wallet extends Component {
           </ModalFooter>
         </Modal>
 
-        <Modal isOpen={this.state.transferState === 3}>
+        <Modal isOpen={this.state.transferState === STATE_SUCCESS}>
           <ModalHeader>Sent</ModalHeader>
           <ModalBody>
             <center>
@@ -241,14 +253,14 @@ class Wallet extends Component {
           <ModalFooter>
             <Button
               color="primary"
-              onClick={(_) => this.transferStateUpdate(0)}
+              onClick={(_) => this.transferStateUpdate(STATE_NONE)}
             >
               Close
             </Button>
           </ModalFooter>
         </Modal>
 
-        <Modal isOpen={this.state.transferState === 4}>
+        <Modal isOpen={this.state.transferState === STATE_ERROR1}>
           <ModalHeader>Error</ModalHeader>
           <ModalBody>
             <center>
@@ -261,14 +273,14 @@ class Wallet extends Component {
           <ModalFooter>
             <Button
               color="primary"
-              onClick={(_) => this.transferStateUpdate(0)}
+              onClick={(_) => this.transferStateUpdate(STATE_NONE)}
             >
               Close
             </Button>
           </ModalFooter>
         </Modal>
 
-        <Modal isOpen={this.state.transferState === 5}>
+        <Modal isOpen={this.state.transferState === STATE_ERROR_PASS}>
           <ModalHeader>Error</ModalHeader>
           <ModalBody>
             <center>
@@ -281,14 +293,14 @@ class Wallet extends Component {
           <ModalFooter>
             <Button
               color="primary"
-              onClick={(_) => this.transferStateUpdate(0)}
+              onClick={(_) => this.transferStateUpdate(STATE_NONE)}
             >
               Close
             </Button>
           </ModalFooter>
         </Modal>
 
-        <Modal isOpen={this.state.transferState === 6}>
+        <Modal isOpen={this.state.transferState === STATE_REQUEST_PROCESS}>
           <ModalHeader>Success</ModalHeader>
           <ModalBody>
             <center>
@@ -300,27 +312,27 @@ class Wallet extends Component {
           <ModalFooter>
             <Button
               color="primary"
-              onClick={(_) => this.transferStateUpdate(0)}
+              onClick={(_) => this.transferStateUpdate(STATE_NONE)}
             >
               Close
             </Button>
           </ModalFooter>
         </Modal>
 
-        <Modal isOpen={this.state.transferState >= 7}>
-          {this.state.transferState === 7 && (
+        <Modal isOpen={this.state.transferState >= STATE_NOADDRESS}>
+          {this.state.transferState === STATE_NOADDRESS && (
             <>
               <ModalHeader>Incorrect ELA Address</ModalHeader>
               <ModalBody>Please provide a correct ELA address</ModalBody>
             </>
           )}
-          {this.state.transferState === 8 && (
+          {this.state.transferState === STATE_NOAMOUNT && (
             <>
               <ModalHeader>Incorrect Amount</ModalHeader>
               <ModalBody>Please provide amount of ELA to send</ModalBody>
             </>
           )}
-          {this.state.transferState === 9 && (
+          {this.state.transferState === STATE_INVALIDAMOUNT && (
             <>
               <ModalHeader>Incorrect Amount</ModalHeader>
               <ModalBody>Too many decimals</ModalBody>
@@ -329,7 +341,7 @@ class Wallet extends Component {
           <ModalFooter>
             <Button
               color="primary"
-              onClick={(_) => this.transferStateUpdate(0)}
+              onClick={(_) => this.transferStateUpdate(STATE_NONE)}
             >
               Ok
             </Button>
@@ -401,6 +413,9 @@ class Wallet extends Component {
                   color="success"
                   onClick={this.checkForm}
                   disabled={
+                    this.state.recipient === "" ||
+                    this.state.recipient.length !== 34 ||
+                    this.state.amount === "" ||
                     parseFloat(this.state.amount) <= 0 ||
                     isNaN(this.state.amount)
                   }
