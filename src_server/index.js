@@ -329,7 +329,7 @@ router.post("/uploadWallet", function (req, res) {
 
 router.post("/getBalance", (req, res) => {
   let address = req.body.address;
-  const command = quote(["curl",`http://localhost:20334/api/v1/asset/balances/`,address]);
+  const command = quote(["curl",`http://localhost:20334/api/v1/asset/balances/${address}`]);
   exec(
     command,
     { maxBuffer: 1024 * maxBufferSize },
