@@ -14,7 +14,6 @@
     "express": "^4.17.1",
     "fix-esm": "^1.0.0",
     "fs-extra": "^10.0.0",
-    "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "node-stream-zip": "^1.13.6",
     "nodejs-file-downloader": "^4.7.2",
