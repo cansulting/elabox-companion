@@ -242,8 +242,8 @@ describe("ENDPOINT TESTING",()=>{
             expect(data.ok).toBeString()
             expect(data.ok).toBeOneOf(['ok',"nope"])          
         })
-        test("/resyncNodeVerification",async ()=>{
-            response= await request.post("/resyncNodeVerification").send({pwd:"testpass"})         
+        test("/authentication",async ()=>{
+            response= await request.post("/authentication").send({pwd:"testpass"})         
             const data=JSON.parse(response.text)          
             expect(response.status).toBe(200) 
             expect(response.headers["content-type"]).toBe("application/json; charset=utf-8") 
