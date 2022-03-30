@@ -1,4 +1,4 @@
-import { useState, useEffect,useRef } from "react"
+import { useState, useEffect } from "react"
 import backend from "../api/backend"
 import {validCharacters} from "../utils/auth"
 export default function UseAuth(clearWindowAddress=false) {
@@ -8,7 +8,6 @@ export default function UseAuth(clearWindowAddress=false) {
       if(clearWindowAddress){
         window.localStorage.removeItem('address');    
       }
-
       backend.getRateLimitWaitTime().then(responseJson => {
         setTimer(responseJson.rateLimitRemaining)
       })

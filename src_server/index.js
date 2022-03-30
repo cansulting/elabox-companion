@@ -504,7 +504,9 @@ router.get("/check_new_updates", processCheckNewUpdates);
 router.get("/download_package", processDownloadPackage);
 
 //end ota routes
-
+router.get("/checkToken",authenticateToken,(req,res)=>{
+  res.send("ok")
+})
 const checkFile = (file) => {
   var prom = new Promise((resolve, reject) => {
     try {

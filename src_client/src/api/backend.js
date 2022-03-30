@@ -1,10 +1,6 @@
 import axios from "axios";
 const PUBLIC_URI = window.location.hostname + ":3001";
 class API {
-  axiosConfig={
-    headers:{
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
-  }}  
   constructor() {
     this.axios = axios.create({ baseURL: `http://${PUBLIC_URI}` });
   }
@@ -84,7 +80,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/restartMainchain`, {
       method: "POST",
       headers: {
-        ...this.axiosConfig.headers,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -95,7 +91,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/resyncMainchain`, {
       method: "POST",
       headers: {
-        ...this.axiosConfig.headers,        
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -106,7 +102,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/restartEID`, {
       method: "POST",
       headers: {
-        ...this.axiosConfig.headers,        
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -117,7 +113,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/resyncEID`, {
       method: "POST",
       headers: {
-        ...this.axiosConfig.headers,                
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -128,7 +124,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/restartESC`, {
       method: "POST",
       headers: {
-        ...this.axiosConfig.headers,                
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -139,7 +135,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/resyncESC`, {
       method: "POST",
       headers: {
-        ...this.axiosConfig.headers,                
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -150,7 +146,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/restartCarrier`, {
       method: "POST",
       headers: {
-        ...this.axiosConfig.headers,                
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -160,7 +156,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/restartFeeds`, {
       method: "POST",
       headers: {
-        ...this.axiosConfig.headers,                
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -240,7 +236,11 @@ class API {
   };
 
   regenerateOnion = () => {
-    return axios.get(`http://${PUBLIC_URI}/regenerateOnion`,this.axiosConfig);
+    return axios.get(`http://${PUBLIC_URI}/regenerateOnion`,{
+      headers:{
+        Authorization: `Bearer ${localStorage.getItem("token")}`,        
+      }
+    });
   };
   checkUpdates = async () => {
     const { data } = await axios.get(`http://${PUBLIC_URI}/check_new_updates`);
@@ -304,6 +304,14 @@ class API {
     })
     return data 
   };
+  checkToken=async ()=>{
+    const {data} = await axios.get(`http://${PUBLIC_URI}/checkToken`,{
+      headers:{
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      }
+    })
+    return data
+  }
 }
 
 export default new API();

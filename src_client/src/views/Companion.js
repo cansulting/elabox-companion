@@ -3,42 +3,41 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
   Redirect,
 } from "react-router-dom"
 import { useMediaQuery } from "react-responsive"
 import { observer } from "mobx-react"
+import backend from "../api/backend"
 import Navbar from "./components/Navbar"
 import SideBar from "./components/Sidebar"
 const loading = () => (
   <div className="animated fadeIn pt-3 text-center">Loading...</div>
 )
-
 const Wallet = React.lazy(() => import("./Wallet"))
 const Settings = React.lazy(() => import("./Settings"))
 const Dashboard = React.lazy(() => import("./Dashboard"))
 const HelpCentre = React.lazy(() => import("./HelpCentre"))
 const Updates = React.lazy(() => import("./Updates"))
-
 function Companion({ ota, elaStatus }) {
   // const [isLoggedIn, setLoggedIn] = useState(false);
   // const { setAuthTokens } = useAuth();
   const isMobile = useMediaQuery({ maxWidth: 767 })
-
   const [isLoggedIn, setLoggedIn] = useState(true)
   const [isOpen, setOpen] = useState(false)
-
-  useEffect(() => {
-    ota.handleCheckUpdates()
-  }, [])
   function logOut() {
     localStorage.setItem("logedin", false)
     localStorage.removeItem("token")     
     setLoggedIn(false)
-    console.log(localStorage)
     // console.log("Logging out")
   }
-
+  useEffect(() => {
+    backend.checkToken().catch(_=>{
+      logOut()
+    })
+ },[window.location.pathname])   
+  useEffect(() => {
+    ota.handleCheckUpdates()
+  }, [])
   if (!isLoggedIn) {
     return <Redirect to="/login" />
   }
