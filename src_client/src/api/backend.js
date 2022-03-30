@@ -1,10 +1,13 @@
 import axios from "axios";
 const PUBLIC_URI = window.location.hostname + ":3001";
+const axiosConfig={
+  headers:{
+  Authorization: `Bearer ${localStorage.getItem("token")}`,
+}}
 class API {
   constructor() {
     this.axios = axios.create({ baseURL: `http://${PUBLIC_URI}` });
   }
-
   login = (pwd) => {
     return fetch(`http://${PUBLIC_URI}/login`, {
       method: "POST",
@@ -27,28 +30,28 @@ class API {
     }).then(response=>response.json())
   }
   fetchEla = async () => {
-    const response = await this.axios.get("/ela");
+    const response = await this.axios.get("/ela",axiosConfig);
     return response.data;
   };
 
   fetchEID = async () => {
-    const response = await this.axios.get("/eid");
+    const response = await this.axios.get("/eid",axiosConfig);
     //console.log(response)
     return response.data;
   };
 
   fetchESC = async () => {
-    const response = await this.axios.get("/esc");
+    const response = await this.axios.get("/esc",axiosConfig);
     //console.log(response)
     return response.data;
   };
 
   fetchCarrier = async () => {
-    const response = await this.axios.get("/carrier");
+    const response = await this.axios.get("/carrier",axiosConfig);
     return response.data;
   };
   fetchFeeds = async () => {
-    const response = await this.axios.get("/feeds");
+    const response = await this.axios.get("/feeds",axiosConfig);
     return response.data;
   };
 

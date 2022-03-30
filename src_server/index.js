@@ -1,7 +1,7 @@
 const express = require("express");
 const eventhandler = require("./helper/eventHandler");
 const urlExist = require("fix-esm").require("url-exist");
-const { generateKeystore, changePassword, authenticatePassword, authLimiter , resetRateLimit } = require("./utilities/auth")
+const { generateKeystore, changePassword, authenticatePassword, authLimiter , resetRateLimit, generateAccessToken, authenticateToken } = require("./utilities/auth")
 // to allow cross-origin request
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -110,7 +110,7 @@ router.get("/synced", (req, res) => {
   res.json({ updated: true });
 });
 
-router.get("/ela", async (req, res) => {
+router.get("/ela", authenticateToken ,async (req, res) => {
   try {
     return res.json(await mainchain.getStatus());
   } catch (err) {
@@ -118,7 +118,7 @@ router.get("/ela", async (req, res) => {
   }
 });
 
-router.get("/eid", async (req, res) => {
+router.get("/eid", authenticateToken ,async (req, res) => {
   try {
     eid.getStatus().then((data) => res.status(200).json({...data}));
   } catch (err) {
@@ -126,7 +126,7 @@ router.get("/eid", async (req, res) => {
   }
 });
 
-router.get("/esc", async (req, res) => {
+router.get("/esc", authenticateToken , async (req, res) => {
   try {
     esc.getStatus().then((data) => res.status(200).json({...data, port: config.RPC_PORT_ESC,chainId:config.ESC_CHAIN_ID}));
   } catch (err) {
@@ -134,7 +134,7 @@ router.get("/esc", async (req, res) => {
   }
 });
 
-router.get("/carrier", async (req, res) => {
+router.get("/carrier", authenticateToken, async (req, res) => {
   try {
     const isRunning = await checkProcessingRunning("ela-bootstrapd");
 
@@ -281,7 +281,8 @@ router.post("/login",(req, res) => {
     .then( _ => {
       resetRateLimit()  
       readWalletAddress().then(address => {
-        res.json({ ok: true, address: address })
+        const token = generateAccessToken()
+        res.json({ ok: true, address: address,token })
       }).catch(e => {
         res.json({ ok: false, err: e.message })
       })   

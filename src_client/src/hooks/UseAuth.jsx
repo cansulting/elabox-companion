@@ -45,6 +45,7 @@ export default function UseAuth(clearWindowAddress=false) {
             if (responseJson.ok) {
               localStorage.setItem('logedin', true);
               localStorage.setItem('address', responseJson.address);
+              localStorage.setItem("token",responseJson.token)              
               resolve("")
             } else {
               if(responseJson.err!=="Too many auth request from this IP"){

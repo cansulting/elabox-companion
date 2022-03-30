@@ -1,3 +1,4 @@
+const jwt= require("jsonwebtoken"); 
 const addSeconds=require("date-fns/addSeconds");
 const differenceInSeconds = require('date-fns/differenceInSeconds');
 const syslog = require("../logger");
@@ -184,12 +185,30 @@ function executeCommand(cmd, tag = "") {
         })
     })
 }
+const  generateAccessToken = () =>{
+    return jwt.sign({ username:'elabox' }, config.AUTH_TOKEN ,{ expiresIn: '1800s' });
+}
+const authenticateToken = (req, res, next)=> {
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+    console.log(token)
+    if (token == null) return res.sendStatus(401)
+  
+    jwt.verify(token, config.AUTH_TOKEN, (err, username) => {
+      if (err) return res.sendStatus(403)
+  
+      req.username = username
 
+      next()
+    })
+  }
 module.exports = {
     generateKeystore: generateKeystore,
     changePassword: changeSystemPassword,
     validCharacters: validCharacters,
     authenticatePassword: authenticatePassword,
     authLimiter: authLimiter,
-    resetRateLimit: resetRateLimit
+    resetRateLimit: resetRateLimit,
+    generateAccessToken: generateAccessToken,
+    authenticateToken: authenticateToken
 }

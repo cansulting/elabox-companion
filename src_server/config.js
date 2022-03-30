@@ -18,7 +18,10 @@ const elaboxVersion = process.env.ELAVERSION
 console.log(buildMode + " MODE")
 console.log("Version " + elaboxVersion)
 console.log("Binaries @" + homeapps)
-
+let AUTH_TOKEN="";
+if (AUTH_TOKEN.length === 0){
+  AUTH_TOKEN = require('crypto').randomBytes(64).toString('hex')
+}
 module.exports = {
   COMPANION_PKID: "ela.companion",                    // current companion package id
   SUPERNODE: homeapps,
@@ -68,5 +71,6 @@ module.exports = {
   FEEDS_DIR: feedsDir,
   PORT: process.env.PORT || 3001,                     // where companion server port will listen to
   LOG_FILE: "/var/log/elabox.log",                    // the log file
-  isDebug: buildMode === "DEBUG"
+  isDebug: buildMode === "DEBUG",
+  AUTH_TOKEN: AUTH_TOKEN
 }
