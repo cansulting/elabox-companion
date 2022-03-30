@@ -1,7 +1,9 @@
 const express = require("express");
 const eventhandler = require("./helper/eventHandler");
 const urlExist = require("fix-esm").require("url-exist");
-const { generateKeystore, changePassword, authenticatePassword, authLimiter , resetRateLimit, generateAccessToken, authenticateToken } = require("./utilities/auth")
+const { generateKeystore, changePassword, 
+  authenticatePassword, authLimiter ,
+   resetRateLimit, generateAccessToken, authenticateToken } = require("./utilities/auth")
 // to allow cross-origin request
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -110,7 +112,7 @@ router.get("/synced", (req, res) => {
   res.json({ updated: true });
 });
 
-router.get("/ela", authenticateToken ,async (req, res) => {
+router.get("/ela" ,async (req, res) => {
   try {
     return res.json(await mainchain.getStatus());
   } catch (err) {
@@ -118,7 +120,7 @@ router.get("/ela", authenticateToken ,async (req, res) => {
   }
 });
 
-router.get("/eid", authenticateToken ,async (req, res) => {
+router.get("/eid" ,async (req, res) => {
   try {
     eid.getStatus().then((data) => res.status(200).json({...data}));
   } catch (err) {
@@ -126,7 +128,7 @@ router.get("/eid", authenticateToken ,async (req, res) => {
   }
 });
 
-router.get("/esc", authenticateToken , async (req, res) => {
+router.get("/esc", async (req, res) => {
   try {
     esc.getStatus().then((data) => res.status(200).json({...data, port: config.RPC_PORT_ESC,chainId:config.ESC_CHAIN_ID}));
   } catch (err) {
@@ -134,7 +136,7 @@ router.get("/esc", authenticateToken , async (req, res) => {
   }
 });
 
-router.get("/carrier", authenticateToken, async (req, res) => {
+router.get("/carrier", async (req, res) => {
   try {
     const isRunning = await checkProcessingRunning("ela-bootstrapd");
 
@@ -420,7 +422,7 @@ router.post("/restartFeeds",authenticateToken, async (req, res) => {
   const isSucess = await feedsHandler.runFeeds();
   res.status(200).json({ success: isSucess });
 });
-router.get("/getOnion",authenticateToken, async (req, res) => {
+router.get("/getOnion", async (req, res) => {
   res.send({ onion: await getOnionAddress() });
 });
 

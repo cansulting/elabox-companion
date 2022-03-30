@@ -160,7 +160,8 @@ const renderAsFragment=(component)=>{
 }
 const clearLocalStorage= () =>{
   window.localStorage.removeItem("address")        
-  window.localStorage.removeItem("logedin")        
+  window.localStorage.removeItem("logedin")       
+  window.localStorage.removeItem("token") 
   window.localStorage.removeItem("islogein")                
 }
 export { server, rest, BASE_URL, renderApp,clearLocalStorage,renderAsFragment }

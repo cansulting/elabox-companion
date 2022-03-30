@@ -1,10 +1,10 @@
 import axios from "axios";
 const PUBLIC_URI = window.location.hostname + ":3001";
-const axiosConfig={
-  headers:{
-  Authorization: `Bearer ${localStorage.getItem("token")}`,
-}}
 class API {
+  axiosConfig={
+    headers:{
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  }}  
   constructor() {
     this.axios = axios.create({ baseURL: `http://${PUBLIC_URI}` });
   }
@@ -30,28 +30,28 @@ class API {
     }).then(response=>response.json())
   }
   fetchEla = async () => {
-    const response = await this.axios.get("/ela",axiosConfig);
+    const response = await this.axios.get("/ela");
     return response.data;
   };
 
   fetchEID = async () => {
-    const response = await this.axios.get("/eid",axiosConfig);
+    const response = await this.axios.get("/eid");
     //console.log(response)
     return response.data;
   };
 
   fetchESC = async () => {
-    const response = await this.axios.get("/esc",axiosConfig);
+    const response = await this.axios.get("/esc");
     //console.log(response)
     return response.data;
   };
 
   fetchCarrier = async () => {
-    const response = await this.axios.get("/carrier",axiosConfig);
+    const response = await this.axios.get("/carrier");
     return response.data;
   };
   fetchFeeds = async () => {
-    const response = await this.axios.get("/feeds",axiosConfig);
+    const response = await this.axios.get("/feeds");
     return response.data;
   };
 
@@ -84,7 +84,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/restartMainchain`, {
       method: "POST",
       headers: {
-        ...axiosConfig.headers,
+        ...this.axiosConfig.headers,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -95,7 +95,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/resyncMainchain`, {
       method: "POST",
       headers: {
-        ...axiosConfig.headers,        
+        ...this.axiosConfig.headers,        
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -106,7 +106,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/restartEID`, {
       method: "POST",
       headers: {
-        ...axiosConfig.headers,        
+        ...this.axiosConfig.headers,        
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -117,7 +117,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/resyncEID`, {
       method: "POST",
       headers: {
-        ...axiosConfig.headers,                
+        ...this.axiosConfig.headers,                
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -128,7 +128,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/restartESC`, {
       method: "POST",
       headers: {
-        ...axiosConfig.headers,                
+        ...this.axiosConfig.headers,                
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -139,7 +139,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/resyncESC`, {
       method: "POST",
       headers: {
-        ...axiosConfig.headers,                
+        ...this.axiosConfig.headers,                
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -150,7 +150,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/restartCarrier`, {
       method: "POST",
       headers: {
-        ...axiosConfig.headers,                
+        ...this.axiosConfig.headers,                
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -160,7 +160,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/restartFeeds`, {
       method: "POST",
       headers: {
-        ...axiosConfig.headers,                
+        ...this.axiosConfig.headers,                
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -236,15 +236,15 @@ class API {
   };
 
   getOnion = () => {
-    return axios.get(`http://${PUBLIC_URI}/getOnion`,axiosConfig);
+    return axios.get(`http://${PUBLIC_URI}/getOnion`);
   };
 
   regenerateOnion = () => {
-    return axios.get(`http://${PUBLIC_URI}/regenerateOnion`,axiosConfig);
+    return axios.get(`http://${PUBLIC_URI}/regenerateOnion`,this.axiosConfig);
   };
   checkUpdates = async () => {
     const { data } = await axios.get(`http://${PUBLIC_URI}/check_new_updates`);
-    return data;
+    return data;      
   };
   processUpdate = async () => {
     const { data } = await axios.get(`http://${PUBLIC_URI}/update_version`, {});

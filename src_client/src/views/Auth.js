@@ -33,12 +33,12 @@ function Auth({ ota }) {
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
 function PrivateRoute({ children, ...rest }) {
-  const isAuth = localStorage.getItem("logedin")
+  const isAuth = localStorage.getItem("logedin") && localStorage?.getItem("token")?.length > 0
   return (
     <Route
       {...rest}
       render={({ location }) =>
-        isAuth == "true" ? (
+        isAuth  ? (
           children
         ) : (
           <Redirect

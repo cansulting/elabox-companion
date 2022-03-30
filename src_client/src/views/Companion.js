@@ -33,6 +33,7 @@ function Companion({ ota, elaStatus }) {
   }, [])
   function logOut() {
     localStorage.setItem("logedin", false)
+    localStorage.removeItem("token")     
     setLoggedIn(false)
     console.log(localStorage)
     // console.log("Logging out")
