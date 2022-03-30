@@ -389,42 +389,42 @@ const restartCarrier = async (callback) => {
   );
 };
 
-router.post("/restartMainchain", async (req, res) => {
+router.post("/restartMainchain",authenticateToken, async (req, res) => {
   await mainchain.restart((resp) => res.json(resp));
 });
 
-router.post("/resyncMainchain", async (req, res) => {
+router.post("/resyncMainchain",authenticateToken, async (req, res) => {
   await mainchain.resync((resp) => res.json(resp));
 });
 
-router.post("/restartEID", async (req, res) => {
+router.post("/restartEID",authenticateToken, async (req, res) => {
   await eid.restart((resp) => res.json(resp));
 });
 
-router.post("/resyncEID", async (req, res) => {
+router.post("/resyncEID",authenticateToken, async (req, res) => {
   await eid.resync((resp) => res.json(resp));
 });
 
-router.post("/restartESC", async (req, res) => {
+router.post("/restartESC",authenticateToken, async (req, res) => {
   await esc.restart((resp) => res.json(resp));
 });
 
-router.post("/resyncESC", async (req, res) => {
+router.post("/resyncESC",authenticateToken, async (req, res) => {
   await esc.resync((resp) => res.json(resp));
 });
 
-router.post("/restartCarrier", async (req, res) => {
+router.post("/restartCarrier",authenticateToken, async (req, res) => {
   await restartCarrier((resp) => res.json(resp));
 });
-router.post("/restartFeeds", async (req, res) => {
+router.post("/restartFeeds",authenticateToken, async (req, res) => {
   const isSucess = await feedsHandler.runFeeds();
   res.status(200).json({ success: isSucess });
 });
-router.get("/getOnion", async (req, res) => {
+router.get("/getOnion",authenticateToken, async (req, res) => {
   res.send({ onion: await getOnionAddress() });
 });
 
-router.get("/regenerateOnion", async (req, res) => {
+router.get("/regenerateOnion",authenticateToken, async (req, res) => {
   await regenerateTor();
   res.send({ onion: await getOnionAddress() });
 });

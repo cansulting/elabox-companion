@@ -84,6 +84,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/restartMainchain`, {
       method: "POST",
       headers: {
+        ...axiosConfig.headers,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -94,6 +95,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/resyncMainchain`, {
       method: "POST",
       headers: {
+        ...axiosConfig.headers,        
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -104,6 +106,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/restartEID`, {
       method: "POST",
       headers: {
+        ...axiosConfig.headers,        
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -114,6 +117,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/resyncEID`, {
       method: "POST",
       headers: {
+        ...axiosConfig.headers,                
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -124,6 +128,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/restartESC`, {
       method: "POST",
       headers: {
+        ...axiosConfig.headers,                
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -134,6 +139,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/resyncESC`, {
       method: "POST",
       headers: {
+        ...axiosConfig.headers,                
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -144,6 +150,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/restartCarrier`, {
       method: "POST",
       headers: {
+        ...axiosConfig.headers,                
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -153,6 +160,7 @@ class API {
     return fetch(`http://${PUBLIC_URI}/restartFeeds`, {
       method: "POST",
       headers: {
+        ...axiosConfig.headers,                
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -228,11 +236,11 @@ class API {
   };
 
   getOnion = () => {
-    return axios.get(`http://${PUBLIC_URI}/getOnion`);
+    return axios.get(`http://${PUBLIC_URI}/getOnion`,axiosConfig);
   };
 
   regenerateOnion = () => {
-    return axios.get(`http://${PUBLIC_URI}/regenerateOnion`);
+    return axios.get(`http://${PUBLIC_URI}/regenerateOnion`,axiosConfig);
   };
   checkUpdates = async () => {
     const { data } = await axios.get(`http://${PUBLIC_URI}/check_new_updates`);
