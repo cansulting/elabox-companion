@@ -53,7 +53,8 @@ function Config() {
                 setCreating(false)
                 if (response.ok === "ok" ) {
                   // localStorage.setItem('isconfiged', response.stdout.trim())
-                  window.localStorage.setItem("pass",pwd1)                  
+                  localStorage.setItem("pass",pwd1)    
+                  localStorage.setItem("token",response.token)              
                   localStorage.setItem('isconfiged', true)
                   localStorage.setItem('islogedin', true)
                   setConfiged(true);

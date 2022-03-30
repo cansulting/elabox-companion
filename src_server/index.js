@@ -302,7 +302,8 @@ router.post("/createWallet", (req, res) => {
     .then( (_) => {
         changePassword(pwd)
         .then( (_) => {
-          res.json({ ok: "ok" });
+          const token = generateAccessToken()          
+          res.json({ ok: "ok" ,token });
         }).catch(err => {
           res.json({ ok: "nope", err: err.message });
         })
