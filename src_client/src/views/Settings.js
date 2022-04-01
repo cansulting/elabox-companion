@@ -110,7 +110,13 @@ class Settings extends Component {
         backend
         .authentication(this.state.pwd)
         .then((responseJson) => {
-          this.restartNode(this.state.pwd,this.state.node)
+          if (responseJson.ok) {
+            this.restartNode(this.state.pwd,this.state.node)
+          }
+          else{
+            this.setState({ errormodal: true });            
+          }
+
         })
       default:
         break;
