@@ -49,6 +49,7 @@ class Wallet extends Component {
       pwd: "",
       transferState: STATE_NONE,
       errMsg: "",
+      balance:"..."
     };
 
     this.handleChange = this.handleChange.bind(this);

@@ -334,17 +334,34 @@ router.post("/getBalance", (req, res) => {
     command,
     { maxBuffer: 1024 * maxBufferSize },
     async (err, stdout, stderr) => {
+      let balance = "...";                    
       if (err)
-        syslog.write(
-          syslog
-            .create()
-            .error("Error retrieving wallet balance", err)
-            .addCaller()
-        );
-      let balance = "...";
-      if (stdout !== "") {
-        let balanceInfo = JSON.parse(stdout);
-        balance = balanceInfo.Result;
+      {
+        const data={
+          "method":"getreceivedbyaddress",
+          "params":{"address": address  }
+        }
+        const headers={
+          "Content-Type":"application/json"
+        }
+         await axios.post(config.ELA_RPC_URL,data,{headers}).then(response=>{
+          const { data } = response
+          balance=parseFloat(data.result)
+          res.json({balance})
+        }).catch(err=>{
+          syslog.write(
+            syslog
+              .create()
+              .error("Error retrieving wallet balance", err)
+              .addCaller()
+          );
+        })
+      }
+      else{
+        if (stdout !== "") {
+          let balanceInfo = JSON.parse(stdout);
+          balance = balanceInfo.Result;
+        }        
       }
       res.json({ balance });
     }
