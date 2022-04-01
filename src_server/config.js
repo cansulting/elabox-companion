@@ -39,6 +39,7 @@ module.exports = {
   KEYSTORE_PATH: eladatadir + "/keystore.dat", // keystore data path
   SUPPORT_EMAIL: "contact@elabox.com",
   TMP_PATH: tmpPath,                                  // where files will be temporary save. specifically use for installer
+  ELA_RPC_URL: "https://api.elastos.io/ela/",
   ELA_SYSTEM_PATH: elaSystemPath,                     // dir where the system apps installed
   ELA_SYSTEM_INFO_PATH: elaSystemInfoPath,            // where information about the system installed
   ELA_SYSTEM_INSTALLER_PATH: elaSystemInstallerPath,  // dir for installer binary

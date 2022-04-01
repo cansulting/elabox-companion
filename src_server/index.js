@@ -1,6 +1,7 @@
 const express = require("express");
 const eventhandler = require("./helper/eventHandler");
 const urlExist = require("fix-esm").require("url-exist");
+const quote = require('shell-quote').quote;
 const { generateKeystore, changePassword, authenticatePassword, authLimiter , resetRateLimit } = require("./utilities/auth")
 // to allow cross-origin request
 const cors = require("cors");
@@ -328,21 +329,39 @@ router.post("/uploadWallet", function (req, res) {
 
 router.post("/getBalance", (req, res) => {
   let address = req.body.address;
+  const command = quote(["curl",`http://localhost:20334/api/v1/asset/balances/${address}`]);
   exec(
-    "curl http://localhost:20334/api/v1/asset/balances/" + address,
+    command,
     { maxBuffer: 1024 * maxBufferSize },
     async (err, stdout, stderr) => {
+      let balance = "...";                    
       if (err)
-        syslog.write(
-          syslog
-            .create()
-            .error("Error retrieving wallet balance", err)
-            .addCaller()
-        );
-      let balance = "...";
-      if (stdout !== "") {
-        let balanceInfo = JSON.parse(stdout);
-        balance = balanceInfo.Result;
+      {
+        const data={
+          "method":"getreceivedbyaddress",
+          "params":{"address": address  }
+        }
+        const headers={
+          "Content-Type":"application/json"
+        }
+         await axios.post(config.ELA_RPC_URL,data,{headers}).then(response=>{
+          const { data } = response
+          balance=parseFloat(data.result)
+          res.json({balance})
+        }).catch(err=>{
+          syslog.write(
+            syslog
+              .create()
+              .error("Error retrieving wallet balance", err)
+              .addCaller()
+          );
+        })
+      }
+      else{
+        if (stdout !== "") {
+          let balanceInfo = JSON.parse(stdout);
+          balance = balanceInfo.Result;
+        }        
       }
       res.json({ balance });
     }
