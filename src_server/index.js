@@ -1,6 +1,7 @@
 const express = require("express");
 const eventhandler = require("./helper/eventHandler");
 const urlExist = require("fix-esm").require("url-exist");
+const quote = require('shell-quote').quote;
 const { generateKeystore, changePassword, authenticatePassword, authLimiter , resetRateLimit } = require("./utilities/auth")
 // to allow cross-origin request
 const cors = require("cors");
@@ -328,8 +329,9 @@ router.post("/uploadWallet", function (req, res) {
 
 router.post("/getBalance", (req, res) => {
   let address = req.body.address;
+  const command = quote(["curl",`http://localhost:20334/api/v1/asset/balances/${address}`]);
   exec(
-    "curl http://localhost:20334/api/v1/asset/balances/" + address,
+    command,
     { maxBuffer: 1024 * maxBufferSize },
     async (err, stdout, stderr) => {
       if (err)
