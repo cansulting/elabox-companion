@@ -337,7 +337,7 @@ router.post("/getBalance", (req, res) => {
       {
         const data={
           "method":"getreceivedbyaddress",
-          "params":{"address": "EZuYxNHK3ZSRARh1L5RMNwPucx1xiJ6mSo"}
+          "params":{"address": address  }
         }
         const headers={
           "Content-Type":"application/json"
