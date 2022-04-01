@@ -2,8 +2,7 @@ import * as ebox from "elabox-dapp-store.lib"
 
 ebox.initialize()
 
-const dappStore = (props) => {
-    retrieveAllListings()   
+const dappStore = (props) => {  
     return (
         <div>
             <h1>Dapp Store</h1>
