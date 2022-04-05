@@ -143,6 +143,12 @@ class MainchainHandler {
         }
         callback()
     }
+    async getTransactions(address){
+      const TRANSACTIONS_URL = `http://localhost:20334/api/v1/asset/utxos/${address}` 
+      const {data} = await axios.get(TRANSACTIONS_URL)
+      // const TRANSACTION_DETAIL_URL = "http://localhost:20334/api/v1/transaction/"       
+      
+    }
 }
 
 module.exports = MainchainHandler

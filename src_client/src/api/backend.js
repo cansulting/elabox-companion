@@ -211,17 +211,7 @@ class API {
 
 
   txHistory = (address) => {
-    console.log(
-      "https://node1.elaphant.app/api/3/history/" +
-        address +
-        "?pageNum=1&pageSize=10&order=desc"
-    );
-
-    return fetch(
-      "https://node1.elaphant.app/api/3/history/" +
-        address +
-        "?pageNum=1&pageSize=10&order=desc"
-    ).then((response) => response.json());
+    return axios.post(`http://${PUBLIC_URI}/transactionHistory`,{address});
   };
 
   getOnion = () => {

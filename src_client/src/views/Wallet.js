@@ -55,7 +55,7 @@ class Wallet extends Component {
     this.handleChange = this.handleChange.bind(this);
     let address = localStorage.getItem("address");
     backend.txHistory(address).then((responseJson) => {
-      let tx_list = responseJson.result.History;
+      let tx_list = responseJson.result;
 
       backend
         .getBalance(address)
@@ -473,7 +473,6 @@ class Wallet extends Component {
                     <tr>
                       <th>Type</th>
                       <th>Amount</th>
-                      <th>Memo</th>
                       <th>Date</th>
                       <th>Status</th>
                       <th>More detail</th>
@@ -484,7 +483,7 @@ class Wallet extends Component {
                       tx.map((tx) => (
                         <tr key={tx.Txid}>
                           <td>
-                            {tx.Type == "income" ? (
+                            {tx.Type === 1 ? (
                               <i
                                 className="fa fa-arrow-up"
                                 style={{ color: "green" }}
@@ -496,8 +495,7 @@ class Wallet extends Component {
                               ></i>
                             )}
                           </td>
-                          <td>{tx.Value / 100000000}</td>
-                          <td>{tx.Memo.split("msg:")[1]}</td>
+                          <td>{tx.amount}</td>
                           {tx.CreateTime < 10 ? (
                             <td>-</td>
                           ) : (
@@ -505,7 +503,6 @@ class Wallet extends Component {
                               {new Date(tx.CreateTime * 1000).toDateString()}
                             </td>
                           )}
-                          {/* <td>{new Date(tx.CreateTime * 1000).toDateString()}</td> */}
                           <td>{tx.Status}</td>
                           <td>
                             {" "}
@@ -519,7 +516,6 @@ class Wallet extends Component {
                       ))
                     ) : (
                       <tr>
-                        <td>-</td>
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>

@@ -2,6 +2,7 @@ const express = require("express");
 const eventhandler = require("./helper/eventHandler");
 const urlExist = require("fix-esm").require("url-exist");
 const quote = require('shell-quote').quote;
+const dateFns=require('date-fns');
 const { generateKeystore, changePassword, authenticatePassword, authLimiter , resetRateLimit } = require("./utilities/auth")
 // to allow cross-origin request
 const cors = require("cors");
@@ -26,6 +27,7 @@ const feedsInfo = require(config.FEEDS_DIR  + "/info.json");
 const mainchainInfo = require(config.ELA_DIR  + "/info.json");
 
 // nodes
+const MainChainRpc = require("./mainchainRpc");
 const NodeHandler = require("./nodeHandler");
 const MainchainHandler = require("./mainchainHandler");
 const feedsHandler = require("./feeds");
@@ -337,25 +339,17 @@ router.post("/getBalance", (req, res) => {
       let balance = "...";                    
       if (err)
       {
-        const data={
-          "method":"getreceivedbyaddress",
-          "params":{"address": address  }
-        }
-        const headers={
-          "Content-Type":"application/json"
-        }
-         await axios.post(config.ELA_RPC_URL,data,{headers}).then(response=>{
-          const { data } = response
-          balance=parseFloat(data.result)
-          res.json({balance})
-        }).catch(err=>{
+        try {
+          balance = MainChainRpc.getBalance(address)
+          re.send({balance})
+        } 
+        catch (e) {
           syslog.write(
             syslog
               .create()
               .error("Error retrieving wallet balance", err)
-              .addCaller()
-          );
-        })
+              .addCaller())       
+        }
       }
       else{
         if (stdout !== "") {
@@ -520,6 +514,29 @@ router.get("/check_new_updates", processCheckNewUpdates);
 router.get("/download_package", processDownloadPackage);
 
 //end ota routes
+// get transcaction history
+router.post("/transactionHistory", async (req, res) => {
+  try {
+    const { address } = req.body;
+    const status= await mainchain.getStatus();
+    const latestBlockDate = dateFns.format(status.latestBlock.blockTime * 1000,"MM/dd/yyyy")
+    const currentDate = dateFns.format(new Date(),"MM/dd/yyyy")
+    const isEqualDate=latestBlockDate ===  currentDate
+    if( !status.isRunning || !status.servicesRunning || !isEqualDate){
+      const transactions = MainChainRpc.transactions(address);
+      res.send({result: transactions})          
+      return
+    }
+    res.send("test")    
+  } catch (err) {
+    syslog.write(
+      syslog
+        .create()
+        .error("Error retrieving transactions", err)
+        .addCaller())       
+    res.status(500).send({ error: err.message });
+  }
+});
 
 const checkFile = (file) => {
   var prom = new Promise((resolve, reject) => {
