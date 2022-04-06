@@ -56,12 +56,7 @@ class MainchainHandler {
     async start(callback = () => {}) {
         if ( !await processhelper.checkProcessingRunning(binaryName)) {
             syslog.write(syslog.create().info(`Start spawning mainchain`).addCategory("mainchain"))
-            await processhelper.requestSpawn(`nohup ./${binaryName} --datadir ${config.ELABLOCKS_DIR} > /dev/null 2>output &`, callback, {
-                maxBuffer: 1024 * maxBufferSize,
-                detached: true,
-                shell: true,
-                cwd: config.ELA_DIR,
-            })
+            
         } else {
             syslog.write(syslog.create().debug("Mainchain already started.").addCategory("mainchain"))
         }
