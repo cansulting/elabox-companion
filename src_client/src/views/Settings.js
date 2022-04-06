@@ -84,25 +84,43 @@ class Settings extends Component {
     this.getVersion();
     this.getOnion();
   }
-  verifyPassword = () => {
+  verifyPassword = (action) => {
     // e.preventDefault();
-    this.setState({ resyncModal: false });
+    switch (action) {
+      case "resync":
+        this.setState({ resyncModal: false });
+        backend
+        .authentication(this.state.pwd)
+        .then((responseJson) => {
+          console.log("RESYNC RESPONSE JSON: ");
+          console.log(responseJson);
+          if (responseJson.ok) {
+            this.setState({ resyncsuccessmodal: true });
+            this.resyncNode(this.state.node);
+          } else {
+            this.setState({ errormodal: true });
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });        
+        break;
+      case "restart":
+        this.setState({ restartModal: false });    
+        backend
+        .authentication(this.state.pwd)
+        .then((responseJson) => {
+          if (responseJson.ok) {
+            this.restartNode(this.state.pwd,this.state.node)
+          }
+          else{
+            this.setState({ errormodal: true });            
+          }
 
-    backend
-      .resyncNodeVerification(this.state.pwd)
-      .then((responseJson) => {
-        console.log("RESYNC RESPONSE JSON: ");
-        console.log(responseJson);
-        if (responseJson.ok) {
-          this.setState({ resyncsuccessmodal: true });
-          this.resyncNode(this.state.node);
-        } else {
-          this.setState({ errormodal: true });
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+        })
+      default:
+        break;
+    }
   };
 
   handleChange = async (event) => {
@@ -115,9 +133,8 @@ class Settings extends Component {
   };
   resyncNode = (node) => {
     this.setState({ resyncModal: false });
-
     node
-      .resync()
+      .resync(this.state.pwd)
       .then((responseJson) => {
         node.fetchData();
       })
@@ -125,12 +142,12 @@ class Settings extends Component {
         console.error(error);
       });
   };
-  restartNode = (node) => {
+  restartNode = (pwd,node) => {
     // e.preventDefault();
     this.setState({ restartModal: false });
 
     node
-      .restart()
+      .restart(pwd)
       .then((responseJson) => {
         node.fetchData();
       })
@@ -498,15 +515,24 @@ class Settings extends Component {
               <br />
               This process will take a few hours
               <br />
-              
+              <br />              
+              <Input
+                type="password"
+                id="pwd"
+                name="pwd"
+                placeholder="Enter ELA wallet password"
+                required
+                onChange={(e) => this.handleChange(e)}
+              />              
               <br />
+              <br />              
             </center>
           </ModalBody>
           <ModalFooter>
             <Button
               data-testid="restart-btn"
               color="success"
-              onClick={() => this.restartNode(this.state.node)}
+              onClick={()=>{this.verifyPassword("restart")}}              
             >
               Restart
             </Button>
@@ -709,7 +735,7 @@ class Settings extends Component {
             <Button
               data-testid="resync-btn"
               color="success"
-              onClick={this.verifyPassword}
+              onClick={()=>{this.verifyPassword("resync")}}
             >
               Re-sync
             </Button>

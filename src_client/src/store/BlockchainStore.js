@@ -26,10 +26,10 @@ export const Ela = types
       }
     });
 
-    const restart = flow(function* () {
+    const restart = flow(function* (pwd) {
       try {
         self.restarting = true;
-        const response = yield API.restartMainChain();
+        const response = yield API.restartMainChain(pwd);
         console.log(response);
       } catch (err) {
         console.log(err);
@@ -37,10 +37,10 @@ export const Ela = types
         self.restarting = false;
       }
     });
-    const resync = flow(function* () {
+    const resync = flow(function* (pwd) {
       try {
         self.restarting = true;
-        const response = yield API.resyncMainchain();
+        yield API.resyncMainchain(pwd);
       } catch (err) {
         console.log(err);
       } finally {
@@ -71,20 +71,20 @@ export const eid = types
       }
     });
 
-    const restart = flow(function* () {
+    const restart = flow(function* (pwd) {
       try {
         self.restarting = true;
-        const response = yield API.restartEID();
+        const response = yield API.restartEID(pwd);
       } catch (err) {
         console.log(err);
       } finally {
         self.restarting = false;
       }
     });
-    const resync = flow(function* () {
+    const resync = flow(function* (pwd) {
       try {
         self.restarting = true;
-        const response = yield API.resyncEID();
+        const response = yield API.resyncEID(pwd);
         console.log(response);
       } catch (err) {
         console.log(err);
@@ -117,20 +117,20 @@ export const esc = types
       }
     });
 
-    const restart = flow(function* () {
+    const restart = flow(function* (pwd) {
       try {
         self.restarting = true;
-        const response = yield API.restartESC();
+        const response = yield API.restartESC(pwd);
       } catch (err) {
         console.log(err);
       } finally {
         self.restarting = false;
       }
     });
-    const resync = flow(function* () {
+    const resync = flow(function* (pwd) {
       try {
         self.restarting = true;
-        const response = yield API.resyncESC();
+        const response = yield API.resyncESC(pwd);
         console.log(response);
       } catch (err) {
         console.log(err);
@@ -157,10 +157,10 @@ export const Carrier = types
       }
     });
 
-    const restart = flow(function* () {
+    const restart = flow(function* (pwd) {
       try {
         self.restarting = true;
-        const response = yield API.restartCarrier();
+        const response = yield API.restartCarrier(pwd);
         console.log(response);
       } catch (err) {
         console.log(err);
@@ -186,10 +186,10 @@ const feeds = types
         console.error(fetchData);
       }
     });
-    const restart = flow(function* () {
+    const restart = flow(function* (pwd) {
       try {
         self.restarting = true;
-        const response = yield API.restartFeeds();
+        const response = yield API.restartFeeds(pwd);
         console.log(response);
       } catch (err) {
         console.log(err);

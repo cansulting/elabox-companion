@@ -257,7 +257,7 @@ router.post("/sendTx", (req, res) => {
   }
 });
 
-router.post("/resyncNodeVerification", (req, res) => {
+router.post("/authentication", (req, res) => {
   let pwd = req.body.pwd;
   //console.log("PASSWORD RECEIVED", pwd, req.body);
   authenticatePassword(pwd)
@@ -407,36 +407,77 @@ const restartCarrier = async (callback) => {
   );
 };
 
-router.post("/restartMainchain", async (req, res) => {
-  await mainchain.restart((resp) => res.json(resp));
+router.post("/restartMainchain", (req, res) => {
+  const { pwd } = req.body;  
+  authenticatePassword(pwd).then( async () => {
+    await mainchain.restart((resp) => res.json(resp));
+  }).catch(_=>{
+    res.sendStatus(401)
+  });
 });
 
-router.post("/resyncMainchain", async (req, res) => {
-  await mainchain.resync((resp) => res.json(resp));
+router.post("/resyncMainchain", (req, res) => { 
+  const {pwd} = req.body;
+  authenticatePassword(pwd).then( async () => {
+    await mainchain.resync((resp) => res.json(resp));    
+  }).catch(_=>{
+    res.sendStatus(401)    
+  });
 });
 
-router.post("/restartEID", async (req, res) => {
-  await eid.restart((resp) => res.json(resp));
+router.post("/restartEID", (req, res) => {
+  const {pwd} = req.body;
+  authenticatePassword(pwd).then( async () => {
+    await eid.restart((resp) => res.json(resp));
+  }).catch(_=>{
+    res.sendStatus(401)    
+  });
 });
 
-router.post("/resyncEID", async (req, res) => {
-  await eid.resync((resp) => res.json(resp));
+router.post("/resyncEID", (req, res) => {
+  const {pwd} = req.body;
+  authenticatePassword(pwd).then( async () => {
+    await eid.resync((resp) => res.json(resp));
+  }).catch(_=>{
+    res.sendStatus(401)
+  });  
 });
 
-router.post("/restartESC", async (req, res) => {
-  await esc.restart((resp) => res.json(resp));
+router.post("/restartESC", (req, res) => {
+  const {pwd} = req.body;
+  authenticatePassword(pwd).then( async () => {
+    await esc.restart((resp) => res.json(resp));
+  }).catch(_=>{
+    res.sendStatus(401)
+  });
 });
 
-router.post("/resyncESC", async (req, res) => {
-  await esc.resync((resp) => res.json(resp));
+router.post("/resyncESC", (req, res) => {
+  const {pwd} = req.body;
+  authenticatePassword(pwd).then( async () => {
+    await esc.resync((resp) => res.json(resp));
+  }).catch(_=>{
+    res.sendStatus(401)
+  });  
+
 });
 
-router.post("/restartCarrier", async (req, res) => {
-  await restartCarrier((resp) => res.json(resp));
+router.post("/restartCarrier", (req, res) => {
+  const {pwd} = req.body;
+  authenticatePassword(pwd).then( async () => {
+    await restartCarrier((resp) => res.json(resp));
+  }).catch(_=>{
+    res.sendStatus(401)
+  });  
 });
 router.post("/restartFeeds", async (req, res) => {
-  const isSucess = await feedsHandler.runFeeds();
-  res.status(200).json({ success: isSucess });
+  const {pwd} = req.body;
+  authenticatePassword(pwd).then( async () => {
+    const isSucess = await feedsHandler.runFeeds();
+    res.status(200).json({ success: isSucess });
+  }).catch(_=>{
+    res.sendStatus(401)
+  });
 });
 router.get("/getOnion", async (req, res) => {
   res.send({ onion: await getOnionAddress() });
