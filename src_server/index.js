@@ -329,7 +329,7 @@ router.post("/uploadWallet", function (req, res) {
     .catch( err => res.json({ ok: 'nope', err: err.message}))
 })
 
-router.post("/getBalance", (req, res) => {
+router.post("/getBalance", async (req, res) => {
   let address = req.body.address;
   const command = quote(["curl",`http://localhost:20334/api/v1/asset/balances/${address}`]);
   exec(
@@ -340,8 +340,7 @@ router.post("/getBalance", (req, res) => {
       if (err)
       {
         try {
-          balance = MainChainRpc.getBalance(address)
-          re.send({balance})
+          balance = await MainChainRpc.getBalance(address)
         } 
         catch (e) {
           syslog.write(
@@ -519,16 +518,24 @@ router.post("/transactionHistory", async (req, res) => {
   try {
     const { address } = req.body;
     const status= await mainchain.getStatus();
+    if(status.latestBlock === undefined){
+      const transactions = await MainChainRpc.transactions(address)
+      res.send({result: transactions})          
+      return
+    }
     const latestBlockDate = dateFns.format(status.latestBlock.blockTime * 1000,"MM/dd/yyyy")
     const currentDate = dateFns.format(new Date(),"MM/dd/yyyy")
     const isEqualDate=latestBlockDate ===  currentDate
     if( !status.isRunning || !status.servicesRunning || !isEqualDate){
-      const transactions = MainChainRpc.transactions(address);
+      const transactions = await MainChainRpc.transactions(address);
       res.send({result: transactions})          
       return
     }
+    const transactions = await MainChainRpc.transactions(address);
+    res.send({result: transactions})              
     res.send("test")    
   } catch (err) {
+    console.log(err)
     syslog.write(
       syslog
         .create()

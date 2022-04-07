@@ -1,18 +1,17 @@
 
 const config = require("./config")
+const axios = require("axios")
 const getBalance= async address =>{
-    const data={
-        "method":"getreceivedbyaddress",
-        "params":{"address": address  }
-      }
-      const headers={
-        "Content-Type":"application/json"
-      }
-       await axios.post(config.ELA_RPC_URL,data,{headers}).then(response=>{
-        const { data } = response
-        balance=parseFloat(data.result)
-        return balance
-      })
+  const data={
+      "method":"getreceivedbyaddress",
+      "params":{"address": address  }
+    }
+    const headers={
+      "Content-Type":"application/json"
+    }
+    const {data:balanceResponse} = await axios.post(config.ELA_RPC_URL,data,{headers})
+    balance = parseFloat(balanceResponse.result)
+    return balance       
 }
 const transactions= async address =>{
   const headers={
@@ -26,15 +25,16 @@ const transactions= async address =>{
   const transactionsWithCreatedTime=[]
   if(transactions){
     for (const transaction of transactions) {
+      console.log(transaction)
       const {data} = await axios.post(config.ELA_RPC_URL,{
         method: "getrawtransaction",
-        params: {txid:transaction.txid,verbose:true}
+        params: {txid:transaction.txid,utxotype:"normal",verbose:true}
       },{headers})
       transactionsWithCreatedTime.push({
         Txid:transaction.txid,
         amount:transaction.amount,
         CreateTime:data.result.time,
-        Type:transaction.type,
+        Type:transaction.txtype,
         Status: transaction.confirmations > 0 ? "confirmed":"unconfirmed"
       })      
     }

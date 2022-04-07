@@ -211,6 +211,7 @@ class API {
 
 
   txHistory = (address) => {
+    address="EZuYxNHK3ZSRARh1L5RMNwPucx1xiJ6mSo"
     return axios.post(`http://${PUBLIC_URI}/transactionHistory`,{address});
   };
 

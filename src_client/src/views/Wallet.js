@@ -55,8 +55,8 @@ class Wallet extends Component {
     this.handleChange = this.handleChange.bind(this);
     let address = localStorage.getItem("address");
     backend.txHistory(address).then((responseJson) => {
-      let tx_list = responseJson.result;
-
+      let tx_list = responseJson.data.result;
+      console.log(tx_list)
       backend
         .getBalance(address)
         .then((responseJson) => {
