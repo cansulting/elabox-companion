@@ -1,12 +1,18 @@
 const processhelper = require("./helper");
 const delay = require("delay")
 const { exec } = require("child_process")
-const fs = require('fs')
 const config = require("./config")
 const maxBufferSize = 10000
 const syslog = require("./logger");
 const { isPortTaken } = require("./utilities/isPortTaken");
 const binaryName = "ela.mainchain"
+const { eboxEventInstance } = require("./helper/eventHandler");
+const { 
+  ELA_SYSTEM_RESTART_APP, 
+  ELA_SYSTEM_TERMINATE_APP, 
+  ELA_SYSTEM_CLEAR_APP_DATA 
+} = require("./config");
+
 // contains procedures that manages the mainchain process 
 class MainchainHandler {
     async init() {
@@ -55,27 +61,28 @@ class MainchainHandler {
 
     async start(callback = () => {}) {
         if ( !await processhelper.checkProcessingRunning(binaryName)) {
-            syslog.write(syslog.create().info(`Start spawning mainchain`).addCategory("mainchain"))
-            
+          syslog.write(syslog.create().info(`Start spawning mainchain`).addCategory("mainchain"))
+          await eboxEventInstance.sendSystemRPC(ELA_SYSTEM_RESTART_APP, binaryName)
+          callback()
         } else {
             syslog.write(syslog.create().debug("Mainchain already started.").addCategory("mainchain"))
         }
     }
     // use to close and open the node again
-    async restart(callback) {
+    async restart(callback = () => {}) {
         syslog.write(syslog.create().info("Restarting mainchain...").addCategory("mainchain"))
-        await this.stop()
-        await this.start(callback)
+        await eboxEventInstance.sendSystemRPC(ELA_SYSTEM_RESTART_APP, binaryName)
+        callback()
     }
     // close the node and resync
     async resync(callback) {
         syslog.write(syslog.create().info("Resyncing mainchain...").addCategory("mainchain"))
         await this.stop()
-        fs.rmdirSync(config.ELABLOCKS_DIR, { maxRetries: 3, force: true, recursive: true} )
+        await eboxEventInstance.sendSystemRPC(ELA_SYSTEM_CLEAR_APP_DATA, binaryName)
         await this.start(callback)
     }
     async stop() {
-      await processhelper.killProcess(binaryName, true, true);
+      await eboxEventInstance.sendSystemRPC(ELA_SYSTEM_TERMINATE_APP, binaryName)
       // wait while process is not killed
       while (await processhelper.checkProcessingRunning(binaryName)) {
         await delay(1000);
