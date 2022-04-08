@@ -9,6 +9,7 @@
     "chart.js": "^2.9.3",
     "copy-to-clipboard": "^3.2.1",
     "elabox-dapp-store.lib": "^0.1.5",
+    "elabox-foundation": "^1.1.6",
     "formik": "^2.1.5",
     "mobx": "^6.0.4",
     "mobx-react": "^7.3.0",

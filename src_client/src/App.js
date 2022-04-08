@@ -75,7 +75,7 @@ class App extends React.Component {
                     >
                       {JSON.stringify({ ok: true })}
                     </pre>
-                  </Route>
+                  </Route>              
                   <PrivateRoute path="/">
                     <Auth />
                   </PrivateRoute>
