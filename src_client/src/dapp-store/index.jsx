@@ -6,7 +6,6 @@ ebox.initialize(new EboxEvent(window.location.hostname))
 export default ({children}) => {  
     const [app,setApp] = useState({})
     const onClick = (app) => {
-        console.log(app)
         setApp(app)
     }    
     const onBack = ()=>{
@@ -16,8 +15,8 @@ export default ({children}) => {
     return (
         <div style={{margin:10}}>
             {!hasSelectedApp ?
-            <ebox.AppDashboardCon onClick={onClick}/>
-            :<ebox.AppInfoCon info={app} onBack={onBack}>
+            <ebox.AppDashboardCon style={{backgroundColor:"#1E1E26",color:"white"}} onClick={onClick}/>
+            :<ebox.AppInfoCon style={{color:"white"}} info={app} onBack={onBack}>
                 {children(app)}
             </ebox.AppInfoCon>}
         </div>

@@ -143,7 +143,7 @@ const Dashboard = ({ isMobile }) => {
         ...{
           paddingLeft: "18%",
           width: "100%",
-          backgroundColor: "white",
+          backgroundColor: "#1E1E26",
         },
         ...(isMobile && { paddingLeft: undefined }),
       }}
