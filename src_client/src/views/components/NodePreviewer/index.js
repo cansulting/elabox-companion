@@ -117,30 +117,6 @@ const Previewer = (props) => {
   const { blockdata, showInfo , label = 'Node' } = props;
   return (
     <div>
-      <Row style={{ paddingTop: "50px" }}>
-        <Col xs="12" sm="4" lg="4">
-          {blockdata.isRunning ? (
-            <Widget02
-              header={label}
-              showInfo={showInfo}
-              mainText="Running"
-              icon={didLogo}
-              color="success"
-              variant="1"
-              initializing={!blockdata.servicesRunning}
-            />
-          ) : (
-            <Widget02
-              header={label}
-              showInfo={showInfo}
-              mainText="Stopped"
-              icon={didLogo}
-              color="danger"
-              variant="1"
-            />
-          )}
-        </Col>
-      </Row>
       { blockdata.servicesRunning  &&
       <div>
         <CardGroup className="mb-4">

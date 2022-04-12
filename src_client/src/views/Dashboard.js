@@ -19,6 +19,7 @@ import { formatTime } from "../utils/time"
 import { shortifyHash } from "../utils/string"
 import { ENABLE_EID } from "../config"
 import Copy from "./components/Copy"
+import DApps from "../dapp-store"
 
 const Dashboard = ({ isMobile }) => {
   const [showEscInfoModal,setShowEscInfoModal]=useState(false)
@@ -148,185 +149,31 @@ const Dashboard = ({ isMobile }) => {
       }}
       className="animated fadeIn w3-container"
     >
-        <Modal isOpen={showEscInfoModal}>
-          <ModalHeader>ESC Access</ModalHeader>
-          <ModalBody>      
-            <center>
-              <img src={didLogo} style={{ width: "50px", height: "50px",marginBottom: 5 }}/>              
-              <Copy id="Ip" label="IP" data={`http://${window.location.hostname}:${esc?.port}`}/>
-              <Copy id="ChainId" label="Chain ID" data={esc?.chainId}/>                            
-            </center>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="primary" onClick={handleCloseEscInfoModal}>
-              Close
-            </Button>
-          </ModalFooter>
-        </Modal>      
-      <Row>
-        <Col xs="12" sm="4" lg="4">
-          {ela.isRunning ? (
-            <Widget02
-              header="ELA"
-              mainText="Running"
-              icon={mainchainLogo}
-              color="success"
-              variant="1"
-              initializing={!ela.servicesRunning}
-            />
-          ) : (
-            <Widget02
-              header="ELA"
-              mainText="Stopped"
-              icon={mainchainLogo}
-              color="danger"
-              variant="1"
-            />
-          )}
-        </Col>
-      </Row>
-
-      <CardGroup className="mb-4">
-        <Widget04 icon="fa fa-gears" header={ela.blockCount.toString()}>
-          Best block
-        </Widget04>
-        <Widget04
-          icon="fa fa-clock-o"
-          header={formatTime(ela.latestBlock.blockTime)}
-        >
-          Block Time
-        </Widget04>
-        <Widget04
-          icon="fa fa-hashtag"
-          header={shortifyHash(ela.latestBlock.blockHash)}
-        >
-          Block Hash
-        </Widget04>
-        <Widget04 icon="fa fa-gears" header={ela.latestBlock.miner}>
-          MINER
-        </Widget04>
-      </CardGroup>
-
-      <Row>
-        <Col xs="12" sm="6" lg="6 ">
-          <Card className="text-white" style={{ backgroundColor: "#272A3D" }}>
-            <CardBody className="pb-0">
-              <div>Transactions per block</div>
-              <div className="text-value">{ela.nbOfTxs[0]}</div>
-            </CardBody>
-            <div className="chart-wrapper mx-3" style={{ height: "70px" }}>
-              <Line
-                data={cardChartData2}
-                options={cardChartOpts2}
-                height={70}
-              />
-            </div>
-          </Card>
-        </Col>
-
-        <Col xs="12" sm="6" lg="6">
-          <Card className="text-white" style={{ backgroundColor: "#272A3D" }}>
-            <CardBody className="pb-0">
-              <ButtonGroup className="float-right"></ButtonGroup>
-              <div>Latest block size</div>
-              <div className="text-value">{ela.blockSizes[0]}</div>
-              {/* <div>Latest block sizes</div> */}
-            </CardBody>
-            <div className="chart-wrapper mx-3" style={{ height: "70px" }}>
-              <Line
-                data={cardChartData1}
-                options={cardChartOpts1}
-                height={70}
-              />
-            </div>
-          </Card>
-        </Col>
-      </Row>
-      {ENABLE_EID && <NodePreview blockdata={eid} label="EID" /> }
-      <NodePreview blockdata={esc} label="ESC" showInfo={handleShowInfoModal}/>
-      <Row style={{ paddingTop: "50px" }}>
-        <Col xs="12" sm="4" lg="4">
-          <Widget02
-            header="Feeds"
-            mainText={`${feeds.isRunning ? "Running" : "Stopped"}`}
-            icon={feedsLogo}
-            color={`${feeds.isRunning ? "success" : "danger"}`}
-            variant="1"
-            children={
-              feeds.isRunning && (
-                <Button
-                as="achor"
-                style={{
-                  marginTop: "0.5em",
-                  width: "100%",
-                }}
-                color="success"
-                target="_blank"
-                href={"http://" + window.location.hostname + ":10018/"}
-              >
-                Launch
-              </Button>
-
-              )
+      <DApps>
+        {
+          app => {
+            let blockData = "";
+            switch (app.id) {
+              case "ela.eid":
+                  blockData = eid
+                break;
+              case "ela.esc":
+                  blockData = esc            
+                  break;
+              case "ela.mainchain":
+                blockData = ela
+                break;
+              default:
+                blockData=""
+                break;
             }
-          />
-        </Col>
-      </Row>
-      <Row style={{ paddingTop: "50px" }}>
-        <Col xs="12" sm="4" lg="4">
-          <Widget02
-            header="Glide"
-            mainText="Running"
-            icon={glideLogo}
-            color='success'
-            variant="1"
-            children={
-              (
-                <Button
-                as="achor"
-                style={{
-                  marginTop: "0.5em",
-                  width: "100%",
-                }}
-                color="success"
-                target="_blank"
-                href={"http://" + window.location.hostname + "/glide"}
-              >
-                Launch
-              </Button>
-
-              )
+            if(blockData !== ""){
+              return <NodePreview blockdata={blockData} label="" />
             }
-          />
-        </Col>
-      </Row>      
-      <Row style={{ paddingTop: "50px" }}>
-        <Col xs="12" sm="4" lg="4">
-          {carrier.isRunning ? (
-            <Widget02
-              header="Carrier"
-              mainText="Running"
-              icon={carrierLogo}
-              color="success"
-              variant="1"
-            />
-          ) : (
-            <Widget02
-              header="Carrier"
-              mainText="Stopped"
-              icon={carrierLogo}
-              color="danger"
-              variant="1"
-            />
-          )}
-        </Col>
-      </Row>
-
-      <CardGroup className="mb-4">
-        <Widget04 icon="fa fa-gears" header={carrier.carrierIP}>
-          Carrier IP Address
-        </Widget04>
-      </CardGroup>
+            return 
+          }
+        }
+      </DApps>
     </div>
   )
 }
