@@ -28,7 +28,6 @@ const mainchainInfo = require(config.ELA_DIR  + "/info.json");
 // nodes
 const NodeHandler = require("./nodeHandler");
 const MainchainHandler = require("./mainchainHandler");
-const feedsHandler = require("./feeds");
 const mainchain = new MainchainHandler();
 const eid = new NodeHandler({
   binaryName: "geth",
@@ -151,17 +150,7 @@ router.get("/carrier", async (req, res) => {
     res.status(500).send({ error: err });
   }
 });
-router.get("/feeds", async (req, res) => {
-  try {
-    const isRunning = await feedsHandler.isRunning()
-    return res.status(200).json({ isRunning: isRunning });
-  } catch (err) {
-    syslog.write(
-      syslog.create().error("Error on /feeds request ", err).addStack()
-    );
-    res.status(500).send({ error: err });
-  }
-});
+
 
 router.post("/sendElaPassswordVerification", (req, res) => {
   let pwd = req.body.pwd;
@@ -470,15 +459,7 @@ router.post("/restartCarrier", (req, res) => {
     res.sendStatus(401)
   });  
 });
-router.post("/restartFeeds", async (req, res) => {
-  const {pwd} = req.body;
-  authenticatePassword(pwd).then( async () => {
-    const isSucess = await feedsHandler.runFeeds();
-    res.status(200).json({ success: isSucess });
-  }).catch(_=>{
-    res.sendStatus(401)
-  });
-});
+
 router.get("/getOnion", async (req, res) => {
   res.send({ onion: await getOnionAddress() });
 });
@@ -815,7 +796,6 @@ const startServer = () => {
           );
         });
     });
-    feedsHandler.runFeeds();
     await mainchain.init();
     mainchain.setOnComplete(async () => {
       await eid.init();
@@ -825,4 +805,15 @@ const startServer = () => {
 };
 
 startServer();
+
+process
+  .on("unhandledRejection", (reason, p) => {
+    syslog.write(syslog.create().error("Unhandled rejection", reason).addCaller())
+  })
+  .on("uncaughtException", (err) => {
+    syslog.write(syslog.create().error("Uncaught Exception thrown", err).addCaller())
+    //process.exit(1);
+  });
+
+
 module.exports = { app, startServer };
