@@ -160,11 +160,10 @@ const Dashboard = ({ isMobile }) => {
                 break;
               case "ela.esc":
                   blockData = esc       
-                  MetaMask = <>
-                    <img src={didLogo} style={{ marginTop: 20, width: "50px", height: "50px",marginBottom: 5 }}/>              
+                  MetaMask = <div style={{ marginTop: 20 }}>
                     <Copy id="Ip" label="IP" data={`http://${window.location.hostname}:${esc?.port}`}/>
                     <Copy id="ChainId" label="Chain ID" data={esc?.chainId}/>                                 
-                  </>     
+                  </div>     
                   break;
               case "ela.mainchain":
                 blockData = ela
