@@ -153,12 +153,18 @@ const Dashboard = ({ isMobile }) => {
         {
           app => {
             let blockData = "";
+            let MetaMask = <></>
             switch (app.id) {
               case "ela.eid":
                   blockData = eid
                 break;
               case "ela.esc":
-                  blockData = esc            
+                  blockData = esc       
+                  MetaMask = <>
+                    <img src={didLogo} style={{ marginTop: 20, width: "50px", height: "50px",marginBottom: 5 }}/>              
+                    <Copy id="Ip" label="IP" data={`http://${window.location.hostname}:${esc?.port}`}/>
+                    <Copy id="ChainId" label="Chain ID" data={esc?.chainId}/>                                 
+                  </>     
                   break;
               case "ela.mainchain":
                 blockData = ela
@@ -168,7 +174,10 @@ const Dashboard = ({ isMobile }) => {
                 break;
             }
             if(blockData !== ""){
-              return <NodePreview blockdata={blockData} label="" />
+              return <>
+                  <NodePreview blockdata={blockData} label="" />            
+                  {MetaMask}                  
+              </>
             }
             return 
           }
