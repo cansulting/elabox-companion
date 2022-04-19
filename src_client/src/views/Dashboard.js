@@ -22,7 +22,6 @@ import Copy from "./components/Copy"
 import DApps from "../dapp-store"
 
 const Dashboard = ({ isMobile }) => {
-  const [showEscInfoModal,setShowEscInfoModal]=useState(false)
   const { ela, eid, carrier, esc, feeds } = RootStore.blockchain
   useEffect(() => {}, [])
 
@@ -130,12 +129,6 @@ const Dashboard = ({ isMobile }) => {
       },
     },
   }
-  const handleShowInfoModal=()=>{
-    setShowEscInfoModal(true)
-  }
-  const handleCloseEscInfoModal=()=>{
-    setShowEscInfoModal(false)
-  }
   return (
     <div
       id="main"
@@ -153,12 +146,18 @@ const Dashboard = ({ isMobile }) => {
         {
           app => {
             let blockData = "";
+            let MetaMask = <></>
             switch (app.id) {
               case "ela.eid":
                   blockData = eid
                 break;
               case "ela.esc":
-                  blockData = esc            
+                  blockData = esc       
+                  MetaMask = <div style={{ marginTop: 20 }}>
+                    <h4>Access Details</h4>
+                    <Copy id="Ip" label="IP" data={`http://${window.location.hostname}:${esc?.port}`}/>
+                    <Copy id="ChainId" label="Chain ID" data={esc?.chainId}/>                                 
+                  </div>     
                   break;
               case "ela.mainchain":
                 blockData = ela
@@ -168,7 +167,10 @@ const Dashboard = ({ isMobile }) => {
                 break;
             }
             if(blockData !== ""){
-              return <NodePreview blockdata={blockData} label="" />
+              return <>
+                  <NodePreview blockdata={blockData} label="" />            
+                  {MetaMask}                  
+              </>
             }
             return 
           }
