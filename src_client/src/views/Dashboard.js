@@ -1,28 +1,12 @@
 import React, { useEffect, useState } from "react"
-import { Line } from "react-chartjs-2"
-import { Button,  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader } from "reactstrap"
 import NodePreview from "./components/NodePreviewer"
-import { ButtonGroup, CardBody, Col, Row, Card, CardGroup } from "reactstrap"
-import Widget02 from "./widgets/Widget02"
-import Widget04 from "./widgets/Widget04"
-import mainchainLogo from "./images/mainchain_white.png"
-import didLogo from "./images/did_white.png"
-import carrierLogo from "./images/carrier_white.png"
-import feedsLogo from "./images/feeds-logo.png"
-import glideLogo from "./images/glide-logo.png"
 import RootStore from "../store"
 import { observer } from "mobx-react"
-import { formatTime } from "../utils/time"
-import { shortifyHash } from "../utils/string"
-import { ENABLE_EID } from "../config"
 import Copy from "./components/Copy"
 import DApps from "../dapp-store"
 
 const Dashboard = ({ isMobile }) => {
-  const { ela, eid, carrier, esc, feeds } = RootStore.blockchain
+  const { ela, eid, esc } = RootStore.blockchain
   useEffect(() => {}, [])
 
   var cardChartData1 = {
