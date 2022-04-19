@@ -138,7 +138,7 @@ const Dashboard = ({ isMobile }) => {
               case "ela.esc":
                   blockData = esc       
                   MetaMask = <div style={{ marginTop: 20 }}>
-                    <h4>Access Details</h4>
+                    <h4>Access details</h4>
                     <Copy id="Ip" label="IP" data={`http://${window.location.hostname}:${esc?.port}`}/>
                     <Copy id="ChainId" label="Chain ID" data={esc?.chainId}/>                                 
                   </div>     
