@@ -4143,14 +4143,6 @@ buffer@^5.5.0:
     base64-js "^1.3.1"
     ieee754 "^1.1.13"
 
-buffer@^6.0.3:
-  version "6.0.3"
-  resolved "https://registry.npmjs.org/buffer/-/buffer-6.0.3.tgz"
-  integrity sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==
-  dependencies:
-    base64-js "^1.3.1"
-    ieee754 "^1.2.1"
-
 builtin-modules@^3.1.0:
   version "3.2.0"
   resolved "https://registry.npmjs.org/builtin-modules/-/builtin-modules-3.2.0.tgz"
@@ -5889,32 +5881,22 @@ ejs@^3.1.6:
     jake "^10.6.1"
 
 elabox-dapp-store.lib@^0.1.6:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/elabox-dapp-store.lib/-/elabox-dapp-store.lib-0.1.5.tgz#00cfcf5f6d48d2355848ab18d8ddef03d6771868"
-  integrity sha512-NxWTjUBR4tNSQZmbvZqfkJusEW9G9Nxp9gqR5yoCQOIgUyh6KlgK1BsdW7TNbgnzY9NVg0VAOF8+CG+m8+F+nQ==
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/elabox-dapp-store.lib/-/elabox-dapp-store.lib-0.1.6.tgz#debffca1200290fa34e7087b03727c8030b8f851"
+  integrity sha512-XMjr6xgpsFmpu+gosInSuBX1ohqOEISp+Nhhh08hJjc1kIbGVVTwCbT1UfCM+iO39CNO2RViyecBEtRNhxJtdg==
   dependencies:
     "@types/react" "^17.0.39"
     "@types/react-dom" "^17.0.11"
     assert "^2.0.0"
     bootstrap "^5.1.3"
     chart.js "^3.7.1"
-    elabox-foundation "^1.1.3"
+    elabox-foundation "^1.1.6"
     react "^16.12.0"
     react-chartjs-2 "^4.0.1"
     react-dom "^16.12.0"
     react-feather "^2.0.9"
     react-scripts "5.0.0"
     reactstrap "^8.4.1"
-
-elabox-foundation@^1.1.3:
-  version "1.1.3"
-  resolved "https://registry.npmjs.org/elabox-foundation/-/elabox-foundation-1.1.3.tgz"
-  integrity sha512-pAQJKl3ejT4O7kcvfMU+OK3xqg3wvKnmNkfjlAl/6GUB52kbDW6Wp3JpwGg/haU1bAyCaFN27Wv/SKUhDZRVmA==
-  dependencies:
-    "@types/node" "^16.10.3"
-    "@types/socket.io-client" "^3.0.0"
-    buffer "^6.0.3"
-    socket.io-client "^2.4.0"
 
 elabox-foundation@^1.1.6:
   version "1.1.6"
@@ -7944,7 +7926,7 @@ identity-obj-proxy@3.0.0, identity-obj-proxy@^3.0.0:
   dependencies:
     harmony-reflect "^1.4.6"
 
-ieee754@^1.1.13, ieee754@^1.1.4, ieee754@^1.2.1:
+ieee754@^1.1.13, ieee754@^1.1.4:
   version "1.2.1"
   resolved "https://registry.npmjs.org/ieee754/-/ieee754-1.2.1.tgz"
   integrity sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==
