@@ -8,7 +8,7 @@
     "bootstrap": "^4.4.1",
     "chart.js": "^2.9.3",
     "copy-to-clipboard": "^3.2.1",
-    "elabox-dapp-store.lib": "0.1.16",
+    "elabox-dapp-store.lib": "^0.1.20",
     "elabox-foundation": "^1.1.6",
     "formik": "^2.1.5",
     "mobx": "^6.0.4",

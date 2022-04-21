@@ -65,7 +65,7 @@ export default ({children}) => {
             <RestartModal name={app.name} node={node} isOpen={restartModal} closeModal={closeRestartModal}/>
             <ResyncModal name={app.name} node={node} isOpen={resyncModal} closeModal={closeResyncModal}/>
             {!hasSelectedApp ?
-            <ebox.AppDashboardCon style={{backgroundColor:"#1E1E26",color:"white"}} onClick={onClick}/>
+            <ebox.AppDashboardCon style={{backgroundColor:"#1E1E26",color:"white"}} iconWidth={200} iconHeight={200} onClick={onClick}/>
             :<ebox.AppInfoCon customActions={customActions()} style={{color:"white"}} info={app} onBack={onBack}>
                 {children(app)}
             </ebox.AppInfoCon>}
