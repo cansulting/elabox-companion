@@ -3,17 +3,43 @@ import * as ebox from "elabox-dapp-store.lib"
 import {EboxEvent} from "elabox-foundation"
 import RestartModal from "./RestartModal"
 import ResyncModal from "./ResyncModal"
-import RootStore from "../store";
 ebox.initialize(new EboxEvent(window.location.hostname))
-export default ({children}) => {  
+export default ({services,children}) => {  
     const [app,setApp] = useState({})
     const [restartModal,setRestartModal] = useState(false)
     const [resyncModal,setResyncModal] = useState(false)    
     const onClick = (app) => {
-        setApp(app)
+        const node = getNode(app.id)
+        const notification = updateStatus(node)                
+        setApp({...app,notificationContents:[notification]})
     }    
     const onBack = ()=>{
         setApp({})
+    }
+    const updateStatus = (node)=>{
+        let notification = {}
+        if (node.hasOwnProperty("isRunning") && node.hasOwnProperty("servicesRunning")){
+            if(node.isRunning){
+                if(node.servicesRunning){
+                    notification={type:"info",content:"Syncing"}
+                }      
+                else if(!node.servicesRunning){
+                    notification={type:"info",content:"Initializing"}
+                }                              
+            }
+            else{
+                notification={type:"error",content:"Not running"}   
+            }                    
+        }
+        else if(node.hasOwnProperty("isRunning") ){
+            if(node.isRunning){
+                notification={type:"info",content:"Running"}
+            }   
+            else{
+                notification={type:"error",content:"Not running"}   
+            }
+        }
+        return notification
     }
     const onRestart= () =>{
         setRestartModal(true)
@@ -27,29 +53,30 @@ export default ({children}) => {
     const closeResyncModal = () =>{
         setResyncModal(false)
     }
-    const getNode = ()=>{
-        let node={}
-        switch (app.id) {
+    const getNode = (appId)=>{
+        let node = {};
+        switch (appId) {
             case "ela.mainchain":
-                node = RootStore.blockchain.ela
+                node = services.ela
                 break;
             case "ela.eid":
-                node = RootStore.blockchain.eid
+                node = services.eid
                 break;
             case "ela.esc":
-                node = RootStore.blockchain.esc
+                node = services.esc
                 break;
             case "ela.feeds":
-                node = RootStore.blockchain.feeds 
+                node = services.feeds 
+                break;
             case "ela.carrier":
-                node = RootStore.blockchain.carrier             
+                node = services.carrier             
+                break;
             default:
                 node  = {}
-                break;
         }
         return node;
     }
-     const node = getNode()
+     const node = getNode(app.id)
      const hasSelectedApp = app.hasOwnProperty("id")
      return (
         <div style={{margin:10}}>

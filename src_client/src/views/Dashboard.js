@@ -6,7 +6,7 @@ import Copy from "./components/Copy"
 import DApps from "../dapp-store"
 
 const Dashboard = ({ isMobile }) => {
-  const { ela, eid, esc } = RootStore.blockchain
+  const { ela, eid, esc,feeds,carrier } = RootStore.blockchain
   useEffect(() => {}, [])
 
   var cardChartData1 = {
@@ -126,29 +126,19 @@ const Dashboard = ({ isMobile }) => {
       }}
       className="animated fadeIn w3-container"
     >
-      <DApps>
+      <DApps services={{ela,eid,esc,feeds,carrier}}>
         {
-          app => {
-            let blockData = "";
+          (appId,node) => {
+            let blockData = node;
             let MetaMask = <></>
-            switch (app.id) {
-              case "ela.eid":
-                  blockData = eid
-                break;
+            switch (appId) {
               case "ela.esc":
-                  blockData = esc       
                   MetaMask = <div style={{ marginTop: 20 }}>
                     <h4>Access details</h4>
                     <Copy id="Ip" label="IP" data={`http://${window.location.hostname}:${esc?.port}`}/>
                     <Copy id="ChainId" label="Chain ID" data={esc?.chainId}/>                                 
                   </div>     
                   break;
-              case "ela.mainchain":
-                blockData = ela
-                break;
-              default:
-                blockData=""
-                break;
             }
             if(blockData !== ""){
               return <>
