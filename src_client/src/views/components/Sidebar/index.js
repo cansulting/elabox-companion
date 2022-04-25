@@ -1,5 +1,5 @@
 import React,{useState} from "react"
-import { Link , withRouter} from "react-router-dom"
+import { Link , withRouter,useLocation} from "react-router-dom"
 import * as Icon from "react-feather"
 import { useMediaQuery } from "react-responsive"
 import { Badge } from "reactstrap"
@@ -11,9 +11,10 @@ import settingsLogo from "../../images/settings_white.png"
 import Activation from "../Activation"
 import { ENABLE_ACTIVATION } from "../../../config"
 
-export function SideBar({ updatesCount, isOpen, onClose }) {
+export default function SideBar({ updatesCount, isOpen, onClose }) {
   const [showActivation,setShowActivation]=useState(false)
   const isMobile = useMediaQuery({ maxWidth: 767 })
+  const location = useLocation()
   const handleShowActivation= () =>{
     setShowActivation(true)
   }
@@ -21,11 +22,11 @@ export function SideBar({ updatesCount, isOpen, onClose }) {
     setShowActivation(false)
   }
   const isSelected = (query) => {
-    const pathName = window.location.pathname
+    const pathName = location.pathname
     if(query === "/dashboard" && pathName==="/"){
       return query === "/dashboard" && pathName==="/"
     }
-    return window.location.pathname.includes(query)
+    return location.pathname.includes(query)
   }
   return (
     <div
@@ -196,5 +197,3 @@ export function SideBar({ updatesCount, isOpen, onClose }) {
     </div>
   )
 }
-
-export default withRouter(SideBar)
