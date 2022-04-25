@@ -21,6 +21,10 @@ export function SideBar({ updatesCount, isOpen, onClose }) {
     setShowActivation(false)
   }
   const isSelected = (query) => {
+    const pathName = window.location.pathname
+    if(query === "/dashboard" && pathName==="/"){
+      return query === "/dashboard" && pathName==="/"
+    }
     return window.location.pathname.includes(query)
   }
   return (
@@ -69,6 +73,7 @@ export function SideBar({ updatesCount, isOpen, onClose }) {
                   color: "white",
                   fontSize: "18px",
                   padding: "20px 0 20px 10px",
+                  borderRadiusTopLeft: 10,
                   backgroundColor: isSelected("/dashboard")  && "rgb(39, 42, 61)"
                 }}
               >
