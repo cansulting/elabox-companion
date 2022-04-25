@@ -1,5 +1,5 @@
 import React,{useState} from "react"
-import { Link } from "react-router-dom"
+import { Link , withRouter} from "react-router-dom"
 import * as Icon from "react-feather"
 import { useMediaQuery } from "react-responsive"
 import { Badge } from "reactstrap"
@@ -11,7 +11,7 @@ import settingsLogo from "../../images/settings_white.png"
 import Activation from "../Activation"
 import { ENABLE_ACTIVATION } from "../../../config"
 
-export default function SideBar({ updatesCount, isOpen, onClose }) {
+export function SideBar({ updatesCount, isOpen, onClose }) {
   const [showActivation,setShowActivation]=useState(false)
   const isMobile = useMediaQuery({ maxWidth: 767 })
   const handleShowActivation= () =>{
@@ -19,6 +19,9 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
   }
   const handleCloseActivation= () =>{
     setShowActivation(false)
+  }
+  const isSelected = (query) => {
+    return window.location.pathname.includes(query)
   }
   return (
     <div
@@ -65,6 +68,8 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
                   textDecoration: "none",
                   color: "white",
                   fontSize: "18px",
+                  padding: "20px 0 20px 10px",
+                  backgroundColor: isSelected("/dashboard")  && "rgb(39, 42, 61)"
                 }}
               >
                 {" "}
@@ -88,6 +93,8 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
                   textDecoration: "none",
                   color: "white",
                   fontSize: "18px",
+                  padding: "20px 0 20px 10px",
+                  backgroundColor: isSelected("/wallet")  && "rgb(39, 42, 61)"                  
                 }}
               >
                 {" "}
@@ -111,6 +118,8 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
                   textDecoration: "none",
                   color: "white",
                   fontSize: "18px",
+                  padding: "20px 0 20px 10px",
+                  backgroundColor: isSelected("/settings")  && "rgb(39, 42, 61)"                  
                 }}
               >
                 {" "}
@@ -134,6 +143,8 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
                   textDecoration: "none",
                   color: "white",
                   fontSize: "18px",
+                  padding: "20px 0 20px 10px",
+                  backgroundColor: isSelected("/updates")  && "rgb(39, 42, 61)"                                    
                 }}
               >
                 <span style={{ paddingRight: "10px" }}>
@@ -156,6 +167,8 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
                   textDecoration: "none",
                   color: "white",
                   fontSize: "18px",
+                  padding: "20px 0 20px 10px",
+                  backgroundColor: isSelected("/help")  && "rgb(39, 42, 61)"                                    
                 }}
               >
                 <span style={{ paddingRight: "10px" }}>
@@ -178,3 +191,5 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
     </div>
   )
 }
+
+export default withRouter(SideBar)
