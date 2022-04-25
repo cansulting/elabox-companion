@@ -85,7 +85,7 @@ export default ({services,children}) => {
             {!hasSelectedApp ?
             <ebox.AppDashboardCon style={{backgroundColor:"#1E1E26",color:"white"}} iconWidth={130} iconHeight={130} onClick={onClick}/>
             :<ebox.AppInfoCon onRestart={onRestart} onResync={onResync}  style={{color:"white"}} info={app} onBack={onBack}>
-                {children(app)}
+                {children(app.id, node)}
             </ebox.AppInfoCon>}
         </div>
     )
