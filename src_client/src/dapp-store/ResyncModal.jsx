@@ -86,8 +86,6 @@ const ResyncModal = ({isOpen,name,closeModal, node })=> {
             <ModalHeader> Resync {name}</ModalHeader>
             <ModalBody>
             <center>
-              <b>PLEASE READ CAREFULY</b>
-              <br />
               Resycing the will take a few days.
               <br />
               You should try to restart the node first!
