@@ -41,20 +41,11 @@ export default ({services,children}) => {
         }
         return notification
     }
-    const customActions=()=>{
-        const actions = []
-        const isService = app.id==="ela.mainchain" || app.id ==="ela.eid" || app.id === "ela.esc" || app.id === "ela.carrier" || app.id === "ela.feeds"
-        if(isService){
-            actions.push({label:"Restart",color:"red",onClick:()=>{
-                setRestartModal(true)
-            }})
-            if(app.id !== "ela.feeds" || app.id !== "ela.carrier"){
-                actions.push({label:"Resync",color:"red",onClick:()=>{
-                    setResyncModal(true)
-                }})
-            }
-        }
-        return actions
+    const onRestart= () =>{
+        setRestartModal(true)
+    }
+    const onResync = () =>{
+        setResyncModal(true)
     }
     const closeRestartModal = () =>{
         setRestartModal(false)
@@ -92,9 +83,9 @@ export default ({services,children}) => {
             <RestartModal name={app.name} node={node} isOpen={restartModal} closeModal={closeRestartModal}/>
             <ResyncModal name={app.name} node={node} isOpen={resyncModal} closeModal={closeResyncModal}/>
             {!hasSelectedApp ?
-            <ebox.AppDashboardCon style={{backgroundColor:"#1E1E26",color:"white"}} onClick={onClick}/>
-            :<ebox.AppInfoCon customActions={customActions()} style={{color:"white"}} info={app} onBack={onBack}>
-                {children(app.id,node)}
+            <ebox.AppDashboardCon style={{backgroundColor:"#1E1E26",color:"white"}} iconWidth={130} iconHeight={130} onClick={onClick}/>
+            :<ebox.AppInfoCon onRestart={onRestart} onResync={onResync}  style={{color:"white"}} info={app} onBack={onBack}>
+                {children(app)}
             </ebox.AppInfoCon>}
         </div>
     )
