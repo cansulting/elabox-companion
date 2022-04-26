@@ -33,7 +33,6 @@ const RestartModal = ({isOpen,name,closeModal, node })=> {
     const restartNode = (pwd) => {
         // e.preventDefault();
         closeModal()
-        restart    
         restart(node)
           .then((responseJson) => {
           })
