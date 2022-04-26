@@ -2822,14 +2822,14 @@
   "resolved" "https://registry.npmjs.org/@types/range-parser/-/range-parser-1.2.4.tgz"
   "version" "1.2.4"
 
-"@types/react-dom@^17.0.16":
+"@types/react-dom@^17.0.11":
   "integrity" "sha512-DWcXf8EbMrO/gWnQU7Z88Ws/p16qxGpPyjTKTpmBSFKeE+HveVubqGO1CVK7FrwlWD5MuOcvh8gtd0/XO38NdQ=="
   "resolved" "https://registry.npmjs.org/@types/react-dom/-/react-dom-17.0.16.tgz"
   "version" "17.0.16"
   dependencies:
     "@types/react" "^17"
 
-"@types/react@^17", "@types/react@^17.0.44":
+"@types/react@^17", "@types/react@^17.0.39":
   "integrity" "sha512-Ye0nlw09GeMp2Suh8qoOv0odfgCoowfM/9MG6WeRD60Gq9wS90bdkdRtYbRkNhXOpG4H+YXGvj4wOWhAC0LJ1g=="
   "resolved" "https://registry.npmjs.org/@types/react/-/react-17.0.44.tgz"
   "version" "17.0.44"
@@ -6570,13 +6570,13 @@
   dependencies:
     "jake" "^10.8.5"
 
-"elabox-dapp-store.lib@^0.1.28":
-  "integrity" "sha512-oiIl7TsCUDRkBj0gLn00ZPF/8+m+OM3uhs51Be6y70uYDzcZIhTvKrkHbQ/IL/tRQx7fiBBav1G+HSeYAPo+5A=="
-  "resolved" "https://registry.npmjs.org/elabox-dapp-store.lib/-/elabox-dapp-store.lib-0.1.30.tgz"
-  "version" "0.1.30"
+"elabox-dapp-store.lib@^0.1.31":
+  "integrity" "sha512-SX4qrSEaLupV6Erf6MmHO9MYRK6z7ufEAsEOk8lWknLCuVm/XsvXPY0KKPxwGf5Rr6grLJ7qnbBm7u+hPLBfaQ=="
+  "resolved" "https://registry.npmjs.org/elabox-dapp-store.lib/-/elabox-dapp-store.lib-0.1.31.tgz"
+  "version" "0.1.31"
   dependencies:
-    "@types/react" "^17.0.44"
-    "@types/react-dom" "^17.0.16"
+    "@types/react" "^17.0.39"
+    "@types/react-dom" "^17.0.11"
     "assert" "^2.0.0"
     "bootstrap" "^5.1.3"
     "chart.js" "^3.7.1"
