@@ -80,8 +80,8 @@ export default ({services,children}) => {
      const hasSelectedApp = app.hasOwnProperty("id")
      return (
         <div style={{margin:10}}>
-            <RestartModal name={app.name} node={node} isOpen={restartModal} closeModal={closeRestartModal}/>
-            <ResyncModal name={app.name} node={node} isOpen={resyncModal} closeModal={closeResyncModal}/>
+            <RestartModal name={app.name} node={app.id} isOpen={restartModal} closeModal={closeRestartModal}/>
+            <ResyncModal name={app.name} node={app.id} isOpen={resyncModal} closeModal={closeResyncModal}/>
             {!hasSelectedApp ?
             <ebox.AppDashboardCon style={{backgroundColor:"#1E1E26",color:"white"}} iconWidth={130} iconHeight={130} onClick={onClick}/>
             :<ebox.AppInfoCon onRestart={onRestart} onResync={onResync}  style={{color:"white"}} info={app} onBack={onBack}>

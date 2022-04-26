@@ -1,4 +1,5 @@
 import React,{useState} from "react";
+import { resync } from 'elabox-dapp-store.lib/dist/actions'
 
 import { Button,  Modal,
     ModalBody,
@@ -35,10 +36,9 @@ const ResyncModal = ({isOpen,name,closeModal, node })=> {
     const resyncNode = (pwd) => {
         // e.preventDefault();
         closeModal()    
-        node
-          .resync(pwd)
+          resync(node)
           .then((responseJson) => {
-            node.fetchData();
+            //node.fetchData();
           })
           .catch((error) => {
             console.error(error);

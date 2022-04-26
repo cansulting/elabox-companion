@@ -1,4 +1,5 @@
 import React,{useState} from "react";
+import { restart } from 'elabox-dapp-store.lib/dist/actions'
 
 import { Button,  Modal,
     ModalBody,
@@ -31,11 +32,10 @@ const RestartModal = ({isOpen,name,closeModal, node })=> {
     }
     const restartNode = (pwd) => {
         // e.preventDefault();
-        closeModal()    
-        node
-          .restart(pwd)
+        closeModal()
+        restart    
+        restart(node)
           .then((responseJson) => {
-            node.fetchData();
           })
           .catch((error) => {
             console.error(error);
