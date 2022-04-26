@@ -8,6 +8,13 @@ const syslog = require("./logger")
 //const GETHWS_RECON = 5000;
 const maxBufferSize = 10000;
 const fs = require('fs')
+const { eboxEventInstance } = require("./helper/eventHandler");
+const { 
+  ELA_SYSTEM_RESTART_APP, 
+  ELA_SYSTEM_TERMINATE_APP, 
+  ELA_SYSTEM_CLEAR_APP_DATA 
+} = require("./config");
+
 
 // NODE STATES
 const STARTING = 0;
@@ -83,43 +90,33 @@ class NodeHandler {
       this.web3 = null;
       syslog.write(syslog.create().info(`Starting ${this.options.binaryName}`).addCategory(this.options.binaryName))
       // callback when response received from node
-      const _callback = (response) => {
-        if (response.success) {
-          syslog.write(syslog.create().debug(`${this.options.binaryName} started.`).addCategory(this.options.binaryName))
-          this.status = STARTED;
-        } else {
-          syslog.write(
-            syslog.create()
-            .error(`${this.options.binaryName} failed to start.`, response.error)
-            .addCategory(this.options.binaryName)
-          )
-          this.status = ERROR;
-        } 
-        callback(response);
-      }
+      // const _callback = (response) => {
+      //   if (response.success) {
+      //     syslog.write(syslog.create().debug(`${this.options.binaryName} started.`).addCategory(this.options.binaryName))
+      //     this.status = STARTED;
+      //   } else {
+      //     syslog.write(
+      //       syslog.create()
+      //       .error(`${this.options.binaryName} failed to start.`, response.error)
+      //       .addCategory(this.options.binaryName)
+      //     )
+      //     this.status = ERROR;
+      //   } 
+      //   callback(response);
+      // }
       // start the node
-      await processhelper.requestSpawn(
-        `nohup ./${this.options.binaryName} --datadir ${this.options.dataPath} --syncmode "full" --rpc --rpcport ${this.options.rpcport} --ws --wsport ${this.options.wsport} --wsapi eth,web3 --rpccorsdomain "*" --rpcaddr "0.0.0.0" --rpcvhosts "*" --rpcapi admin,db,eth,miner,web3,net,personal,txpool > /dev/null 2>output &`,
-        _callback,
-        {
-          maxBuffer: 1024 * maxBufferSize,
-          detached: true,
-          shell: true,
-          cwd: this.options.cwd,
-          //stdio: "ignore"
-        },
-        0,
-        //[`--datadir`, `${this.options.dataPath}`, `--syncmode`, `full`, `--rpc`, `--rpcport`, `${this.options.rpcport}`, `--ws`, `--wsport`, `${this.options.wsport}`, `--wsapi`, `eth,web3`]
-      );
+      await eboxEventInstance.sendSystemRPC(ELA_SYSTEM_RESTART_APP, this.options.binaryName)
+      this.status = STARTED;
+      callback()
     } else {
       syslog.write(syslog.create().info(`${this.options.binaryName} already started`).addCategory(this.options.binaryName))
     }
   }
   // use to close and open the node again
-  async restart(callback) {
+  async restart(callback = () => {}) {
     syslog.write(syslog.create().info(`Restarting ${this.options.binaryName}`).addCategory(this.options.binaryName))
-    await this.stop();
-    await this.start(callback);
+    await eboxEventInstance.sendSystemRPC(ELA_SYSTEM_RESTART_APP, this.options.binaryName)
+    callback()
   }
   isSyncing() {
     return this.web3.eth.isSyncing();
@@ -128,16 +125,14 @@ class NodeHandler {
   async resync(callback) {
     syslog.write(syslog.create().info(`Resyncing ${this.options.binaryName}`).addCategory(this.options.binaryName))
     await this.stop();
-    if (fs.existsSync(this.options.dataPath)) {
-      fs.rmdirSync(this.options.dataPath, { maxRetries: 3, force: true, recursive: true} )
-    }
+    await eboxEventInstance.sendSystemRPC(ELA_SYSTEM_CLEAR_APP_DATA, this.options.binaryName)
     await this.start(callback)
   }
 
   async stop() {
     this.web3 = null;
     this.status = STOPPING;
-    await processhelper.killProcess(this.options.binaryName, true, false);
+    await eboxEventInstance.sendSystemRPC(ELA_SYSTEM_TERMINATE_APP, this.options.binaryName)
     let retries = 0
     // wait while process is not killed
     while (await processhelper.checkProcessingRunning(this.options.binaryName)) {

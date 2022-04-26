@@ -30,14 +30,14 @@ const NodeHandler = require("./nodeHandler");
 const MainchainHandler = require("./mainchainHandler");
 const mainchain = new MainchainHandler();
 const eid = new NodeHandler({
-  binaryName: "geth",
+  binaryName: "ela.eid",
   cwd: config.EID_DIR,
   dataPath: config.EIDDATA_DIR + "/blocks",
   wsport: config.EID_PORT,
   rpcport: config.RPC_PORT_EID,
 });
 const esc = new NodeHandler({
-  binaryName: "esc",
+  binaryName: "ela.esc",
   cwd: config.ESC_DIR,
   dataPath: config.ESCDATA_DIR + "/blocks",
   wsport: config.ESC_PORT,
