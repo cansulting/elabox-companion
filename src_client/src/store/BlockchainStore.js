@@ -174,8 +174,6 @@ export const Carrier = types
 const feeds = types
   .model({
     isRunning: types.maybeNull(types.boolean, false),
-    servicesRunning: types.optional(types.boolean, false),
-    restarting: false,
   })
   .actions((self) => {
     const fetchData = flow(function* () {

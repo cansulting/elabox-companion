@@ -28,6 +28,7 @@ const mainchainInfo = require(config.ELA_DIR  + "/info.json");
 // nodes
 const NodeHandler = require("./nodeHandler");
 const MainchainHandler = require("./mainchainHandler");
+const feedsHandler = require("./feeds");
 const mainchain = new MainchainHandler();
 const eid = new NodeHandler({
   binaryName: "ela.eid",
@@ -146,6 +147,17 @@ router.get("/carrier", async (req, res) => {
   } catch (err) {
     syslog.write(
       syslog.create().error("Error on /carrier request ", err).addStack()
+    );
+    res.status(500).send({ error: err });
+  }
+});
+router.get("/feeds", async (req, res) => {
+  try {
+    const isRunning = await feedsHandler.isRunning()
+    return res.status(200).json({ isRunning: isRunning });
+  } catch (err) {
+    syslog.write(
+      syslog.create().error("Error on /feeds request ", err).addStack()
     );
     res.status(500).send({ error: err });
   }
