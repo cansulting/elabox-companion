@@ -160,8 +160,8 @@ class Wallet extends Component {
     const { isMobile } = this.props;
     const amountWithFee =
       parseFloat(this.state.amount) + this.state.transfer_fee;
-    let tx = this.state.tx_list;
-    let address = localStorage.getItem("address");
+    const txlist = this.state.tx_list;
+    const address = localStorage.getItem("address");
     return (
       <div
         id="main"
@@ -480,8 +480,8 @@ class Wallet extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {tx && tx.length ? (
-                      tx.map((tx) => (
+                    {txlist && txlist.length ? (
+                      txlist.map((tx) => (
                         <tr key={tx.Txid}>
                           <td>
                             {tx.Type == "income" ? (
