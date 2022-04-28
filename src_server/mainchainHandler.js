@@ -88,6 +88,12 @@ class MainchainHandler {
         await delay(1000);
       }
     }
+    async isRunning() {
+      const processRunning = await processhelper.checkProcessingRunning(binaryName)
+      if (!processRunning) return false;
+      const portRunning = await isPortTaken(config.ELA_PORT)
+      return portRunning;
+    }
     // get the current status of eid. this returns the state and blocks
     async getStatus() {
         const isRunning = await processhelper.checkProcessingRunning(binaryName)
@@ -145,6 +151,52 @@ class MainchainHandler {
         }
         callback()
     }
+    async retrieveUTX(walletAddr = "") {
+      //console.log("retrieveUTX")
+      const res = await fetch(config.WALLET_TRANSACTION_URL + "/" + walletAddr)
+      const json = await res.json()
+      const txids = {}
+      //console.log(json)
+      if (json.Error === 0) {
+        const promises = []
+        for (const transacRes of json.Result) {
+          if (transacRes.AssetName !== 'ELA') continue
+          for (const itemUtx of transacRes.UTXO) {
+            txids[itemUtx.Txid] = itemUtx.Value
+            promises.push(
+              fetch(config.UTX_DETAILS_URL + "/" + itemUtx.Txid)
+            )
+          }
+        }
+        const utxList = await Promise.all(promises);
+        const output = []
+        let i = 0
+        for (const detailedUtx of utxList) {
+          const detailedJson = await detailedUtx.json()
+          // console.log(detailedJson)
+          let totalAmount = txids[detailedJson.Result.txid];
+          const type = detailedJson.Result.vout[0].address === walletAddr ? "income": "expense"
+          if (type === 'expense')
+            totalAmount = detailedJson.Result.vout[0].value
+          output[i] = {
+            Value: parseFloat( totalAmount) * 100000000,
+            Type: type,
+            CreateTime: detailedJson.Result.time,
+            Status: detailedJson.Result.confirmations > 0 ? "confirmed" : "pending",
+            Txid: detailedJson.Result.txid
+          }
+          i++
+        }
+        return output.sort((a,b) => a.CreateTime < b.CreateTime ? 1 : -1)
+        //console.log(output)
+        //return output
+      }
+      return []
+    }
 }
 
-module.exports = MainchainHandler
+const instance = new MainchainHandler()
+
+module.exports = {
+  instance: instance
+}
