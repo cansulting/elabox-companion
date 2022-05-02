@@ -19,10 +19,13 @@ const fsExtra = require("fs-extra");
 const axios = require("axios");
 const app = express();
 //versions
+const feedsInfoPath = config.FEEDS_DIR  + "/info.json";
+const escInfoPath = config.ESC_DIR  + "/info.json";
+const eidInfoPath = config.EID_DIR  + "/info.json"
 const carrierInfo = require(config.CARRIER_DIR + "/info.json");
-const eidInfo = require(config.EID_DIR  + "/info.json");
-const escInfo = require(config.ESC_DIR  + "/info.json");
-const feedsInfo = require(config.FEEDS_DIR  + "/info.json");
+const eidInfo = fs.existsSync(eidInfoPath) ? require(eidInfoPath) : {};
+const escInfo = fs.existsSync(escInfoPath) ? require(escInfoPath) : {};
+const feedsInfo = fs.existsSync(feedsInfoPath) ? require(feedsInfoPath) : {};
 const mainchainInfo = require(config.ELA_DIR  + "/info.json");
 
 // nodes
