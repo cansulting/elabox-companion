@@ -5894,10 +5894,10 @@ ejs@^3.1.6:
   dependencies:
     jake "^10.8.5"
 
-elabox-dapp-store.lib@^0.1.32:
-  version "0.1.32"
-  resolved "https://registry.yarnpkg.com/elabox-dapp-store.lib/-/elabox-dapp-store.lib-0.1.32.tgz#6a6974422d2c052ebc9de679ff31ce98c8dcab71"
-  integrity sha512-E7rcFtbCkCQMiX+0iCSiVAYArAgcCjyfjGeP30qJa70w2+84Xp3Oa3tpeaLtPr4gLDSG/Q0esD2kH/OWZd3kNQ==
+elabox-dapp-store.lib@^0.1.35:
+  version "0.1.35"
+  resolved "https://registry.yarnpkg.com/elabox-dapp-store.lib/-/elabox-dapp-store.lib-0.1.35.tgz#7d6e5a00b9ec681f3d0380f18b28225855cd594a"
+  integrity sha512-2+zp+RSrI0hHXudS0YmKmutaiDUe5fwCp6hGIywjb69Xc/AJG3Trb/7V82PcfRKOBzW5oZf1+b1e+w3yDl0kpg==
   dependencies:
     "@types/react" "^17.0.44"
     "@types/react-dom" "^17.0.16"
