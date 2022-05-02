@@ -84,25 +84,43 @@ class Settings extends Component {
     this.getVersion();
     this.getOnion();
   }
-  verifyPassword = () => {
+  verifyPassword = (action) => {
     // e.preventDefault();
-    this.setState({ resyncModal: false });
+    switch (action) {
+      case "resync":
+        this.setState({ resyncModal: false });
+        backend
+        .authentication(this.state.pwd)
+        .then((responseJson) => {
+          console.log("RESYNC RESPONSE JSON: ");
+          console.log(responseJson);
+          if (responseJson.ok) {
+            this.setState({ resyncsuccessmodal: true });
+            this.resyncNode(this.state.node);
+          } else {
+            this.setState({ errormodal: true });
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });        
+        break;
+      case "restart":
+        this.setState({ restartModal: false });    
+        backend
+        .authentication(this.state.pwd)
+        .then((responseJson) => {
+          if (responseJson.ok) {
+            this.restartNode(this.state.pwd,this.state.node)
+          }
+          else{
+            this.setState({ errormodal: true });            
+          }
 
-    backend
-      .resyncNodeVerification(this.state.pwd)
-      .then((responseJson) => {
-        console.log("RESYNC RESPONSE JSON: ");
-        console.log(responseJson);
-        if (responseJson.ok) {
-          this.setState({ resyncsuccessmodal: true });
-          this.resyncNode(this.state.node);
-        } else {
-          this.setState({ errormodal: true });
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+        })
+      default:
+        break;
+    }
   };
 
   handleChange = async (event) => {
@@ -115,9 +133,8 @@ class Settings extends Component {
   };
   resyncNode = (node) => {
     this.setState({ resyncModal: false });
-
     node
-      .resync()
+      .resync(this.state.pwd)
       .then((responseJson) => {
         node.fetchData();
       })
@@ -125,12 +142,12 @@ class Settings extends Component {
         console.error(error);
       });
   };
-  restartNode = (node) => {
+  restartNode = (pwd,node) => {
     // e.preventDefault();
     this.setState({ restartModal: false });
 
     node
-      .restart()
+      .restart(pwd)
       .then((responseJson) => {
         node.fetchData();
       })
@@ -490,31 +507,6 @@ class Settings extends Component {
         }}
         className="animated fadeIn w3-container"
       >
-        <Modal isOpen={this.state.restartModal}>
-          <ModalHeader> Restart {this.state.nodeLabel}</ModalHeader>
-          <ModalBody>
-            <center>
-              You are about to restart the {this.state.nodeLabel}
-              <br />
-              This process will take a few hours
-              <br />
-              
-              <br />
-            </center>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              data-testid="restart-btn"
-              color="success"
-              onClick={() => this.restartNode(this.state.node)}
-            >
-              Restart
-            </Button>
-            <Button color="danger" onClick={this.closeRestart}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </Modal>
         <Modal isOpen={this.state.uploadKeyStoreModal}>
           <ModalHeader toggle={this.closeUploadKeyStoreModal}>Upload keystore</ModalHeader>
           <ModalBody>
@@ -665,59 +657,6 @@ class Settings extends Component {
             </Button>
           </ModalFooter>
         </Modal>
-
-        <Modal isOpen={this.state.resyncsuccessmodal}>
-          <ModalHeader>Success</ModalHeader>
-          <ModalBody>
-            <center>
-              Resyncing Node <br />
-              <br />
-              <img src={checkLogo} style={{ width: "50px", height: "50px" }} />
-            </center>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="primary" onClick={this.resyncsuccesstoggle}>
-              Close
-            </Button>
-          </ModalFooter>
-        </Modal>
-
-        <Modal isOpen={this.state.resyncModal}>
-          <ModalHeader>Resync {this.state.nodeLabel}</ModalHeader>
-          <ModalBody>
-            <center>
-              <b>PLEASE READ CAREFULY</b>
-              <br />
-              Resycing the will take a few days.
-              <br />
-              You should try to restart the node first!
-              <br />
-              <br />
-              Enter your wallet password to re-sync the {this.state.nodeLabel}
-              <br />
-            </center>
-            <Input
-              type="password"
-              id="pwd"
-              name="pwd"
-              placeholder="Enter ELA wallet password"
-              required
-              onChange={(e) => this.handleChange(e)}
-            />
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              data-testid="resync-btn"
-              color="success"
-              onClick={this.verifyPassword}
-            >
-              Re-sync
-            </Button>
-            <Button color="danger" onClick={this.closeResync}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </Modal>
         <Modal isOpen={checkUpdateModal}>
           <ModalHeader>Update Elabox</ModalHeader>
           <ModalBody>
@@ -819,109 +758,6 @@ class Settings extends Component {
                 backgroundColor: "#272A3D",
                 color: "white",
                 fontSize: "16px",
-                marginBottom: "20px",
-              }}
-            >
-              <CardHeader>Control your Elabox</CardHeader>
-            </Card>
-          </Col>
-        </Row>
-
-        <Row>
-          <Col xs="12" sm="6" lg="4">
-            <Widget05
-              testid="ela-btn"
-              dataBox={() => ({
-                title: "MainChain",
-                variant: "facebook",
-                Restart: "Restart",
-                Resync: "Re-sync",
-                version: mainchainVersion,                
-              })}
-              onGreenPress={() =>
-                this.showRestart("ELA", RootStore.blockchain.ela)
-              }
-              onRedPress={() =>
-                this.showResync("ELA", RootStore.blockchain.ela)
-              }
-            ></Widget05>
-          </Col>
-          {ENABLE_EID && <Col xs="12" sm="6" lg="4">
-            <Widget05
-              testid="eid-btn"
-              dataBox={() => ({
-                title: "EID",
-                variant: "facebook",
-                Restart: "Restart",
-                Resync: "Re-sync",
-                version: eidVersion,                                
-              })}
-              onGreenPress={() =>
-                this.showRestart("EID", RootStore.blockchain.eid)
-              }
-              onRedPress={() =>
-                this.showResync("EID", RootStore.blockchain.eid)
-              }
-            ></Widget05>
-          </Col> }
-          <Col xs="12" sm="6" lg="4">
-            <Widget05
-              testid="esc-btn"
-              dataBox={() => ({
-                title: "ESC",
-                variant: "facebook",
-                Restart: "Restart",
-                Resync: "Re-sync",
-                version: escVersion,                                                
-              })}
-              onGreenPress={() =>
-                this.showRestart("ESC", RootStore.blockchain.esc)
-              }
-              onRedPress={() =>
-                this.showResync("ESC", RootStore.blockchain.esc)
-              }
-            ></Widget05>
-          </Col>
-          <Col xs="12" sm="6" lg="4">
-            <Widget05
-              testid="feeds-btn"
-              dataBox={() => ({
-                title: "Feeds",
-                variant: "facebook",
-                Restart: "Relaunch",
-                Resync: "",
-                version: feedsVersion,                                                
-              })}
-              onGreenPress={() =>
-                this.showRestart("Feeds", RootStore.blockchain.feeds)
-              }
-            ></Widget05>
-          </Col>
-          <Col xs="12" sm="6" lg="4">
-            <Widget05
-              testid="carrier-btn"
-              dataBox={() => ({
-                title: "Carrier",
-                variant: "facebook",
-                Restart: "Relaunch",
-                Resync: "",
-                version: carrierVersion,                                                
-              })}
-              onGreenPress={() =>
-                this.showRestart("Carrier", RootStore.blockchain.carrier)
-              }
-            ></Widget05>
-          </Col>
-        </Row>
-
-        <Row>
-          <Col>
-            <Card
-              style={{
-                backgroundColor: "#272A3D",
-                color: "white",
-                fontSize: "16px",
-                marginTop: "40px",
               }}
             >
               <CardHeader>Backup your wallet file</CardHeader>

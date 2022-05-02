@@ -1,12 +1,18 @@
 const processhelper = require("./helper");
 const delay = require("delay")
 const { exec } = require("child_process")
-const fs = require('fs')
 const config = require("./config")
 const maxBufferSize = 10000
 const syslog = require("./logger");
 const { isPortTaken } = require("./utilities/isPortTaken");
 const binaryName = "ela.mainchain"
+const { eboxEventInstance } = require("./helper/eventHandler");
+const { 
+  ELA_SYSTEM_RESTART_APP, 
+  ELA_SYSTEM_TERMINATE_APP, 
+  ELA_SYSTEM_CLEAR_APP_DATA 
+} = require("./config");
+
 // contains procedures that manages the mainchain process 
 class MainchainHandler {
     async init() {
@@ -55,36 +61,38 @@ class MainchainHandler {
 
     async start(callback = () => {}) {
         if ( !await processhelper.checkProcessingRunning(binaryName)) {
-            syslog.write(syslog.create().info(`Start spawning mainchain`).addCategory("mainchain"))
-            await processhelper.requestSpawn(`nohup ./${binaryName} --datadir ${config.ELABLOCKS_DIR} > /dev/null 2>output &`, callback, {
-                maxBuffer: 1024 * maxBufferSize,
-                detached: true,
-                shell: true,
-                cwd: config.ELA_DIR,
-            })
+          syslog.write(syslog.create().info(`Start spawning mainchain`).addCategory("mainchain"))
+          await eboxEventInstance.sendSystemRPC(ELA_SYSTEM_RESTART_APP, binaryName)
+          callback()
         } else {
             syslog.write(syslog.create().debug("Mainchain already started.").addCategory("mainchain"))
         }
     }
     // use to close and open the node again
-    async restart(callback) {
+    async restart(callback = () => {}) {
         syslog.write(syslog.create().info("Restarting mainchain...").addCategory("mainchain"))
-        await this.stop()
-        await this.start(callback)
+        await eboxEventInstance.sendSystemRPC(ELA_SYSTEM_RESTART_APP, binaryName)
+        callback()
     }
     // close the node and resync
     async resync(callback) {
         syslog.write(syslog.create().info("Resyncing mainchain...").addCategory("mainchain"))
         await this.stop()
-        fs.rmdirSync(config.ELABLOCKS_DIR, { maxRetries: 3, force: true, recursive: true} )
+        await eboxEventInstance.sendSystemRPC(ELA_SYSTEM_CLEAR_APP_DATA, binaryName)
         await this.start(callback)
     }
     async stop() {
-      await processhelper.killProcess(binaryName, true, true);
+      await eboxEventInstance.sendSystemRPC(ELA_SYSTEM_TERMINATE_APP, binaryName)
       // wait while process is not killed
       while (await processhelper.checkProcessingRunning(binaryName)) {
         await delay(1000);
       }
+    }
+    async isRunning() {
+      const processRunning = await processhelper.checkProcessingRunning(binaryName)
+      if (!processRunning) return false;
+      const portRunning = await isPortTaken(config.ELA_PORT)
+      return portRunning;
     }
     // get the current status of eid. this returns the state and blocks
     async getStatus() {
@@ -143,6 +151,52 @@ class MainchainHandler {
         }
         callback()
     }
+    async retrieveUTX(walletAddr = "") {
+      //console.log("retrieveUTX")
+      const res = await fetch(config.WALLET_TRANSACTION_URL + "/" + walletAddr)
+      const json = await res.json()
+      const txids = {}
+      //console.log(json)
+      if (json.Error === 0) {
+        const promises = []
+        for (const transacRes of json.Result) {
+          if (transacRes.AssetName !== 'ELA') continue
+          for (const itemUtx of transacRes.UTXO) {
+            txids[itemUtx.Txid] = itemUtx.Value
+            promises.push(
+              fetch(config.UTX_DETAILS_URL + "/" + itemUtx.Txid)
+            )
+          }
+        }
+        const utxList = await Promise.all(promises);
+        const output = []
+        let i = 0
+        for (const detailedUtx of utxList) {
+          const detailedJson = await detailedUtx.json()
+          // console.log(detailedJson)
+          let totalAmount = txids[detailedJson.Result.txid];
+          const type = detailedJson.Result.vout[0].address === walletAddr ? "income": "expense"
+          if (type === 'expense')
+            totalAmount = detailedJson.Result.vout[0].value
+          output[i] = {
+            Value: parseFloat( totalAmount) * 100000000,
+            Type: type,
+            CreateTime: detailedJson.Result.time,
+            Status: detailedJson.Result.confirmations > 0 ? "confirmed" : "pending",
+            Txid: detailedJson.Result.txid
+          }
+          i++
+        }
+        return output.sort((a,b) => a.CreateTime < b.CreateTime ? 1 : -1)
+        //console.log(output)
+        //return output
+      }
+      return []
+    }
 }
 
-module.exports = MainchainHandler
+const instance = new MainchainHandler()
+
+module.exports = {
+  instance: instance
+}

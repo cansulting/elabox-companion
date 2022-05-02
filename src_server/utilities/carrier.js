@@ -1,5 +1,4 @@
 var shell = require('shelljs');
-const config = require("../config")
 const syslog = require("../logger")
 
 // check and update carrier IP if needed

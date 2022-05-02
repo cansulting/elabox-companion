@@ -84,6 +84,9 @@ class API {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        pwd,
+      }),      
     }).then((response) => response.json());
   };
 
@@ -94,65 +97,86 @@ class API {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      body:JSON.stringify({
+        pwd: pwd,
+      })
     }).then((response) => response.json());
   };
 
-  restartEID = () => {
+  restartEID = (pwd) => {
     return fetch(`http://${PUBLIC_URI}/restartEID`, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      body:JSON.stringify({
+        pwd: pwd,
+      })      
     }).then((response) => response.json());
   };
 
-  resyncEID = () => {
+  resyncEID = (pwd) => {
     return fetch(`http://${PUBLIC_URI}/resyncEID`, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      body:JSON.stringify({
+        pwd: pwd,
+      })            
     }).then((response) => response.json());
   };
 
-  restartESC = () => {
+  restartESC = (pwd) => {
     return fetch(`http://${PUBLIC_URI}/restartESC`, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      body:JSON.stringify({
+        pwd: pwd,
+      })            
     }).then((response) => response.json());
   };
 
-  resyncESC = () => {
+  resyncESC = (pwd) => {
     return fetch(`http://${PUBLIC_URI}/resyncESC`, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      body:JSON.stringify({
+        pwd: pwd,
+      })            
     }).then((response) => response.json());
   };
 
-  restartCarrier = () => {
+  restartCarrier = (pwd) => {
     return fetch(`http://${PUBLIC_URI}/restartCarrier`, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      body:JSON.stringify({
+        pwd: pwd,
+      })            
     }).then((response) => response.json());
   };
-  restartFeeds = () => {
+  restartFeeds = (pwd) => {
     return fetch(`http://${PUBLIC_URI}/restartFeeds`, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      body:JSON.stringify({
+        pwd: pwd,
+      })            
     }).then((response) => response.json());
   };
   getBalance = (address) => {
@@ -181,8 +205,8 @@ class API {
     }).then((response) => response.json());
   };
 
-  resyncNodeVerification = (pwd) => {
-    return fetch(`http://${PUBLIC_URI}/resyncNodeVerification`, {
+  authentication = (pwd) => {
+    return fetch(`http://${PUBLIC_URI}/authentication`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -210,18 +234,11 @@ class API {
   };
 
 
-  txHistory = (address) => {
-    console.log(
-      "https://node1.elaphant.app/api/3/history/" +
-        address +
-        "?pageNum=1&pageSize=10&order=desc"
-    );
-
-    return fetch(
-      "https://node1.elaphant.app/api/3/history/" +
-        address +
-        "?pageNum=1&pageSize=10&order=desc"
-    ).then((response) => response.json());
+  txHistory = async (address) => {
+    const {data} =  await axios.post(`http://${PUBLIC_URI}/utxo`,{
+      wallet : address
+    })
+    return data 
   };
 
   getOnion = () => {

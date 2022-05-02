@@ -1,6 +1,7 @@
 const express = require("express");
 const eventhandler = require("./helper/eventHandler");
 const urlExist = require("fix-esm").require("url-exist");
+const quote = require('shell-quote').quote;
 const { generateKeystore, changePassword, authenticatePassword, authLimiter , resetRateLimit } = require("./utilities/auth")
 // to allow cross-origin request
 const cors = require("cors");
@@ -28,16 +29,16 @@ const mainchainInfo = require(config.ELA_DIR  + "/info.json");
 const NodeHandler = require("./nodeHandler");
 const MainchainHandler = require("./mainchainHandler");
 const feedsHandler = require("./feeds");
-const mainchain = new MainchainHandler();
+const mainchain = MainchainHandler.instance;
 const eid = new NodeHandler({
-  binaryName: "geth",
+  binaryName: "ela.eid",
   cwd: config.EID_DIR,
   dataPath: config.EIDDATA_DIR + "/blocks",
   wsport: config.EID_PORT,
   rpcport: config.RPC_PORT_EID,
 });
 const esc = new NodeHandler({
-  binaryName: "esc",
+  binaryName: "ela.esc",
   cwd: config.ESC_DIR,
   dataPath: config.ESCDATA_DIR + "/blocks",
   wsport: config.ESC_PORT,
@@ -164,6 +165,7 @@ router.get("/feeds", async (req, res) => {
   }
 });
 
+
 router.post("/sendElaPassswordVerification", (req, res) => {
   let pwd = req.body.pwd;
   exec(
@@ -258,7 +260,7 @@ router.post("/sendTx", (req, res) => {
   }
 });
 
-router.post("/resyncNodeVerification", (req, res) => {
+router.post("/authentication", (req, res) => {
   let pwd = req.body.pwd;
   //console.log("PASSWORD RECEIVED", pwd, req.body);
   authenticatePassword(pwd)
@@ -330,21 +332,39 @@ router.post("/uploadWallet", function (req, res) {
 
 router.post("/getBalance", (req, res) => {
   let address = req.body.address;
+  const command = quote(["curl",`http://localhost:20334/api/v1/asset/balances/${address}`]);
   exec(
-    "curl http://localhost:20334/api/v1/asset/balances/" + address,
+    command,
     { maxBuffer: 1024 * maxBufferSize },
     async (err, stdout, stderr) => {
+      let balance = "...";                    
       if (err)
-        syslog.write(
-          syslog
-            .create()
-            .error("Error retrieving wallet balance", err)
-            .addCaller()
-        );
-      let balance = "...";
-      if (stdout !== "") {
-        let balanceInfo = JSON.parse(stdout);
-        balance = balanceInfo.Result;
+      {
+        const data={
+          "method":"getreceivedbyaddress",
+          "params":{"address": address  }
+        }
+        const headers={
+          "Content-Type":"application/json"
+        }
+         await axios.post(config.ELA_RPC_URL,data,{headers}).then(response=>{
+          const { data } = response
+          balance=parseFloat(data.result)
+          res.json({balance})
+        }).catch(err=>{
+          syslog.write(
+            syslog
+              .create()
+              .error("Error retrieving wallet balance", err)
+              .addCaller()
+          );
+        })
+      }
+      else{
+        if (stdout !== "") {
+          let balanceInfo = JSON.parse(stdout);
+          balance = balanceInfo.Result;
+        }        
       }
       res.json({ balance });
     }
@@ -390,37 +410,81 @@ const restartCarrier = async (callback) => {
   );
 };
 
-router.post("/restartMainchain", async (req, res) => {
-  await mainchain.restart((resp) => res.json(resp));
+router.post("/restartMainchain", (req, res) => {
+  const { pwd } = req.body;  
+  authenticatePassword(pwd).then( async () => {
+    await mainchain.restart((resp) => res.json(resp));
+  }).catch(_=>{
+    res.sendStatus(401)
+  });
 });
 
-router.post("/resyncMainchain", async (req, res) => {
-  await mainchain.resync((resp) => res.json(resp));
+router.post("/resyncMainchain", (req, res) => { 
+  const {pwd} = req.body;
+  authenticatePassword(pwd).then( async () => {
+    await mainchain.resync((resp) => res.json(resp));    
+  }).catch(_=>{
+    res.sendStatus(401)    
+  });
 });
 
-router.post("/restartEID", async (req, res) => {
-  await eid.restart((resp) => res.json(resp));
+router.post("/restartEID", (req, res) => {
+  const {pwd} = req.body;
+  authenticatePassword(pwd).then( async () => {
+    await eid.restart((resp) => res.json(resp));
+  }).catch(_=>{
+    res.sendStatus(401)    
+  });
 });
 
-router.post("/resyncEID", async (req, res) => {
-  await eid.resync((resp) => res.json(resp));
+router.post("/resyncEID", (req, res) => {
+  const {pwd} = req.body;
+  authenticatePassword(pwd).then( async () => {
+    await eid.resync((resp) => res.json(resp));
+  }).catch(_=>{
+    res.sendStatus(401)
+  });  
 });
 
-router.post("/restartESC", async (req, res) => {
-  await esc.restart((resp) => res.json(resp));
+router.post("/restartESC", (req, res) => {
+  const {pwd} = req.body;
+  authenticatePassword(pwd).then( async () => {
+    await esc.restart((resp) => res.json(resp));
+  }).catch(_=>{
+    res.sendStatus(401)
+  });
 });
 
-router.post("/resyncESC", async (req, res) => {
-  await esc.resync((resp) => res.json(resp));
+router.post("/resyncESC", (req, res) => {
+  const {pwd} = req.body;
+  authenticatePassword(pwd).then( async () => {
+    await esc.resync((resp) => res.json(resp));
+  }).catch(_=>{
+    res.sendStatus(401)
+  });  
+
 });
 
-router.post("/restartCarrier", async (req, res) => {
-  await restartCarrier((resp) => res.json(resp));
+router.post("/restartCarrier", (req, res) => {
+  const {pwd} = req.body;
+  authenticatePassword(pwd).then( async () => {
+    await restartCarrier((resp) => res.json(resp));
+  }).catch(_=>{
+    res.sendStatus(401)
+  });  
 });
-router.post("/restartFeeds", async (req, res) => {
-  const isSucess = await feedsHandler.runFeeds();
-  res.status(200).json({ success: isSucess });
-});
+
+// get wallet transactions
+router.post("/utxo", (req, res) => {
+  const {wallet} = req.body
+  mainchain.retrieveUTX(wallet)
+    .then( _res => res.json(_res))
+    .catch( err => {
+      console.log(err)
+      res.sendStatus(401)
+    })
+})
+
 router.get("/getOnion", async (req, res) => {
   res.send({ onion: await getOnionAddress() });
 });
@@ -756,6 +820,7 @@ app.use(require('./utilities/systemcontrol.js'));
 
 const startServer = () => {
   app.listen(config.PORT, async function () {
+    await mainchain.retrieveUTX("EdtCygxivZckETb5NcDpz4RVitNEFyRWm2")
     syslog.write(
       syslog.create().info("Companion start running on " + config.PORT)
     );
@@ -767,7 +832,6 @@ const startServer = () => {
           );
         });
     });
-    feedsHandler.runFeeds();
     await mainchain.init();
     mainchain.setOnComplete(async () => {
       await eid.init();
@@ -777,4 +841,15 @@ const startServer = () => {
 };
 
 startServer();
+
+process
+  .on("unhandledRejection", (reason, p) => {
+    syslog.write(syslog.create().error("Unhandled rejection", reason).addCaller())
+  })
+  .on("uncaughtException", (err) => {
+    syslog.write(syslog.create().error("Uncaught Exception thrown", err).addCaller())
+    //process.exit(1);
+  });
+
+
 module.exports = { app, startServer };
