@@ -57,7 +57,7 @@ export default ({services,children}) => {
     const closeResyncModal = () =>{
         setResyncModal(false)
     }
-    const getNode = (appId)=>{
+    const getNode = appId =>{
         let node = {};
         switch (appId) {
             case "ela.mainchain":
@@ -80,9 +80,9 @@ export default ({services,children}) => {
         }
         return node;
     }
-    const isValidApp = id =>{
+    const isValidApp = appId =>{
         let isValid = false
-        switch (id) {
+        switch (appId) {
             case "ela.mainchain":
             case "ela.eid":
             case "ela.esc":
