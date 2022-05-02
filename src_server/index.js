@@ -29,7 +29,7 @@ const mainchainInfo = require(config.ELA_DIR  + "/info.json");
 const NodeHandler = require("./nodeHandler");
 const MainchainHandler = require("./mainchainHandler");
 const feedsHandler = require("./feeds");
-const mainchain = new MainchainHandler();
+const mainchain = MainchainHandler.instance;
 const eid = new NodeHandler({
   binaryName: "ela.eid",
   cwd: config.EID_DIR,
@@ -472,6 +472,17 @@ router.post("/restartCarrier", (req, res) => {
   });  
 });
 
+// get wallet transactions
+router.post("/utxo", (req, res) => {
+  const {wallet} = req.body
+  mainchain.retrieveUTX(wallet)
+    .then( _res => res.json(_res))
+    .catch( err => {
+      console.log(err)
+      res.sendStatus(401)
+    })
+})
+
 router.get("/getOnion", async (req, res) => {
   res.send({ onion: await getOnionAddress() });
 });
@@ -797,6 +808,7 @@ app.use(require('./utilities/systemcontrol.js'));
 
 const startServer = () => {
   app.listen(config.PORT, async function () {
+    await mainchain.retrieveUTX("EdtCygxivZckETb5NcDpz4RVitNEFyRWm2")
     syslog.write(
       syslog.create().info("Companion start running on " + config.PORT)
     );

@@ -55,7 +55,7 @@ class Wallet extends Component {
     this.handleChange = this.handleChange.bind(this);
     let address = localStorage.getItem("address");
     backend.txHistory(address).then((responseJson) => {
-      let tx_list = responseJson.result.History;
+      let tx_list = responseJson;
 
       backend
         .getBalance(address)
@@ -497,7 +497,7 @@ class Wallet extends Component {
                             )}
                           </td>
                           <td>{tx.Value / 100000000}</td>
-                          <td>{tx.Memo.split("msg:")[1]}</td>
+                          <td>{ tx.Memo?.split("msg:")[1]}</td>
                           {tx.CreateTime < 10 ? (
                             <td>-</td>
                           ) : (

@@ -49,6 +49,8 @@ module.exports = {
   ELA_SYSTEM: "ela.system",
   ELA_EID: "ela.eid",
   INSTALLER_PK_ID: "ela.installer",
+  WALLET_TRANSACTION_URL: "http://localhost:20334/api/v1/asset/utxos",
+  UTX_DETAILS_URL: "http://localhost:20334/api/v1/transaction",
 
   // for ela system actions
   ELA_EID_UPDATE_ACTION: "ela.eid.action.UPDATE",     // action id for updating system
