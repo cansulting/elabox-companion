@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState ,useEffect} from "react"
 import * as ebox from "elabox-dapp-store.lib"
 import {EboxEvent} from "elabox-foundation"
 import RestartModal from "./RestartModal"
@@ -10,11 +10,15 @@ export default ({services,children}) => {
     const [resyncModal,setResyncModal] = useState(false)    
     const onClick = (app) => {
         const node = getNode(app.id)
-        const notification = updateStatus(node)                
-        setApp({...app,notificationContents:[notification]})
+        const notification = updateStatus(node)             
+        const path = `/${app.id}/dashboard/${app.id}`
+        const appInfo = {...app,notificationContents:[notification]}
+        setApp(appInfo)
+        window.history.pushState({}, '',path)
     }    
     const onBack = ()=>{
         setApp({})
+        window.history.pushState({}, '',"/")        
     }
     const updateStatus = (node)=>{
         let notification = {}
@@ -76,6 +80,36 @@ export default ({services,children}) => {
         }
         return node;
     }
+    const isValidApp = id =>{
+        let isValid = false
+        switch (id) {
+            case "ela.mainchain":
+            case "ela.eid":
+            case "ela.esc":
+            case "ela.feeds":
+            case "ela.carrier":
+            case "trinity.pasar":
+            case "glide":
+                isValid = true 
+                break
+            default:
+                isValid = false
+        }        
+        return isValid
+    }
+    useEffect(()=>{
+        const checkRoute = () => {
+            const pathNameSplitCount = window.location.pathname.split("/").length
+            const appId = window.location.pathname.split("/")[pathNameSplitCount - 1]  
+            if(isValidApp(appId)){
+                const node = getNode(appId)
+                const notification = updateStatus(node)      
+                const appInfo = {id: appId, notificationContents: [notification]}                       
+                setApp(appInfo)
+            }
+        }       
+        checkRoute()
+    },[])    
      const node = getNode(app.id)
      const hasSelectedApp = app.hasOwnProperty("id")
      return (
