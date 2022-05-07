@@ -6,20 +6,39 @@ const maxBufferSize = 10000
 const syslog = require("./logger");
 const { isPortTaken } = require("./utilities/isPortTaken");
 const binaryName = "ela.mainchain"
-const { eboxEventInstance } = require("./helper/eventHandler");
+const { eboxEventInstance, broadcast } = require("./helper/eventHandler");
 const { 
   ELA_SYSTEM_RESTART_APP, 
   ELA_SYSTEM_TERMINATE_APP, 
   ELA_SYSTEM_CLEAR_APP_DATA 
 } = require("./config");
 
+
 // contains procedures that manages the mainchain process 
 class MainchainHandler {
+    latestBlocks = {}
     async init() {
-        syslog.write(syslog.create().debug("Starting mainchain...").addCategory("mainchain"))
+        syslog.write(syslog.create().debug("Starting mainchain...").addCategory("mainchain"))        
         await this.start((response) => {
           syslog.write(syslog.create().debug(`Mainchain start response ${response}`).addCategory("mainchain"))
         })
+    }
+    async listen() {
+      while(true){
+        const {blockCount, blockSizeList, nbOfTxList, latestBlock} = await this.retrieveBlocks()
+        this.latestBlocks = {
+          blockCount: blockCount - 1,
+          blockSizes: blockSizeList,
+          nbOfTxs: nbOfTxList,
+          latestBlock: {
+              blockTime: latestBlock.time,
+              blockHash: latestBlock.hash,
+              miner: latestBlock.minerinfo,
+          }
+        }            
+        broadcast("ela.mainchain", "ela.mainchain.action.UPDATE", this.latestBlocks)                            
+        await delay(10000)        
+      }
     }
     getBlockSize(height) {
         return new Promise(function (resolve, reject) {
@@ -104,38 +123,20 @@ class MainchainHandler {
         }
 
         try {
-            const blockCountResponse = await processhelper.execShell(
-                `curl -X POST http://User:Password@localhost:${config.ELA_PORT} -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' `,
-                { maxBuffer: 1024 * maxBufferSize }
-            )
-        
-            const blockCount = JSON.parse(blockCountResponse).result
-            const latestBlock = await this.getBlockSize(blockCount - 1)
-            const blockSizeList = []
-            const nbOfTxList = []
-        
-            for (let i = 0; i < blockCount - 1 && i < 10; i++) {
-                const blockSize = await this.getBlockSize(blockCount - 1 - i)
-                blockSizeList.push(blockSize.size)
+            const {blockCount, blockSizeList, nbOfTxList, latestBlock} = await this.retrieveBlocks()
+            this.latestBlocks = {
+              blockCount: blockCount - 1,
+              blockSizes: blockSizeList,
+              nbOfTxs: nbOfTxList,
+              isRunning,
+              servicesRunning,
+              latestBlock: {
+                  blockTime: latestBlock.time,
+                  blockHash: latestBlock.hash,
+                  miner: latestBlock.minerinfo,
+              }
             }
-        
-            for (let i = 0; i < blockCount - 1 && i < 10; i++) {
-                const nbOfTx = await this.getNbOfTx(blockCount - 1 - i)
-                nbOfTxList.push(nbOfTx)
-            }
-        
-            return {
-                blockCount: blockCount - 1,
-                blockSizes: blockSizeList,
-                nbOfTxs: nbOfTxList,
-                isRunning: isRunning,
-                servicesRunning,
-                latestBlock: {
-                    blockTime: latestBlock.time,
-                    blockHash: latestBlock.hash,
-                    miner: latestBlock.minerinfo,
-                }
-            }
+            return this.latestBlocks
         } catch (err) {
             syslog.write(syslog.create().error("Error while getting status", err).addStack().addCategory("mainchain"))
             throw err
@@ -150,6 +151,31 @@ class MainchainHandler {
             return
         }
         callback()
+    }
+    async retrieveBlocks() {
+      const blockCountResponse = await processhelper.execShell(
+        `curl -X POST http://User:Password@localhost:${config.ELA_PORT} -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' `,
+        { maxBuffer: 1024 * maxBufferSize }
+      )
+      const blockCount = JSON.parse(blockCountResponse).result      
+      if(this.latestBlocks.blockCount === blockCount){
+        return this.latestBlocks
+      }
+      this.lastBlockCount = blockCount      
+      const latestBlock = await this.getBlockSize(blockCount - 1)
+      const blockSizeList = []
+      const nbOfTxList = []
+  
+      for (let i = 0; i < blockCount - 1 && i < 10; i++) {
+          const blockSize = await this.getBlockSize(blockCount - 1 - i)
+          blockSizeList.push(blockSize.size)
+      }
+  
+      for (let i = 0; i < blockCount - 1 && i < 10; i++) {
+          const nbOfTx = await this.getNbOfTx(blockCount - 1 - i)
+          nbOfTxList.push(nbOfTx)
+      }
+      return {blockCount, blockSizeList, nbOfTxList, latestBlock}
     }
     async retrieveUTX(walletAddr = "") {
       //console.log("retrieveUTX")

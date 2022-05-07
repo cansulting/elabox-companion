@@ -37,6 +37,9 @@ export const Ela = types
         self.restarting = false;
       }
     });
+    const update = flow(function* (updatedEla) {
+      self.blockCount = updatedEla.blockCount
+    })
     const resync = flow(function* (pwd) {
       try {
         self.restarting = true;
@@ -48,7 +51,7 @@ export const Ela = types
       }
     });
 
-    return { fetchData, restart, resync };
+    return { fetchData, restart, resync, update };
   });
 
 export const eid = types
