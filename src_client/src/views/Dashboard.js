@@ -13,9 +13,7 @@ const Dashboard = ({ isMobile }) => {
       console.log(res)
     })
     elaboxEvent.on("ela.mainchain", args => {
-      RootStore.blockchain.ela.update(args.data).then(()=>{
-        RootStore.blockchain.ela.fetchData()
-      })
+      RootStore.blockchain.ela.fetchData()
     })          
      return ()=>{
       elaboxEvent.off("ela.mainchain")

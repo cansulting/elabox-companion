@@ -16,7 +16,7 @@ const {
 
 // contains procedures that manages the mainchain process 
 class MainchainHandler {
-    latestBlocks = {}
+    lastBlockCount = 0
     async init() {
         syslog.write(syslog.create().debug("Starting mainchain...").addCategory("mainchain"))        
         await this.start((response) => {
@@ -25,19 +25,10 @@ class MainchainHandler {
     }
     async listen() {
       while(true){
-        const {blockCount, blockSizeList, nbOfTxList, latestBlock} = await this.retrieveBlocks()
-        this.latestBlocks = {
-          blockCount: blockCount - 1,
-          blockSizes: blockSizeList,
-          nbOfTxs: nbOfTxList,
-          latestBlock: {
-              blockTime: latestBlock.time,
-              blockHash: latestBlock.hash,
-              miner: latestBlock.minerinfo,
-          }
-        }            
-        broadcast("ela.mainchain", "ela.mainchain.action.UPDATE", this.latestBlocks)                            
-        await delay(10000)        
+        if(!await this.isBlockCountEqualToLatestBlockCount()){
+          broadcast("ela.mainchain", "ela.mainchain.action.UPDATE")                                      
+        }
+        await delay(5000)        
       }
     }
     getBlockSize(height) {
@@ -124,7 +115,7 @@ class MainchainHandler {
 
         try {
             const {blockCount, blockSizeList, nbOfTxList, latestBlock} = await this.retrieveBlocks()
-            this.latestBlocks = {
+            return {
               blockCount: blockCount - 1,
               blockSizes: blockSizeList,
               nbOfTxs: nbOfTxList,
@@ -136,7 +127,6 @@ class MainchainHandler {
                   miner: latestBlock.minerinfo,
               }
             }
-            return this.latestBlocks
         } catch (err) {
             syslog.write(syslog.create().error("Error while getting status", err).addStack().addCategory("mainchain"))
             throw err
@@ -152,15 +142,23 @@ class MainchainHandler {
         }
         callback()
     }
+    async isBlockCountEqualToLatestBlockCount(){
+      const blockCountResponse = await processhelper.execShell(
+        `curl -X POST http://User:Password@localhost:${config.ELA_PORT} -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' `,
+        { maxBuffer: 1024 * maxBufferSize }
+      )
+      const blockCount = JSON.parse(blockCountResponse).result
+      if(blockCount === this.lastBlockCount){
+        return true
+      }
+      return false;
+    }
     async retrieveBlocks() {
       const blockCountResponse = await processhelper.execShell(
         `curl -X POST http://User:Password@localhost:${config.ELA_PORT} -H "Content-Type: application/json" -d \'{"method": "getblockcount"}\' `,
         { maxBuffer: 1024 * maxBufferSize }
       )
       const blockCount = JSON.parse(blockCountResponse).result      
-      if(this.latestBlocks.blockCount === blockCount){
-        return this.latestBlocks
-      }
       this.lastBlockCount = blockCount      
       const latestBlock = await this.getBlockSize(blockCount - 1)
       const blockSizeList = []
