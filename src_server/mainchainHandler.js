@@ -28,7 +28,7 @@ class MainchainHandler {
         if(!await this.isBlockCountEqualToLatestBlockCount()){
           broadcast("ela.mainchain", "ela.mainchain.action.UPDATE")                                      
         }
-        await delay(5000)        
+        await delay(3000)        
       }
     }
     getBlockSize(height) {

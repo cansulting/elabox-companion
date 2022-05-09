@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
+import {useLocation} from "react-router-dom"
 import {EboxEvent} from "elabox-foundation"
 import NodePreview from "./components/NodePreviewer"
 import RootStore from "../store"
@@ -8,17 +9,23 @@ import DApps from "../dapp-store"
 const elaboxEvent = new EboxEvent(window.location.hostname)
 const Dashboard = ({ isMobile }) => {
   const { ela,eid, esc,feeds,carrier } = RootStore.blockchain
+  const location = useLocation()
   useEffect(() => {
-    elaboxEvent.subscribe("ela.mainchain.action.UPDATE", res =>{
-      console.log(res)
-    })
-    elaboxEvent.on("ela.mainchain", args => {
-      RootStore.blockchain.ela.fetchData()
-    })          
+    if(location.pathname.includes('ela.mainchain')){
+      elaboxEvent.subscribe("ela.mainchain.action.UPDATE", res =>{
+        console.log(res)
+      })      
+      elaboxEvent.on("ela.mainchain", args => {
+        RootStore.blockchain.ela.fetchData()
+      })          
+    }
+    else{
+      elaboxEvent.off("ela.mainchain")
+    }
      return ()=>{
       elaboxEvent.off("ela.mainchain")
     }
-  }, [])
+  }, [location.pathname])
 
   var cardChartData1 = {
     labels: ["       ", " ", " ", " ", " ", " ", " ", " ", " ", "       "],

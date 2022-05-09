@@ -1,24 +1,26 @@
 import React, { useState ,useEffect} from "react"
+import { useHistory } from "react-router-dom"
 import * as ebox from "elabox-dapp-store.lib"
 import {EboxEvent} from "elabox-foundation"
 import RestartModal from "./RestartModal"
 import ResyncModal from "./ResyncModal"
 ebox.initialize(new EboxEvent(window.location.hostname))
-export default ({services,children}) => {  
+export default ({services,children}) => { 
+    const history = useHistory() 
     const [app,setApp] = useState({})
     const [restartModal,setRestartModal] = useState(false)
     const [resyncModal,setResyncModal] = useState(false)    
     const onClick = (app) => {
         const node = getNode(app.id)
         const notification = updateStatus(node)             
-        const path = `/ela.companion/dashboard/${app.id}`
+        const path = `/dashboard/${app.id}`
         const appInfo = {...app,notificationContents:[notification]}
         setApp(appInfo)
-        window.history.pushState({}, '',path)
+        history.push(path)
     }    
     const onBack = ()=>{
         setApp({})
-        window.history.pushState({}, '',"/")        
+        history.push("/")       
     }
     const updateStatus = (node)=>{
         let notification = {}
