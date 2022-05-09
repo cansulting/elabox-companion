@@ -1,6 +1,6 @@
 import { VerifiableCredential } from '@elastosfoundation/did-js-sdk';
 import { connectivity, DID } from '@elastosfoundation/elastos-connectivity-sdk-js';
-import { EssentialsConnector } from '@elastosfoundation/essentials-connector-client-browser';
+import { EssentialsConnector } from '@elabox/essentials-connector-client-browser';
 let instance = null;
 export default class Did {
 
@@ -35,6 +35,7 @@ export default class Did {
 
     disconnectConnector() {
         if (this.connector) {
+            
             this.connector.disconnect()
             this.connector = null
         }
