@@ -24,7 +24,6 @@ import Widget05 from "./widgets/Widget05";
 import master from "../api/master";
 import backend from "../api/backend";
 import { validCharacters } from "../utils/auth"
-import { ENABLE_EID } from "../config"
 import RootStore from "../store";
 import errorLogo from "./images/error.png";
 import checkLogo from "./images/check.png";
