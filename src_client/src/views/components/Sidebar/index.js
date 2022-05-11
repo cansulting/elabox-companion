@@ -1,4 +1,4 @@
-import React,{useState} from "react"
+import React,{useState, useEffect} from "react"
 import { Link } from "react-router-dom"
 import * as Icon from "react-feather"
 import { useMediaQuery } from "react-responsive"
@@ -10,16 +10,27 @@ import walletLogo from "../../images/wallet_white.png"
 import settingsLogo from "../../images/settings_white.png"
 import Activation from "../Activation"
 import { ENABLE_ACTIVATION } from "../../../config"
+import * as License from '../../../utils/license'
 
 export default function SideBar({ updatesCount, isOpen, onClose }) {
   const [showActivation,setShowActivation]=useState(false)
+  const [activated, setActivated]=useState(true)
   const isMobile = useMediaQuery({ maxWidth: 767 })
   const handleShowActivation= () =>{
     setShowActivation(true)
   }
-  const handleCloseActivation= () =>{
+  const handleCloseActivation= (isActivated=false) =>{
     setShowActivation(false)
+    setActivated(isActivated)
   }
+  useEffect( () => {
+    // check first if license is activated or not
+    License.isActivated().then( _activated => {
+      console.log("Device activated=", _activated)
+      //_activated = false
+      setActivated(_activated)
+    })
+  }, [isOpen])
   return (
     <div
       className="w3-sidebar w3-bar-block w3-animate-left"
@@ -168,7 +179,7 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
         </ul>
       </div>
       {
-      ENABLE_ACTIVATION && 
+      ENABLE_ACTIVATION && !activated &&
       <p 
         style={{color:"white",left:"5vw", 
         position: "absolute", top: "83vh", 

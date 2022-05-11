@@ -58,6 +58,8 @@ module.exports = {
   ELA_SYSTEM_TERMINATE_APP: "ela.system.APP_TERMINATE",
   ELA_SYSTEM_RESTART_APP: "ela.system.APP_RESTART",
   ELA_SYSTEM_CLEAR_APP_DATA: "ela.system.APP_CLEAR_DATA",
+  ELA_SYSTEM_RPC: "ela.system.RPC",                   // action id for rpc message to system
+  INSTALLER_PK_ID: "ela.installer",
   ELA_SYSTEM_BROADCAST_ID_INSTALLER: "ela.installer.PROGRESS", // installer action id that tells the companion front end it is in progress
   ELA_INSTALLER_BROADCAST_INSTALL_DONE: "ela.installer.INSTALL_DONE",
   ELA_INSTALLER_BROADCAST_INSTALL_ERROR: "ela.installer.INSTALL_ERROR",
