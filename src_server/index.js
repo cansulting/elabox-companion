@@ -70,6 +70,8 @@ const filedownload = require("./helper/filedownload");
 const { readWalletAddress } = require("./utilities/keystore");
 const postMarkMail = new postmark.ServerClient(config.POSTMARK_SERVER_TOKEN);
 
+const licenseChecker = require("./utilities/license")
+
 let elaPath = config.ELA_DIR;
 let keyStorePath = config.KEYSTORE_PATH;
 router.get("/", (req, res) => {
@@ -485,6 +487,27 @@ router.get("/regenerateOnion", async (req, res) => {
   await regenerateTor();
   res.send({ onion: await getOnionAddress() });
 });
+
+router.get("/elabox_activated", async (req, res) => {
+  try {
+    const activated = await licenseChecker.isElaboxActivated()
+    res.send({ activated: activated});
+  } catch(err) {
+    syslog.write(syslog.create().error("/elabox_activated request failed", err))
+    res.send({ activated: false, error: err.message})
+  }
+});
+
+router.post("/activate_elabox", async (req, res) => {
+  const { did } = req.body;
+  try {
+    const isActivated = await licenseChecker.activateElabox(did);
+    res.send({ activated: isActivated });
+  }catch(err) {
+    syslog.write(syslog.create().error("/activate_elabox request failed", err))
+    res.send({ activated: false, error: err.message})
+  }
+})
 
 // support mail
 router.post("/sendSupportEmail", async (req, res) => {

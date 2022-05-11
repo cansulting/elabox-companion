@@ -310,6 +310,16 @@ class API {
     })
     return data 
   };
+  activateElabox=async (did)=>{ 
+    const {data} =  await axios.post(`http://${PUBLIC_URI}/activate_elabox`,{
+      did : did
+    })
+    return data 
+  }
+  isElaboxActivated=async ()=>{
+    const {data} =  await axios.get(`http://${PUBLIC_URI}/elabox_activated`)
+    return data 
+  }
 }
 
 export default new API();
