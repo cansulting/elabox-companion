@@ -6,8 +6,7 @@
   "dependencies": {
     "@elastosfoundation/did-js-sdk": "^2.2.5",
     "@elastosfoundation/elastos-connectivity-sdk-js": "^1.0.15",
-    "@elabox/essentials-connector-client-browser": "^1.0.32",
-    "@elabox/web3-provider": "^1.7.0",
+    "@elabox/essentials-connector-client-browser": "1.0.46",
     "axios": ">=0.21.2",
     "bootstrap": "^4.4.1",
     "chart.js": "^2.9.3",

@@ -3,46 +3,120 @@
 
 import React, { useState } from 'react'
 import * as Icon from "react-feather"
-import { Button, Table, Modal , ModalHeader , ModalBody } from "reactstrap"
+import { Button, Table, Modal , ModalHeader , ModalBody, Spinner } from "reactstrap"
 import { activateLicense } from '../../utils/license'
 export default function Activation({ isMobile, isOpen, closeActivation , isModal = true}) {
     const [currentPage, setCurrentPage] = useState(0)
+    const [activateRes, setActivateRes] = useState(null)
+    const [loading, setLoading] = useState(false)
     const handleNextPage = () => {
         setCurrentPage(currentPage + 1)
     }
     const handlePrevPage = () => {
         setCurrentPage(currentPage - 1)
     }
-    const handleCloseActivation=()=>{
+    const handleCloseActivation=(success=false)=>{
         setCurrentPage(0)
-        closeActivation()
+        if (typeof success !== 'boolean')
+            success = false
+        closeActivation(success)
+        console.log(success)
     } 
-    const handleActivate=()=>{
-        activateLicense()
+    // on activate button was pressed
+    const handleActivate=async ()=>{
+        setLoading(true)
+        let res = await activateLicense()
+        setLoading(false)
+        if (res) {
+            res = {...res, onClick: () => {
+                handleCloseActivation(res.isActivated)
+                setActivateRes(null)
+            }} 
+            setActivateRes(res)
+        }
     }
     if(!isModal){
-        return <ActivationBody 
-                isMobile={isMobile} 
-                handleNextPage={handleNextPage}
-                handlePrevPage={handlePrevPage}
-                handleCloseActivation={handleCloseActivation}
-                handleActivate={handleActivate}
-                currentPage={currentPage} />            
-    }
-    return ( 
-        <Modal isOpen={isOpen} centered>
-            <ModalBody style={{padding:"60px"}}>
-                <ActivationBody 
+        if (loading)
+            return <ActivationLoading/>
+        if (!activateRes) {
+            return <ActivationBody 
                     isMobile={isMobile} 
                     handleNextPage={handleNextPage}
                     handlePrevPage={handlePrevPage}
                     handleCloseActivation={handleCloseActivation}
                     handleActivate={handleActivate}
-                    currentPage={currentPage} />
+                    currentPage={currentPage} />         
+        }
+        return <ActivationResult {...activateRes}/>
+    }
+    return ( 
+        <Modal isOpen={isOpen} centered>
+            <ModalBody style={{padding:"60px"}}>
+                {!loading && !activateRes && <ActivationBody 
+                    isMobile={isMobile} 
+                    handleNextPage={handleNextPage}
+                    handlePrevPage={handlePrevPage}
+                    handleCloseActivation={handleCloseActivation}
+                    handleActivate={handleActivate}
+                    currentPage={currentPage} />}
+                {!loading && activateRes && 
+                    <ActivationResult {...activateRes}/>
+                }
+                {loading && <ActivationLoading/>}
             </ModalBody>
         </Modal>
     )
 }
+
+const Frame = ({isMobile, children}) => {
+    return (<div
+        style={{
+            ...{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                color: "white"
+            },
+            ...(isMobile && { paddingLeft: undefined }),
+        }}>
+            <div style={{ textAlign: "center", width: `${isMobile ? "80vw" : "45vw"}` }}>
+                {children}
+            </div>
+    </div>)
+}
+
+const ActivationLoading = ({}) => {
+    return (<Frame>
+        <Spinner color="light" type="grow">Loading</Spinner>
+        <Spinner color="light" type="grow">Loading</Spinner>
+        <Spinner color="light" type="grow">Loading</Spinner>
+    </Frame>)
+}
+
+const ActivationResult = ({isActivated, error, onClick}) => {
+    return (
+        <Frame>
+        <div className="animated fadeIn w3-container">
+            {isActivated && <>
+                <h2>Activate Success</h2>
+            </>}
+            {!isActivated && <>
+                <h2>Activation Failed</h2>
+                {error && <p>{error}</p>}
+                {!error && <p>Please try again later.</p>}
+            </>}
+            <div style={{ display: "flex", justifyContent: "center", gap: 40 }}>
+                <Button style={{ padding: 10, width: 100, margin: 10 }} color="success" size="sm" onClick={onClick}>
+                    Ok
+                </Button>
+            </div>
+        </div>
+        </Frame>
+    )
+}
+
 const ActivationBody=({
     isMobile,
     handleNextPage,
@@ -51,25 +125,12 @@ const ActivationBody=({
     currentPage, 
     handleActivate,
 })=>{
-    return <div
-    style={{
-        ...{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-            width: "100%",
-            color: "white"
-        },
-        ...(isMobile && { paddingLeft: undefined }),
-    }}>
-        <div style={{ textAlign: "center", width: `${isMobile ? "80vw" : "45vw"}` }}>
+    return (<Frame>
             {currentPage === 0 ? 
                 <ActivatePage handleNextPage={handleNextPage} handleActivate={handleActivate}/> 
                 : 
                 <PurchasePage handlePrevPage={handlePrevPage} handleCloseActivation={handleCloseActivation} />}
-        </div>
-    </div >    
+        </Frame>)   
 }
 const ActivatePage = ({ handleNextPage, handleActivate }) => {
     return <div className="animated fadeIn w3-container">
@@ -106,7 +167,7 @@ const PurchasePage = ({ handlePrevPage , handleCloseActivation }) => {
                 </tr>
                 <tr>
                     <td>dApps services</td>
-                    <td>{<Icon.XCircle height={20} width={20} color="red" />}</td>
+                    <td>{<Icon.CheckCircle height={20} width={20} color="green" />}</td>
                     <td>{<Icon.CheckCircle height={20} width={20} color="green" />}</td>
                 </tr>
                 <tr>

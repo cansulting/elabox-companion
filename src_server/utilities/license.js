@@ -6,11 +6,19 @@ const CHECK_DEVICE_ACTION = "ela.reward.actions.CHECK_DEVICE"
 
 module.exports = {
     activateElabox: async (did) => { 
-        const res = await ehandler.RPC(rewards, REGISTERDEVICE_ACTION, {did: did})
-        return res
+        const res = await ehandler.eboxEventInstance.sendRPC(rewards, REGISTERDEVICE_ACTION, "",{did: did})
+        if (res.code !== 200) 
+            throw res
+        return "activate success"
     },
     isElaboxActivated: async () => { 
-        const res = await ehandler.RPC(rewards, CHECK_DEVICE_ACTION, {did: did})
-        return res
+        const res = await ehandler.eboxEventInstance.sendRPC(rewards, CHECK_DEVICE_ACTION)
+        //console.log("isactivated", res)
+        if (res.code !== 200) 
+            throw res
+        let activated = true
+        if (res.message !== "registered")
+            activated = false
+        return activated
     },
 }

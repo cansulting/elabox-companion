@@ -20,7 +20,10 @@ export default class Did {
     }
 
     async signin() {
+        if (this.connector.hasWalletConnectSession())
+            await this.connector.disconnectWalletConnect()
         const didAccess = new DID.DIDAccess()
+        
         try {
             const presentation = await didAccess.requestCredentials(
                 {claims: [DID.standardNameClaim("Activate elabox", false)]}
