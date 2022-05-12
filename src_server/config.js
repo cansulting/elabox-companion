@@ -3,6 +3,8 @@ const feedsUrl = "http://localhost:10018/"
 const feedsDir = "/home/elabox/apps/ela.feeds"
 const homeapps = "/home/elabox/apps"
 const homeappdata = "/home/elabox/data"
+const documents = "/home/elabox/documents"
+const documentsMainchain = documents + "/ela.mainchain"
 const eladatadir = homeappdata + "/ela.mainchain"
 let elaPath = homeapps + "/ela.mainchain"
 const tmpPath = "/tmp/ela"
@@ -36,7 +38,8 @@ module.exports = {
   RPC_PORT_EID: 20636,                                // EID RPC
   RPC_PORT_ESC: 20637,                                // ESC RPC
   CARRIER_DIR: homeapps + "/ela.carrier", // carrier app directory
-  KEYSTORE_PATH: eladatadir + "/keystore.dat", // keystore data path
+  OLD_KEYSTORE_PATH: eladatadir + "/keystore.dat", // keystore data path, migration to new path starting from 0.2.1
+  KEYSTORE_PATH: documentsMainchain + "/keystore.dat", // keystore data path
   SUPPORT_EMAIL: "contact@elabox.com",
   TMP_PATH: tmpPath,                                  // where files will be temporary save. specifically use for installer
   ELA_RPC_URL: "https://api.elastos.io/ela/",

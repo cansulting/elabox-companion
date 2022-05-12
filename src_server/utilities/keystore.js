@@ -4,9 +4,40 @@ const auth = require("./auth")
 const log = require("../logger")
 const { exec } = require("child_process"); 
 const syslog = require("../logger");
-
+const futils = require("./fileutils")
 const tmpWallet = "/tmp/wallet.dat"
 const maxBufferSize = 10000;
+
+function migrateOldKeystore() {
+    return new Promise( async (resolve, reject) => {
+        const oldExist = await futils.checkFile(config.OLD_KEYSTORE_PATH)
+        if (oldExist) {
+            log.write(log.create().debug("Migrating keystore key from old path."))
+            const lastI = config.KEYSTORE_PATH.lastIndexOf("/")
+            const parentDir = config.KEYSTORE_PATH.substring(0, lastI)
+            fs.mkdir(parentDir, {recursive: true}, (err) => {
+                if (err) {
+                    log.write(log.create().error('Migrating keystore failed', err))
+                    reject(err)
+                    return
+                }
+                fs.rename(config.OLD_KEYSTORE_PATH, config.KEYSTORE_PATH, (err) => {
+                    if (err) {
+                        log.write(log.create().error('Migrating keystore failed', err))
+                        reject(err)
+                        return
+                    }
+                    log.write(log.create().debug("Migrating keystore success."))
+                    resolve()
+                })
+            })
+            
+        } else {
+            log.write(log.create().info("Migrating keystore skipped."))
+            resolve()
+        }
+    })
+}
 
 // use to upload new keystore
 // @hex the hexadecimal string of keystore data
@@ -127,5 +158,6 @@ function readWalletAddress() {
 
 module.exports = {
     uploadFromHex : fromHex,
-    readWalletAddress : readWalletAddress
+    readWalletAddress : readWalletAddress,
+    migrateOldKeystore: migrateOldKeystore
 }
