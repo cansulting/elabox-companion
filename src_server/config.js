@@ -33,6 +33,7 @@ module.exports = {
   ESC_PORT: 20646,                                    // esc port that can be access for web3 api
   ESC_CHAIN_ID:20,
   ELA_PORT: 20336,                                    // mainchain rpc port
+  ELA_SOCKET_PORT: 20335,                             // mainchain socket port
   RPC_PORT_EID: 20636,                                // EID RPC
   RPC_PORT_ESC: 20637,                                // ESC RPC
   CARRIER_DIR: homeapps + "/ela.carrier", // carrier app directory

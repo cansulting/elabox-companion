@@ -26,7 +26,7 @@ class MainchainHandler {
     listen() {
           let ws;
           try {
-              ws = new WebSocket("ws://localhost:20335")
+              ws = new WebSocket(`ws://localhost:${config.ELA_SOCKET_PORT}`)
           }catch(e) {
               console.log("SetupWS error", e)
           }

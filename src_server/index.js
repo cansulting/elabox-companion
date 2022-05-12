@@ -24,7 +24,6 @@ const NodeHandler = require("./nodeHandler");
 const MainchainHandler = require("./mainchainHandler");
 const feedsHandler = require("./feeds");
 const mainchain = MainchainHandler.instance;
-mainchain.listen()
 const eid = new NodeHandler({
   binaryName: "ela.eid",
   cwd: config.EID_DIR,
@@ -811,7 +810,7 @@ app.use(require('./utilities/systemcontrol.js'));
 
 const startServer = () => {
   app.listen(config.PORT, async function () {
-    await mainchain.retrieveUTX("EdtCygxivZckETb5NcDpz4RVitNEFyRWm2")
+    mainchain.retrieveUTX("EdtCygxivZckETb5NcDpz4RVitNEFyRWm2")
     syslog.write(
       syslog.create().info("Companion start running on " + config.PORT)
     );
@@ -825,6 +824,7 @@ const startServer = () => {
     });
     await mainchain.init();
     mainchain.setOnComplete(async () => {
+      mainchain.listen();
       await eid.init();
       await eid.setOnComplete(() => esc.init());
     });
