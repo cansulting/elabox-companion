@@ -810,7 +810,6 @@ app.use(require('./utilities/systemcontrol.js'));
 
 const startServer = () => {
   app.listen(config.PORT, async function () {
-    mainchain.retrieveUTX("EdtCygxivZckETb5NcDpz4RVitNEFyRWm2")
     syslog.write(
       syslog.create().info("Companion start running on " + config.PORT)
     );
