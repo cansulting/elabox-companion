@@ -24,6 +24,7 @@ const NodeHandler = require("./nodeHandler");
 const MainchainHandler = require("./mainchainHandler");
 const feedsHandler = require("./feeds");
 const mainchain = MainchainHandler.instance;
+mainchain.listen()
 const eid = new NodeHandler({
   binaryName: "ela.eid",
   cwd: config.EID_DIR,

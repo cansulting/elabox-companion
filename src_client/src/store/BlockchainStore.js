@@ -25,7 +25,13 @@ export const Ela = types
         console.error(err);
       }
     });
-
+    const update = flow(function* (data) {
+      try{
+        applySnapshot(self, data);
+      } catch (err) {
+        console.error(err);
+      }
+    });
     const restart = flow(function* (pwd) {
       try {
         self.restarting = true;
@@ -48,7 +54,7 @@ export const Ela = types
       }
     });
 
-    return { fetchData, restart, resync };
+    return { fetchData, restart, resync , update};
   });
 
 export const eid = types
@@ -70,7 +76,6 @@ export const eid = types
         console.error(err);
       }
     });
-
     const restart = flow(function* (pwd) {
       try {
         self.restarting = true;

@@ -17,25 +17,25 @@ const loading = () => <Landing/>;
 class App extends React.Component {
   constructor(props) {
     super(props);
-    try {
-      RootStore.blockchain.ela.fetchData();
-      RootStore.blockchain.eid.fetchData();
-      RootStore.blockchain.esc.fetchData();
-      RootStore.blockchain.carrier.fetchData();
-      RootStore.blockchain.feeds.fetchData();    
-      backend.checkInstallation().then((responseJson) => {
-        localStorage.setItem("isconfiged", responseJson.configed.trim());
-        this.setState({ loading: false });
-      });
-    } catch (e) {
-      console.error(e);
-      this.setState({ loading: false });
-    }
   }
-
   state = {
     loading: true,
   };
+  async componentDidMount(){
+    try {
+      await RootStore.blockchain.ela.fetchData();
+      await RootStore.blockchain.eid.fetchData();
+      await RootStore.blockchain.esc.fetchData();
+      await RootStore.blockchain.carrier.fetchData();
+      await RootStore.blockchain.feeds.fetchData();    
+      const responseJson = await backend.checkInstallation()
+        localStorage.setItem("isconfiged", responseJson.configed.trim());
+        this.setState({ loading: false });      
+    } catch (e) {
+      console.error(e);
+      this.setState({ loading: false });
+    }    
+  }
   render() {
     if (this.state.loading) {
       return (
