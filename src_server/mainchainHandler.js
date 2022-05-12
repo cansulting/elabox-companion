@@ -40,7 +40,7 @@ class MainchainHandler {
               const output = Buffer.from(data).toString()
               const result = JSON.parse(output).Result
               if(result.hasOwnProperty("height")){
-                pool.exec("handleElaSocketEvent",[result])
+                pool.exec("ElaSocketEvent",[result])
                 .then(result => {
                   broadcast("ela.mainchain", "ela.mainchain.action.UPDATE",result)                      
                 })

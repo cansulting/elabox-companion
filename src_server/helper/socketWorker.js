@@ -3,7 +3,7 @@ const { exec } = require("child_process");
 
 const maxBufferSize = 10000
 
-async function handleElaSocketEvent(result){
+async function ElaSocketEvent(result){
     const blockCount = result.height
     const blockSizeList = []
     const nbOfTxList = []
@@ -65,5 +65,5 @@ async function handleElaSocketEvent(result){
   }      
 
   workerpool.worker({
-    handleElaSocketEvent
+    ElaSocketEvent
   });
