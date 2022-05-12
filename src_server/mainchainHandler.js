@@ -34,7 +34,7 @@ class MainchainHandler {
             
           })
           ws.on("close", (code, reason) => {
-              setTimeout(listen, 2000)
+              setTimeout(this.listen, 2000)
           })
           ws.on("message",(data) => {
               const output = Buffer.from(data).toString()
