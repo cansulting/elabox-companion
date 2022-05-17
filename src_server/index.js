@@ -73,7 +73,6 @@ const postMarkMail = new postmark.ServerClient(config.POSTMARK_SERVER_TOKEN);
 const licenseChecker = require("./utilities/license")
 
 let elaPath = config.ELA_DIR;
-let keyStorePath = config.KEYSTORE_PATH;
 router.get("/", (req, res) => {
   res.send("HELLO WORLD");
 });
@@ -366,7 +365,7 @@ router.post("/getBalance", (req, res) => {
 });
 
 router.get("/checkInstallation", async (req, res) => {
-  res.send({ configed: JSON.stringify(await checkFile(keyStorePath)) });
+  res.send({ configed: JSON.stringify(await checkFile(config.KEYSTORE_PATH)) });
 });
 
 router.post("/update", (req, res) => {
@@ -810,6 +809,8 @@ app.use(require('./utilities/systemcontrol.js'));
 
 const startServer = () => {
   app.listen(config.PORT, async function () {
+    await keystore.migrateOldKeystore()
+    //await mainchain.retrieveUTX("EdtCygxivZckETb5NcDpz4RVitNEFyRWm2")
     syslog.write(
       syslog.create().info("Companion start running on " + config.PORT)
     );
