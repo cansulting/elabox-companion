@@ -57,37 +57,10 @@ class NodeHandler {
           pool.exec("EscSocketEvent",[latestBlocks])
           .then(result => {
             broadcast("ela.esc", "ela.esc.action.UPDATE",result)                      
-          }).catch(err=>{
-            console.log(err)
           })          
         }).on("error",err=>{
             syslog.write(syslog.create().error("Uncaught Exception thrown", err).addCaller())                      
         })
-        // let ws;
-        // try {
-        //     ws = new WebSocket(this.wspath)
-        // }catch(e) {
-        //   syslog.write(syslog.create().error("ela.esc websocket error", err).addCaller())                      
-        // }
-        // ws.on("open", () => {
-        //   syslog.write(syslog.create().info(`ela.esc socket connected.`).addCategory("ela.esc"))          
-        // })
-        // ws.on("close", (code, reason) => {
-        //     console.log("Closed ela.esc websocket", Buffer.from(reason).toString())
-        //     console.log("Reconnecting")
-        //     setTimeout(()=>{
-        //       this.listen()
-        //     }, GETHWS_RECON)
-        // })
-        // ws.on("message", (data) => {
-        //   console.log(output)
-        //     const output = Buffer.from(data).toString()
-        //     //eventhandler.broadcast(config.ELA_EID, config.ELA_EID_UPDATE_ACTION, block)
-        // })
-        // ws.on("error", (err) => {
-        //     console.log("ela.esc websocker error ")
-        //     syslog.write(syslog.create().error("Uncaught Exception thrown", err).addCaller())            
-        // })
       }
   }
   _initWeb3() {
