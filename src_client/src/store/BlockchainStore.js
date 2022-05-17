@@ -132,6 +132,13 @@ export const esc = types
         self.restarting = false;
       }
     });
+    const update = flow(function* (data) {
+      try{
+        applySnapshot(self, data);
+      } catch (err) {
+        console.error(err);
+      }
+    });    
     const resync = flow(function* (pwd) {
       try {
         self.restarting = true;
@@ -143,7 +150,7 @@ export const esc = types
         self.restarting = false;
       }
     });
-    return { fetchData, restart, resync };
+    return { fetchData, restart, resync, update };
   });
 
 export const Carrier = types

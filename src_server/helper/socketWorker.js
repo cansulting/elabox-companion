@@ -1,5 +1,7 @@
 const workerpool = require('workerpool');
+const Web3 = require("web3");
 const { exec } = require("child_process");
+const config = require("../config");
 
 const maxBufferSize = 10000
 
@@ -63,7 +65,38 @@ async function ElaSocketEvent(result){
     }                    
     }
   }      
+async function EscSocketEvent(latestBlock){
+    const web3 = new Web3(`ws://localhost:${config.ESC_PORT}`);
+    const latestBlockN = latestBlock.number;
+    const blockSizeList = [];
+    const nbOfTxList = [];
+    let bestBlockSize = 0;
+    let bestBlockN = latestBlockN;
+    let startingBlock = latestBlockN - 10;
+    if (startingBlock <= 0) startingBlock = 0;
+    for (let index = startingBlock; index < latestBlockN; index++) {
+      const block = await web3.eth.getBlock(index);
+      blockSizeList.push(block.size);
+      if (block.size > bestBlockSize) {
+        bestBlockSize = block.size;
+        bestBlockN = block.number;
+      }
+      const txcount = await web3.eth.getBlockTransactionCount(index);
+      nbOfTxList.push(txcount);
+    }
 
+    return {
+      blockCount: bestBlockN,
+      blockSizes: blockSizeList,
+      nbOfTxs: nbOfTxList,
+      latestBlock: {
+        blockTime: latestBlock.timestamp,
+        blockHash: latestBlock.hash,
+        miner: latestBlock.miner,
+      },
+    };    
+  }
   workerpool.worker({
-    ElaSocketEvent
+    ElaSocketEvent,
+    EscSocketEvent
   });

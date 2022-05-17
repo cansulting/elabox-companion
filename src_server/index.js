@@ -823,9 +823,13 @@ const startServer = () => {
     });
     await mainchain.init();
     mainchain.setOnComplete(async () => {
-      mainchain.listen();
+      mainchain.listen()      
+      await esc.init()
+      esc.setOnComplete(()=>{
+        esc.listen();
+      })      
       await eid.init();
-      await eid.setOnComplete(() => esc.init());
+      await eid.setOnComplete();
     });
   });
 };

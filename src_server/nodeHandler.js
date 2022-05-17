@@ -1,14 +1,13 @@
 const processhelper = require("./helper");
+const workerpool = require('workerpool');
+const pool = workerpool.pool("./helper/socketWorker");
 //const eventhandler = require("./helper/eventHandler")
 const delay = require("delay");
-//const WebSocket = require("ws")
 const Web3 = require("web3");
 const { isPortTaken } = require("./utilities/isPortTaken");
 const syslog = require("./logger")
-//const GETHWS_RECON = 5000;
-const maxBufferSize = 10000;
-const fs = require('fs')
-const { eboxEventInstance } = require("./helper/eventHandler");
+
+const { eboxEventInstance, broadcast } = require("./helper/eventHandler");
 const { 
   ELA_SYSTEM_RESTART_APP, 
   ELA_SYSTEM_TERMINATE_APP, 
@@ -22,64 +21,78 @@ const STARTED = 1;
 const STOPPING = 2;
 const STOPPED = 3;
 const ERROR = 4;
-
 // class that manages nodes( ESC, EID and other related nodes) 
 class NodeHandler {
   // @binaryName: name of binary to be executed
   // @cwd: path where binary is saved
   // @dataPath: path where data is saved
   // @wsport: port where ws api is accessible
-  constructor(options = { binaryName: "", cwd: "", dataPath: "", wsport: 0, rpcport: 0, }) {
+  constructor(options = { binaryName: "", cwd: "", dataPath: "", wsport: 0, rpcport: 0 }) {
     this.options = options;
     this.wspath = "ws://localhost:" + options.wsport;
     this.status = STOPPED;
   }
   async init() {
-    await this.start();
+    await this.start()
     //setupWS()
   }
 
-  // function setupWS() {
-  //     let ws;
-  //     try {
-  //         ws = new WebSocket(GETHWS)
-  //     }catch(e) {
-  //         console.log("SetupWS error", e)
-  //     }
-
-  //     ws.on("open", () => {
-  //         const input = {"id": 1, "method": "eth_subscribe", "params": ["syncing"]}
-  //         ws.send(JSON.stringify(input), (err) => {
-  //             if (err)
-  //                 console.log("Sent ERROR", err)
-  //         })
-
-  //     })
-  //     ws.on("close", (code, reason) => {
-  //         console.log("Closed GETH WS", Buffer.from( reason).toString())
-  //         console.log("Reconnecting")
-  //         setTimeout(setupWS, GETHWS_RECON)
-  //     })
-  //     ws.on("message", (data) => {
-  //         const output = Buffer.from(data).toString()
-  //         console.log(output)
-  //         //eventhandler.broadcast(config.ELA_EID, config.ELA_EID_UPDATE_ACTION, block)
-  //     })
-  //     ws.on("error", (err) => {
-  //         console.log("GETH websocker error ")
-  //     })
-  // }
+  listen() {
+      if(this.options.binaryName === "ela.esc"){
+        this.web3.eth.subscribe("newBlockHeaders",(err,latestBlocks)=>{
+          if (!err){
+            if(latestBlocks !== null){
+              pool.exec("EscSocketEvent",[latestBlocks])
+              .then(result => {
+                broadcast("ela.esc", "ela.esc.action.UPDATE",result)                      
+              }).catch(err=>{
+                console.log(err)
+              })
+            }
+          }
+          return
+        }).on("connected",()=>{
+          syslog.write(syslog.create().info(`ela.esc socket connected.`).addCategory("ela.esc"))                    
+        }).on("data",latestBlocks => {
+          pool.exec("EscSocketEvent",[latestBlocks])
+          .then(result => {
+            broadcast("ela.esc", "ela.esc.action.UPDATE",result)                      
+          }).catch(err=>{
+            console.log(err)
+          })          
+        }).on("error",err=>{
+            syslog.write(syslog.create().error("Uncaught Exception thrown", err).addCaller())                      
+        })
+        // let ws;
+        // try {
+        //     ws = new WebSocket(this.wspath)
+        // }catch(e) {
+        //   syslog.write(syslog.create().error("ela.esc websocket error", err).addCaller())                      
+        // }
+        // ws.on("open", () => {
+        //   syslog.write(syslog.create().info(`ela.esc socket connected.`).addCategory("ela.esc"))          
+        // })
+        // ws.on("close", (code, reason) => {
+        //     console.log("Closed ela.esc websocket", Buffer.from(reason).toString())
+        //     console.log("Reconnecting")
+        //     setTimeout(()=>{
+        //       this.listen()
+        //     }, GETHWS_RECON)
+        // })
+        // ws.on("message", (data) => {
+        //   console.log(output)
+        //     const output = Buffer.from(data).toString()
+        //     //eventhandler.broadcast(config.ELA_EID, config.ELA_EID_UPDATE_ACTION, block)
+        // })
+        // ws.on("error", (err) => {
+        //     console.log("ela.esc websocker error ")
+        //     syslog.write(syslog.create().error("Uncaught Exception thrown", err).addCaller())            
+        // })
+      }
+  }
   _initWeb3() {
     if (this.web3) return
     this.web3 = new Web3(this.wspath);
-  //   var filter = this.web3.eth.subscribe('newBlockHeaders')
-  // .on("connected", function(subscriptionId){
-  //     console.log(subscriptionId);
-  // })
-  // .on("data", function(blockHeader){
-  //     //console.log(blockHeader);
-  // })
-  // .on("error", console.error);
   }
 
   async start(callback = () => {}) {
@@ -89,21 +102,6 @@ class NodeHandler {
       this.status = STARTING;
       this.web3 = null;
       syslog.write(syslog.create().info(`Starting ${this.options.binaryName}`).addCategory(this.options.binaryName))
-      // callback when response received from node
-      // const _callback = (response) => {
-      //   if (response.success) {
-      //     syslog.write(syslog.create().debug(`${this.options.binaryName} started.`).addCategory(this.options.binaryName))
-      //     this.status = STARTED;
-      //   } else {
-      //     syslog.write(
-      //       syslog.create()
-      //       .error(`${this.options.binaryName} failed to start.`, response.error)
-      //       .addCategory(this.options.binaryName)
-      //     )
-      //     this.status = ERROR;
-      //   } 
-      //   callback(response);
-      // }
       // start the node
       await eboxEventInstance.sendSystemRPC(ELA_SYSTEM_RESTART_APP, this.options.binaryName)
       this.status = STARTED;
@@ -125,6 +123,7 @@ class NodeHandler {
   async resync(callback) {
     syslog.write(syslog.create().info(`Resyncing ${this.options.binaryName}`).addCategory(this.options.binaryName))
     await this.stop();
+
     await eboxEventInstance.sendSystemRPC(ELA_SYSTEM_CLEAR_APP_DATA, this.options.binaryName)
     await this.start(callback)
   }
@@ -156,8 +155,6 @@ class NodeHandler {
       if (!isRunning || !servicesRunning) {
         return { isRunning, servicesRunning };
       }
-      this._initWeb3();
-
       // get last 10 latest blocks
       await delay(1000)
       let latestBlock = await this.web3.eth.getBlock("latest");
@@ -216,9 +213,7 @@ class NodeHandler {
     }
     this._initWeb3();
     if (await this.isSyncing()) {
-      setTimeout(() => {
-        this.setOnComplete(callback);
-      }, 5000);
+      this.setOnComplete(callback)
     } else this.setOnComplete(callback);
   }
 }

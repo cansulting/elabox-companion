@@ -28,13 +28,15 @@ class MainchainHandler {
           try {
               ws = new WebSocket(`ws://localhost:${config.ELA_SOCKET_PORT}`)
           }catch(e) {
-              console.log("SetupWS error", e)
+              console.log("Ela socket error", e)
           }
           ws.on("open", () => {
-            
+            syslog.write(syslog.create().info(`Ela socket connected.`).addCategory("mainchain"))
           })
           ws.on("close", (code, reason) => {
-              setTimeout(this.listen, 2000)
+              setTimeout(()=>{
+                this.listen()
+              }, 5000)
           })
           ws.on("message",(data) => {
               const output = Buffer.from(data).toString()
@@ -44,13 +46,11 @@ class MainchainHandler {
                 .then(result => {
                   broadcast("ela.mainchain", "ela.mainchain.action.UPDATE",result)                      
                 })
-                .catch(error => {
-                  console.log(error)
-                })
               }
           })
           ws.on("error", (err) => {
-              console.log("Ela websocket error.")
+              console.log("Ela websocket error.")            
+              syslog.write(syslog.create().error("Uncaught Exception thrown", err).addCaller())            
           })
       }
     getBlockSize(height) {

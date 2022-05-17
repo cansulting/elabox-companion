@@ -1,11 +1,14 @@
 import React, { useState ,useEffect} from "react"
 import { useHistory } from "react-router-dom"
+import { observer } from "mobx-react"
 import * as ebox from "elabox-dapp-store.lib"
 import {EboxEvent} from "elabox-foundation"
+import RootStore from "../store"
 import RestartModal from "./RestartModal"
 import ResyncModal from "./ResyncModal"
 ebox.initialize(new EboxEvent(window.location.hostname))
-export default ({services,children}) => {  
+const DApps = ({children}) => {  
+    const { ela, eid, esc, feeds,carrier } = RootStore.blockchain    
     const [app,setApp] = useState({})
     const [restartModal,setRestartModal] = useState(false)
     const [resyncModal,setResyncModal] = useState(false)    
@@ -63,19 +66,19 @@ export default ({services,children}) => {
         let node = {};
         switch (appId) {
             case "ela.mainchain":
-                node = services.ela
+                node = ela
                 break;
             case "ela.eid":
-                node = services.eid
+                node = eid
                 break;
             case "ela.esc":
-                node = services.esc
+                node = esc
                 break;
             case "ela.feeds":
-                node = services.feeds 
+                node = feeds 
                 break;
             case "ela.carrier":
-                node = services.carrier             
+                node = carrier             
                 break;
             default:
                 node  = {}
@@ -126,3 +129,5 @@ export default ({services,children}) => {
         </div>
     )
 }
+
+export default observer(DApps)
