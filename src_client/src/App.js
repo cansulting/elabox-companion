@@ -23,16 +23,17 @@ class App extends React.Component {
   };
   async componentDidMount(){
     try {
-      await RootStore.blockchain.ela.fetchData();
-      await RootStore.blockchain.eid.fetchData();
-      await RootStore.blockchain.esc.fetchData();
-      await RootStore.blockchain.carrier.fetchData();
-      await RootStore.blockchain.feeds.fetchData();    
-      const responseJson = await backend.checkInstallation()
+      RootStore.blockchain.ela.fetchData();
+      RootStore.blockchain.eid.fetchData();
+      RootStore.blockchain.esc.fetchData();
+      RootStore.blockchain.carrier.fetchData();
+      RootStore.blockchain.feeds.fetchData();    
+      backend.checkInstallation().then( responseJson => {
         localStorage.setItem("isconfiged", responseJson.configed.trim());
         this.setState({ loading: false });      
+      })
     } catch (e) {
-      console.error(e);
+      console.error("issue fetching blockchain", e);
       this.setState({ loading: false });
     }    
   }
