@@ -27,7 +27,7 @@ module.exports = {
   ESC_DIR: homeapps + "/ela.esc",                     // esc bin path
   EID_DIR: homeapps + "/ela.eid",                     // eid bin path
   ELA_DIR: elaPath,                                   // ela mainchain bin path
-  ELADATA_DIR: eladatadir,                            // where keystore will be saved
+  ELADATA_DIR: documentsMainchain,                            // where keystore will be saved
   ELABLOCKS_DIR: eladatadir + "/elastos",             // mainchain blocks will be save
   EIDDATA_DIR: homeappdata + "/ela.eid",              // eid data directory
   ESCDATA_DIR: homeappdata + "/ela.esc",

@@ -365,7 +365,11 @@ router.post("/getBalance", (req, res) => {
 });
 
 router.get("/checkInstallation", async (req, res) => {
-  res.send({ configed: JSON.stringify(await checkFile(config.KEYSTORE_PATH)) });
+  let isExist = await checkFile(config.KEYSTORE_PATH)
+  if (!isExist) {
+    isExist = await checkFile(config.OLD_KEYSTORE_PATH)
+  }
+  res.send({ configed: JSON.stringify(isExist) });
 });
 
 router.post("/update", (req, res) => {
