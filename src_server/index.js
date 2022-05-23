@@ -365,7 +365,11 @@ router.post("/getBalance", (req, res) => {
 });
 
 router.get("/checkInstallation", async (req, res) => {
-  res.send({ configed: JSON.stringify(await checkFile(config.KEYSTORE_PATH)) });
+  let isExist = await checkFile(config.KEYSTORE_PATH)
+  if (!isExist) {
+    isExist = await checkFile(config.OLD_KEYSTORE_PATH)
+  }
+  res.send({ configed: JSON.stringify(isExist) });
 });
 
 router.post("/update", (req, res) => {
@@ -487,6 +491,7 @@ router.get("/regenerateOnion", async (req, res) => {
   res.send({ onion: await getOnionAddress() });
 });
 
+// use to check if elabox was already activated
 router.get("/elabox_activated", async (req, res) => {
   try {
     const activated = await licenseChecker.isElaboxActivated()
@@ -779,6 +784,7 @@ async function processDownloadPackage(req, res) {
         );
       })
       .catch((err) => {
+        syslog.write(syslog.create().error('failed to initiate download update', err))
         //revert back
         eventhandler.broadcast(
           config.INSTALLER_PK_ID,
