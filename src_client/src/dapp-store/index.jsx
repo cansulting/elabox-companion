@@ -16,7 +16,7 @@ const DApps = ({children}) => {
     const onClick = (app) => {
         const node = getNode(app.id)
         const notification = updateStatus(node)             
-        const path = `/ela.companion/dashboard/${app.id}`
+        const path = `/dashboard/${app.id}`
         const appInfo = {...app,notificationContents:[notification]}
         setApp(appInfo)
         history.push(path)
