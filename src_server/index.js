@@ -71,6 +71,7 @@ const { readWalletAddress } = require("./utilities/keystore");
 const postMarkMail = new postmark.ServerClient(config.POSTMARK_SERVER_TOKEN);
 
 const licenseChecker = require("./utilities/license")
+const transactions = require("./helper/transactions")
 
 let elaPath = config.ELA_DIR;
 router.get("/", (req, res) => {
@@ -474,11 +475,11 @@ router.post("/restartCarrier", (req, res) => {
 // get wallet transactions
 router.post("/utxo", (req, res) => {
   const {wallet} = req.body
-  mainchain.retrieveUTX(wallet)
+  transactions.retrieveUTX(wallet)
     .then( _res => res.json(_res))
     .catch( err => {
       console.log(err)
-      res.sendStatus(401)
+      res.sendStatus(500)
     })
 })
 
