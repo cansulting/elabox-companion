@@ -1,9 +1,15 @@
-import { useState, useEffect,useRef } from "react"
+import { useState, useEffect } from "react"
 import backend from "../api/backend"
+import DIDAuth from "../utils/did"
 import {validCharacters} from "../utils/auth"
+
+const DidAuth = new DIDAuth()
+DidAuth._initConnector()
+
 export default function UseAuth(clearWindowAddress=false) {
     const [seconds,setTimer]=useState(0)    
     const [isProcessing, setProcessing] = useState(false)    
+    const [isProcessingDid,setProcessingDid] = useState(false)
     useEffect(()=>{
       if(clearWindowAddress){
         window.localStorage.removeItem('address');    
@@ -67,11 +73,32 @@ export default function UseAuth(clearWindowAddress=false) {
           })   
       }) 
     }    
+    const handleDidSignin = () =>{
+      return new Promise( async (resolve,reject) => {
+        try {
+          const presentation = await DidAuth.signin()
+          if(presentation !== null){
+            const result = presentation.toJSON()     
+            setProcessingDid(true)            
+            localStorage.setItem('logedin', true)
+            localStorage.setItem('address', "EMx4pcKoPJSHKUzdyretPSjG5XxwBRdLSD") 
+            resolve(result)
+          } 
+        } catch (error) {
+          reject(error)
+        }
+        finally{
+          setProcessingDid(false)
+        }
+      })
+    }
     const isBlocked= seconds>0     
   return {
     seconds,
     isBlocked,
     isProcessing,
+    isProcessingDid,
     handleLogin,
+    handleDidSignin
   }
 }

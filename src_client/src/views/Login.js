@@ -2,18 +2,26 @@ import React, { useState ,useRef} from "react"
 import { Redirect } from "react-router-dom"
 import { Button, Input, Spinner } from "reactstrap"
 import useAuth from "../hooks/UseAuth"
+import Landing from "./components/Landing"
 import elaboxLogo from "./images/logo-circle-transparent.png"
 
 const CLEAR_WINDOW_ADDRESS = true
 function Login() {
   const [pwd,setPwd]=useState("")
   const [isLoggedIn, setLoggedIn] = useState(false)  
-  const {seconds,isBlocked,isProcessing, handleLogin } = useAuth(CLEAR_WINDOW_ADDRESS)
+  const {seconds,isBlocked,isProcessing,isProcessingDid, handleLogin, handleDidSignin } = useAuth(CLEAR_WINDOW_ADDRESS)
   function login() {
     handleLogin(pwd).then(_=>{
       setLoggedIn(true)
     }).catch(err=>{
       setPwd("")
+      alert(err)
+    })
+  }
+  function didlogin(){
+    handleDidSignin().then(_ => {
+      setLoggedIn(true)
+    }).catch(err=>{
       alert(err)
     })
   }
@@ -25,7 +33,10 @@ function Login() {
   if (isLoggedIn) {
     return <Redirect to="/" />;
   }  
-
+  
+  if (isProcessingDid){
+    return <Landing message="Open your Essentials to login"/>
+  }
   return (
     <div
       style={{
@@ -49,6 +60,7 @@ function Login() {
               if (!isProcessing) login();
             }}
           >
+            <Button block style={{marginBottom:10}} onClick={didlogin}>Login via essentials</Button>                        
             <Input
               data-testid="password"
               type="password"
@@ -64,7 +76,7 @@ function Login() {
               {!isProcessing && !isBlocked && "Sign In"} 
               {isBlocked && !isProcessing && `${new Date(seconds * 1000).toISOString().substr(11, 8)} remaning`}
               {isProcessing && <>Please wait<Spinner size='sm' style={{margin:"0 5px"}}/></>}
-            </Button>
+            </Button>            
           </form>
           <a style={{position:"absolute", bottom: 20,right: 30,color: "white"}} href="https://elabox.com/contact" target="_blank" rel="noopener noreferrer nofollow">
           Contact Us
