@@ -2,6 +2,12 @@ import React, { useState, useEffect } from "react"
 import { event_server } from "../../../Socket"
 import API from "../../../api/backend"
 import Landing from "../../../views/components/Landing"
+import { EboxEventInstance, INSTALLER_PKID } from "../../../config"
+
+EboxEventInstance.subscribe(
+  INSTALLER_PKID, 
+  (res) => console.log(res))
+
 export default function Ota({ children }) {
   const [status, setStatus] = useState("idle")
   const [currentVersionDetails, setCurrentVersionDetails] = useState("")
@@ -25,13 +31,13 @@ export default function Ota({ children }) {
   }, [status])
   // register to event server
   useEffect(() => {
-    event_server.on("ela.installer.PROGRESS", ({ data }) => {
+    EboxEventInstance.onAction("ela.installer.PROGRESS", ({data}) => {
       setProgress(data)
     })
-    event_server.on("ela.installer.INSTALL_DONE", ({}) => {
+    EboxEventInstance.on("ela.installer.INSTALL_DONE", ({}) => {
       setStatus("new-updates")
     })
-    event_server.on("ela.installer.INSTALL_ERROR", ({ data }) => {
+    EboxEventInstance.on("ela.installer.INSTALL_ERROR", ({ data }) => {
       setStatus("new-download")
       console.log("Failed downloading update " + data.reason)
       setErrorMsg("Failed downloading update please try again later.")

@@ -12,7 +12,7 @@
     "chart.js": "^2.9.3",
     "copy-to-clipboard": "^3.2.1",
     "elabox-dapp-store.lib": "^0.1.42",
-    "elabox-foundation": "^1.1.6",
+    "elabox-foundation": "^1.1.7",
     "formik": "^2.1.5",
     "mobx": "^6.0.4",
     "mobx-react": "^7.3.0",
@@ -47,6 +47,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "resolutions": {
+    "react-error-overlay": "6.0.9"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.14.1",

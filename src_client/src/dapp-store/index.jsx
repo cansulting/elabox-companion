@@ -1,9 +1,11 @@
 import React, { useState ,useEffect} from "react"
-import * as ebox from "elabox-dapp-store.lib"
-import {EboxEvent} from "elabox-foundation"
+import * as store from "elabox-dapp-store.lib"
 import RestartModal from "./RestartModal"
 import ResyncModal from "./ResyncModal"
-ebox.initialize(new EboxEvent(window.location.hostname))
+import { EboxEventInstance } from "../config"
+
+store.initialize(EboxEventInstance)
+
 export default ({services,children}) => {  
     const [app,setApp] = useState({})
     const [restartModal,setRestartModal] = useState(false)
@@ -117,10 +119,10 @@ export default ({services,children}) => {
             <RestartModal name={app.name} node={app.id} isOpen={restartModal} closeModal={closeRestartModal}/>
             <ResyncModal name={app.name} node={app.id} isOpen={resyncModal} closeModal={closeResyncModal}/>
             {!hasSelectedApp ?
-            <ebox.AppDashboardCon style={{backgroundColor:"#1E1E26",color:"white"}} iconWidth={130} iconHeight={130} onClick={onClick}/>
-            :<ebox.AppInfoCon onRestart={onRestart} onResync={onResync}  style={{color:"white"}} info={app} onBack={onBack}>
+            <store.AppDashboardCon style={{backgroundColor:"#1E1E26",color:"white"}} iconWidth={130} iconHeight={130} onClick={onClick}/>
+            :<store.AppInfoCon onRestart={onRestart} onResync={onResync}  style={{color:"white"}} info={app} onBack={onBack}>
                 {children(app.id, node)}
-            </ebox.AppInfoCon>}
+            </store.AppInfoCon>}
         </div>
     )
 }

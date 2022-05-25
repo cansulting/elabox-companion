@@ -1,52 +1,13 @@
 import { useState, useEffect } from "react"
-import io from "socket.io-client"
-const BROADCAST_SERVER_URL = window.location.hostname
+import { EboxEventInstance } from "./config";
 let setup = false
-let onStatusChanged;
 let lastStatus = ""
-export const SERVICE_ID = "ela.system"
-export const event_server = io(BROADCAST_SERVER_URL, {
-  transports: ["websocket"],
-})
-event_server.on("ela.broadcast.SYSTEM_STATUS_CHANGED", (data) => {
-  console.log("Status changed", data)
-})
-event_server.on("connect", () => {
-  if (onStatusChanged)
-    onStatusChanged()
-  event_server.emit(
-    SERVICE_ID,
-    { id: "ela.system.SUBSCRIBE"},
-    (response) => {
-      console.log(response)
-    }
-  )
-  event_server.emit(
-    SERVICE_ID,
-    { id: "ela.system.SUBSCRIBE", packageId: "ela.installer" },
-    (response) => {
-      console.log(response)
-    }
-  )
-  event_server.emit(
-    SERVICE_ID,
-    { id: "ela.system.SUBSCRIBE", packageId: "ela.eid"},
-    (response) => {
-      console.log(response)
-    }
-  )
-})
-event_server.on("disconnect", () => {
-  console.log("broadcast server disconnected")
-})
-event_server.on("connect_error", (response) => {
-  console.log(response)
-})
 
+// redirect to screen install when system initiates update
 function Socket({ children }) {
   const [elaStatus, setElaStatus] = useState()
   const handleCheckStatus = () => {
-    event_server.emit("elastatus", (currentStatus) => {
+    EboxEventInstance.getStatus((currentStatus) => {
       console.log("Status changed", currentStatus)
       if (currentStatus === lastStatus)
         return
@@ -55,14 +16,16 @@ function Socket({ children }) {
         window.location.href = "/"
       }
       setElaStatus(currentStatus)
-    })
+    }, true)
   }
   useEffect(() => {
-    if (!event_server || setup) return
+    if (setup) return
     setup = true
     handleCheckStatus()
-    onStatusChanged = handleCheckStatus
-  }, [event_server, elaStatus])
+    EboxEventInstance.on("connect", () => {
+      handleCheckStatus()
+    })
+  }, [elaStatus])
   return children
 }
 export default Socket
