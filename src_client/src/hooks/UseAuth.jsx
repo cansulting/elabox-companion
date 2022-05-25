@@ -76,12 +76,12 @@ export default function UseAuth(clearWindowAddress=false) {
     const handleDidSignin = () =>{
       return new Promise( async (resolve,reject) => {
         try {
+          setProcessingDid(true)            
           const presentation = await DidAuth.signin()
           if(presentation !== null){
             const result = presentation.toJSON()     
-            setProcessingDid(true)            
             localStorage.setItem('logedin', true)
-            localStorage.setItem('address', "EMx4pcKoPJSHKUzdyretPSjG5XxwBRdLSD") 
+            // localStorage.setItem('address', "EMx4pcKoPJSHKUzdyretPSjG5XxwBRdLSD") 
             resolve(result)
           } 
         } catch (error) {
