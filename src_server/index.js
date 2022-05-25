@@ -479,7 +479,7 @@ router.post("/utxo", (req, res) => {
     .then( _res => res.json(_res))
     .catch( err => {
       console.log(err)
-      res.sendStatus(401)
+      res.sendStatus(500)
     })
 })
 

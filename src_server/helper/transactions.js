@@ -1,5 +1,6 @@
 
 const mainchain = require("../mainchainHandler")
+const dateFns = require("date-fns")
 
 function retrieveTransactionElephant(address = "") { 
     return fetch(
@@ -14,8 +15,11 @@ async function retrieveTransactionViaLocal(walletAddr = "") {
 }
 
 async function retrieveTransaction(walletAddr = "") {
-    const localRunning = mainchain.instance.isRunning()
-    if (localRunning) {
+    const localRunning = await mainchain.instance.isRunning()
+    const { blockTime } = (await mainchain.instance.getStatus()).latestBlock
+    const timestamp = Date.now();
+    const isSync = dateFns.differenceInDays(timestamp,blockTime * 1000) === 0
+    if (localRunning && isSync) {
         return await retrieveTransactionViaLocal(walletAddr)
     } 
 
