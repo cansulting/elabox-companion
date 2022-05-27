@@ -22,7 +22,7 @@ class App extends React.Component {
       RootStore.blockchain.carrier.fetchData();
       RootStore.blockchain.feeds.fetchData();    
       backend.checkInstallation().then((responseJson) => {
-        if(!responseJson.configed){
+        if(responseJson.configed !== true){
           window.location.href = "/ela.setup"
           return
         }
