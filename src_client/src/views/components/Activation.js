@@ -29,7 +29,7 @@ export default function Activation({ isMobile, isOpen, closeActivation , isModal
         setLoading(false)
         if (res) {
             res = {...res, onClick: () => {
-                handleCloseActivation(res.isActivated)
+                handleCloseActivation(res.activated)
                 setActivateRes(null)
             }} 
             setActivateRes(res)
@@ -95,14 +95,14 @@ const ActivationLoading = ({}) => {
     </Frame>)
 }
 
-const ActivationResult = ({isActivated, error, onClick}) => {
+const ActivationResult = ({activated, error, onClick}) => {
     return (
         <Frame>
         <div className="animated fadeIn w3-container">
-            {isActivated && <>
-                <h2>Activate Success</h2>
+            {activated && <>
+                <h2>License Activated</h2>
             </>}
-            {!isActivated && <>
+            {!activated && <>
                 <h2>Activation Failed</h2>
                 {error && <p>{error}</p>}
                 {!error && <p>Please try again later.</p>}
