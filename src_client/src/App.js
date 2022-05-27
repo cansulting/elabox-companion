@@ -3,7 +3,6 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect,
 } from "react-router-dom";
 
 import backend from "./api/backend";
@@ -11,7 +10,6 @@ import RootStore from "./store";
 import Socket from "./Socket";
 import Landing from "./views/components/Landing"
 const Auth = React.lazy(() => import("./views/Auth"));
-const Config = React.lazy(() => import("./views/Config"));
 const Download = React.lazy(() => import("./views/Download"));
 const loading = () => <Landing/>;
 class App extends React.Component {
@@ -24,11 +22,13 @@ class App extends React.Component {
       RootStore.blockchain.carrier.fetchData();
       RootStore.blockchain.feeds.fetchData();    
       backend.checkInstallation().then((responseJson) => {
-        localStorage.setItem("isconfiged", responseJson.configed.trim());
+        if(responseJson.configed !== true){
+          window.location.href = "/ela.setup"
+          return
+        }
         this.setState({ loading: false });
       });
     } catch (e) {
-      console.error(e);
       this.setState({ loading: false });
     }
   }
@@ -63,9 +63,6 @@ class App extends React.Component {
             <div>
               <React.Suspense fallback={loading()}>
                 <Switch>
-                  <Route path="/config">
-                    <Config />
-                  </Route>
                   <Route path="/download">
                     <Download />
                   </Route>
@@ -99,16 +96,9 @@ function PrivateRoute({ children, ...rest }) {
     <Route
       {...rest}
       render={({ location }) =>
-        isConfiged === "true" ? (
+        isConfiged === "true" && (
           children
-        ) : (
-          <Redirect
-            to={{
-              pathname: "/config",
-              state: { from: location },
-            }}
-          />
-        )
+        ) 
       }
     />
   );

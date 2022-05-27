@@ -370,7 +370,7 @@ router.get("/checkInstallation", async (req, res) => {
   if (!isExist) {
     isExist = await checkFile(config.OLD_KEYSTORE_PATH)
   }
-  res.send({ configed: JSON.stringify(isExist) });
+  res.send({ configed: isExist });
 });
 
 router.post("/update", (req, res) => {
