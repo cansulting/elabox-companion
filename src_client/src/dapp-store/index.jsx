@@ -11,7 +11,6 @@ export default ({services,children}) => {
     const [restartModal,setRestartModal] = useState(false)
     const [resyncModal,setResyncModal] = useState(false)    
     const onClick = (appInfo) => {
-        console.log(appInfo)
         const node = getNode(appInfo.id)
         const notification = updateStatus(appInfo, node)             
         const path = `/ela.companion/dashboard/${appInfo.id}`
