@@ -476,7 +476,12 @@ router.post("/restartCarrier", (req, res) => {
 router.post("/utxo", (req, res) => {
   const {wallet} = req.body
   transactions.retrieveUTX(wallet)
-    .then( _res => res.json(_res))
+    .then( _res => {
+      if(_res.hasOwnProperty("result")){
+        return res.json(_res.result.History)
+      }
+      return res.json(_res)
+    })
     .catch( err => {
       console.log(err)
       res.sendStatus(500)

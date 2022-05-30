@@ -16,13 +16,18 @@ async function retrieveTransactionViaLocal(walletAddr = "") {
 
 async function retrieveTransaction(walletAddr = "") {
     const localRunning = await mainchain.instance.isRunning()
-    const { blockTime } = (await mainchain.instance.getStatus()).latestBlock
-    const timestamp = Date.now();
-    const isSync = dateFns.differenceInDays(timestamp,blockTime * 1000) === 0
-    if (localRunning && isSync) {
-        return await retrieveTransactionViaLocal(walletAddr)
-    } 
-
+    const block= await mainchain.instance.getStatus()
+    if(block !== undefined){
+        const { latestBlock } = block
+        if (latestBlock) {
+            const { blockTime } = latestBlock
+            const timestamp = Date.now();
+            const isSync = dateFns.differenceInDays(timestamp,blockTime * 1000) === 0
+            if (localRunning && isSync) {
+                return await retrieveTransactionViaLocal(walletAddr)
+            }         
+        }
+    }
     return await retrieveTransactionElephant(walletAddr) 
 }
 
