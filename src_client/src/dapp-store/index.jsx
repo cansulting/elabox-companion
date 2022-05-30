@@ -10,11 +10,12 @@ export default ({services,children}) => {
     const [app,setApp] = useState({})
     const [restartModal,setRestartModal] = useState(false)
     const [resyncModal,setResyncModal] = useState(false)    
-    const onClick = (app) => {
-        const node = getNode(app.id)
-        const notification = updateStatus(node)             
-        const path = `/ela.companion/dashboard/${app.id}`
-        const appInfo = {...app,notificationContents:[notification]}
+    const onClick = (appInfo) => {
+        console.log(appInfo)
+        const node = getNode(appInfo.id)
+        const notification = updateStatus(appInfo, node)             
+        const path = `/ela.companion/dashboard/${appInfo.id}`
+        appInfo = {...appInfo,notificationContents:[notification]}
         setApp(appInfo)
         window.history.pushState({}, '',path)
     }    
@@ -22,28 +23,30 @@ export default ({services,children}) => {
         setApp({})
         window.history.pushState({}, '',"/")        
     }
-    const updateStatus = (node)=>{
+    const updateStatus = (appInfo, node)=>{
         let notification = {}
-        if (node.hasOwnProperty("isRunning") && node.hasOwnProperty("servicesRunning")){
-            if(node.isRunning){
-                if(node.servicesRunning){
-                    notification={type:"info",content:"Syncing"}
-                }      
-                else if(!node.servicesRunning){
-                    notification={type:"info",content:"Initializing"}
-                }                              
+        if (appInfo.status === 'installed') {
+            if (node.hasOwnProperty("isRunning") && node.hasOwnProperty("servicesRunning")){
+                if(node.isRunning){
+                    if(node.servicesRunning){
+                        notification={type:"info",content:"Syncing"}
+                    }      
+                    else if(!node.servicesRunning){
+                        notification={type:"info",content:"Initializing"}
+                    }                              
+                }
+                else{
+                    notification={type:"error",content:"Not running"}   
+                }                    
             }
-            else{
-                notification={type:"error",content:"Not running"}   
-            }                    
-        }
-        else if(node.hasOwnProperty("isRunning") ){
-            if(node.isRunning){
-                notification={type:"info",content:"Running"}
-            }   
-            else{
-                notification={type:"error",content:"Not running"}   
-            }
+            else if(node.hasOwnProperty("isRunning") ){
+                if(node.isRunning) {
+                    notification={type:"info",content:"Running"}
+                }   
+                else{
+                    notification={type:"error",content:"Not running"}   
+                }
+            } 
         }
         return notification
     }
@@ -105,7 +108,7 @@ export default ({services,children}) => {
             const appId = window.location.pathname.split("/")[pathNameSplitCount - 1]  
             if(isValidApp(appId)){
                 const node = getNode(appId)
-                const notification = updateStatus(node)      
+                const notification = updateStatus(app, node)      
                 const appInfo = {id: appId, notificationContents: [notification]}                       
                 setApp(appInfo)
             }
