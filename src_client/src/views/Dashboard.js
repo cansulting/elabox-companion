@@ -1,42 +1,43 @@
 import React, { useEffect } from "react"
 import {useLocation} from "react-router-dom"
-import {EboxEvent} from "elabox-foundation"
+import {EboxEventInstance} from "../config"
 import NodePreview from "./components/NodePreviewer"
 import RootStore from "../store"
 import { observer } from "mobx-react"
 import Copy from "./components/Copy"
 import DApps from "../dapp-store"
 
-const elaboxEvent = new EboxEvent(window.location.hostname)
 const Dashboard = ({ isMobile }) => {
   const { ela, eid, esc,feeds,carrier } = RootStore.blockchain
   const location = useLocation()
   useEffect(() => {
+    console.log(location.pathname)
     if(location.pathname.includes('ela.mainchain')){
-      elaboxEvent.subscribe("ela.mainchain.action.UPDATE", res =>{
+      EboxEventInstance.subscribe("ela.mainchain", res =>{
         console.log(res)
       })      
-      elaboxEvent.on("ela.mainchain", args => {
+      EboxEventInstance.on("ela.mainchain.action.UPDATE", args => {
         const updatedEla = {...ela,...args.data}
         RootStore.blockchain.ela.update(updatedEla)
       })          
     }
     else if(location.pathname.includes("ela.esc")){
-      elaboxEvent.subscribe("ela.esc.action.UPDATE", res =>{
+      EboxEventInstance.subscribe("ela.esc", res =>{
         console.log(res)
       })      
-      elaboxEvent.on("ela.esc", args => {
+      EboxEventInstance.on("ela.esc.action.UPDATE", args => {
         const updatedEsc = {...esc,...args.data}
+        //console.log(updatedEsc)
         RootStore.blockchain.esc.update(updatedEsc)
       })                
     }
     else{
-      elaboxEvent.off("ela.mainchain")
-      elaboxEvent.off("ela.esc")
+      EboxEventInstance.off("ela.mainchain.action.UPDATE")
+      EboxEventInstance.off("ela.esc.action.UPDATE")
     }
      return ()=>{
-      elaboxEvent.off("ela.mainchain")
-      elaboxEvent.off("ela.esc")      
+      EboxEventInstance.off("ela.mainchain.action.UPDATE")
+      EboxEventInstance.off("ela.esc.action.UPDATE")      
     }
   }, [location.pathname])
   return (

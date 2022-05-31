@@ -1,9 +1,7 @@
 const workerpool = require('workerpool');
 const Web3 = require("web3");
-const { exec } = require("child_process");
 const config = require("../config");
-
-const maxBufferSize = 10000
+const { default: axios } = require('axios');
 
 async function ElaSocketEvent(result){
     const blockCount = result.height
@@ -11,39 +9,17 @@ async function ElaSocketEvent(result){
     const nbOfTxList = []
     const getBlockSize = (height) =>{
       return new Promise(function (resolve, reject) {
-        exec(
-          "curl http://localhost:20334/api/v1/block/details/height/" + height + "",
-          { maxBuffer: 1024 * maxBufferSize },
-          (err, stdout, stderr) => {
-            if (err) {
-              reject(err)
-            } else {
-              let details = JSON.parse(stdout)
-              resolve(details.Result)
-            }
-          }
-        )
+        axios.get("http://localhost:20334/api/v1/block/details/height/" + height)
+        .then( res => resolve(res.data.Result))
+        .catch( err => reject(err))
       })            
     }
     const getNbOfTx = (height) =>{
       return new Promise(function (resolve, reject) {
-        exec(
-          "curl http://localhost:20334/api/v1/block/transactions/height/" +
-            height +
-            "",
-          { maxBuffer: 1024 * maxBufferSize },
-          (err, stdout, stderr) => {
-            if (err) {
-              reject(err)
-            } else {
-              let details = JSON.parse(stdout)
-              resolve(details.Result.Transactions.length)
-            }
-          }
-        )
-      }).catch((error) => {
-        reject(error)
-      })            
+        axios.get("http://localhost:20334/api/v1/block/transactions/height/" + height)
+        .then( res => resolve(res.data.Result.Transactions.length))
+        .catch( err => reject(err))
+      })         
     }
     for (let i = 0; i < blockCount - 1 && i < 10; i++) {
         const blockSize = await getBlockSize(blockCount - 1 - i)

@@ -21,7 +21,8 @@ class MainchainHandler {
         syslog.write(syslog.create().debug("Starting mainchain...").addCategory("mainchain"))
         await this.start((response) => {
           syslog.write(syslog.create().debug(`Mainchain start response ${response}`).addCategory("mainchain"))
-        })
+        }) 
+        this.listen()
     }
     listen() {
           let ws;
@@ -41,11 +42,15 @@ class MainchainHandler {
           ws.on("message",(data) => {
               const output = Buffer.from(data).toString()
               const result = JSON.parse(output).Result
-              if(result.hasOwnProperty("height")){
-                pool.exec("ElaSocketEvent",[result])
+              if(result.height || result.Height){
+                pool.exec('ElaSocketEvent',[result])
                 .then(result => {
+                  if (!result.blockCount) return
+                  //console.log("mainchain needs to be updated", result)
                   broadcast("ela.mainchain", "ela.mainchain.action.UPDATE",result)                      
                 })
+                .catch(err => 
+                  syslog.write(syslog.create().error("mainchain pool error", err)))
               }
           })
           ws.on("error", (err) => {
@@ -155,7 +160,7 @@ class MainchainHandler {
                 const nbOfTx = await this.getNbOfTx(blockCount - 1 - i)
                 nbOfTxList.push(nbOfTx)
             }
-        
+            console.log(blockCount === null)
             return {
                 blockCount: blockCount - 1,
                 blockSizes: blockSizeList,

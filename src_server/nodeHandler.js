@@ -34,17 +34,18 @@ class NodeHandler {
   }
   async init() {
     await this.start()
+    this._initWeb3()
+    this.listen()
     //setupWS()
   }
 
   listen() {
-      if(this.options.binaryName === "ela.esc"){
         this.web3.eth.subscribe("newBlockHeaders",(err,latestBlocks)=>{
           if (!err){
             if(latestBlocks !== null){
               pool.exec("EscSocketEvent",[latestBlocks])
               .then(result => {
-                broadcast("ela.esc", "ela.esc.action.UPDATE",result)                      
+                broadcast(this.options.binaryName, this.options.binaryName + ".action.UPDATE",result)                      
               }).catch(err=>{
                 console.log(err)
               })
@@ -52,20 +53,14 @@ class NodeHandler {
           }
           return
         }).on("connected",()=>{
-          syslog.write(syslog.create().info(`ela.esc socket connected.`).addCategory("ela.esc"))                    
-        }).on("data",latestBlocks => {
-          pool.exec("EscSocketEvent",[latestBlocks])
-          .then(result => {
-            broadcast("ela.esc", "ela.esc.action.UPDATE",result)                      
-          })          
+          syslog.write(syslog.create().info(`ela.esc socket connected.`).addCategory("ela.esc"))                        
         }).on("error",err=>{
             syslog.write(syslog.create().error("Uncaught Exception thrown", err).addCaller())                      
         })
-      }
   }
   _initWeb3() {
     if (this.web3) return
-    this.web3 = new Web3(this.wspath);
+    this.web3 = new Web3(this.wspath,  );
   }
 
   async start(callback = () => {}) {

@@ -835,14 +835,12 @@ const startServer = () => {
         });
     });
     await mainchain.init();
-    mainchain.setOnComplete(async () => {
-      mainchain.listen()      
+    mainchain.setOnComplete(async () => {  
       await esc.init()
-      esc.setOnComplete(()=>{
-        esc.listen();
+      esc.setOnComplete( async ()=>{
+          await eid.init();
+          await eid.setOnComplete();
       })      
-      await eid.init();
-      await eid.setOnComplete();
     });
   });
 };

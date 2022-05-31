@@ -1,4 +1,6 @@
 import React, { useState ,useEffect} from "react"
+import { useHistory } from "react-router-dom"
+import RootStore from "../store"
 import * as store from "elabox-dapp-store.lib"
 import RestartModal from "./RestartModal"
 import ResyncModal from "./ResyncModal"
@@ -7,13 +9,15 @@ import { EboxEventInstance } from "../config"
 store.initialize(EboxEventInstance)
 
 export default ({services,children}) => {  
+    const { ela, eid, esc, feeds,carrier } = RootStore.blockchain    
     const [app,setApp] = useState({})
     const [restartModal,setRestartModal] = useState(false)
-    const [resyncModal,setResyncModal] = useState(false)    
+    const [resyncModal,setResyncModal] = useState(false)  
+    const history = useHistory()  
     const onClick = (appInfo) => {
         const node = getNode(appInfo.id)
         const notification = updateStatus(appInfo, node)             
-        const path = `/ela.companion/dashboard/${appInfo.id}`
+        const path = `/dashboard/${appInfo.id}`
         appInfo = {...appInfo,notificationContents:[notification]}
         setApp(appInfo)
         history.push(path)
@@ -128,5 +132,3 @@ export default ({services,children}) => {
         </div>
     )
 }
-
-export default observer(DApps)
