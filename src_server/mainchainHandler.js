@@ -185,7 +185,7 @@ class MainchainHandler {
     }
     async retrieveUTX(walletAddr = "") {
       //console.log("retrieveUTX")
-      const res = await fetch(config.WALLET_TRANSACTION_URL + "/" + walletAddr)
+      const res = await fetch(config.WALLET_TRANSACTION_URL + "/" + walletAddr, {method: 'GET'})
       const json = await res.json()
       const txids = {}
       //console.log(json)
@@ -196,7 +196,7 @@ class MainchainHandler {
           for (const itemUtx of transacRes.UTXO) {
             txids[itemUtx.Txid] = itemUtx.Value
             promises.push(
-              fetch(config.UTX_DETAILS_URL + "/" + itemUtx.Txid)
+              fetch(config.UTX_DETAILS_URL + "/" + itemUtx.Txid, {method:'GET'})
             )
           }
         }

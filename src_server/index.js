@@ -71,6 +71,7 @@ const { readWalletAddress } = require("./utilities/keystore");
 const postMarkMail = new postmark.ServerClient(config.POSTMARK_SERVER_TOKEN);
 
 const licenseChecker = require("./utilities/license")
+const transactions = require("./helper/transactions")
 
 let elaPath = config.ELA_DIR;
 router.get("/", (req, res) => {
@@ -369,7 +370,7 @@ router.get("/checkInstallation", async (req, res) => {
   if (!isExist) {
     isExist = await checkFile(config.OLD_KEYSTORE_PATH)
   }
-  res.send({ configed: JSON.stringify(isExist) });
+  res.send({ configed: isExist });
 });
 
 router.post("/update", (req, res) => {
@@ -474,11 +475,16 @@ router.post("/restartCarrier", (req, res) => {
 // get wallet transactions
 router.post("/utxo", (req, res) => {
   const {wallet} = req.body
-  mainchain.retrieveUTX(wallet)
-    .then( _res => res.json(_res))
+  transactions.retrieveUTX(wallet)
+    .then( _res => {
+      if(_res.hasOwnProperty("result")){
+        return res.json(_res.result.History)
+      }
+      return res.json(_res)
+    })
     .catch( err => {
       console.log(err)
-      res.sendStatus(401)
+      res.sendStatus(500)
     })
 })
 

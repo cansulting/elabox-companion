@@ -20,26 +20,7 @@ async function broadcast(packageId, actionId, broadcast_data) {
     //   }
     // )
 
-    elaboxEvent.broadcast(packageId, actionId, broadcast_data)
-}
-
-async function RPC(packageId, actionId, data) {
-    return new Promise((resolve, reject) => {
-        broadcast_server.emit(
-          config.ELA_SYSTEM,
-          {
-            id: config.ELA_SYSTEM_RPC,
-            packageId: packageId,
-            data: {
-              id: actionId,
-              data: data
-            },
-          },
-          (response) => {
-            resolve(response)
-          }
-        )
-    })
+    elaboxEvent.broadcast(actionId, packageId, broadcast_data)
 }
 
 

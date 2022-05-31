@@ -1,23 +1,20 @@
 import React, { useState ,useEffect} from "react"
-import { useHistory } from "react-router-dom"
-import { observer } from "mobx-react"
-import * as ebox from "elabox-dapp-store.lib"
-import {EboxEvent} from "elabox-foundation"
-import RootStore from "../store"
+import * as store from "elabox-dapp-store.lib"
 import RestartModal from "./RestartModal"
 import ResyncModal from "./ResyncModal"
-ebox.initialize(new EboxEvent(window.location.hostname))
-const DApps = ({children}) => {  
-    const { ela, eid, esc, feeds,carrier } = RootStore.blockchain    
+import { EboxEventInstance } from "../config"
+
+store.initialize(EboxEventInstance)
+
+export default ({services,children}) => {  
     const [app,setApp] = useState({})
     const [restartModal,setRestartModal] = useState(false)
     const [resyncModal,setResyncModal] = useState(false)    
-    const history = useHistory()     
-    const onClick = (app) => {
-        const node = getNode(app.id)
-        const notification = updateStatus(node)             
-        const path = `/dashboard/${app.id}`
-        const appInfo = {...app,notificationContents:[notification]}
+    const onClick = (appInfo) => {
+        const node = getNode(appInfo.id)
+        const notification = updateStatus(appInfo, node)             
+        const path = `/ela.companion/dashboard/${appInfo.id}`
+        appInfo = {...appInfo,notificationContents:[notification]}
         setApp(appInfo)
         history.push(path)
     }    
@@ -25,28 +22,30 @@ const DApps = ({children}) => {
         setApp({})
         history.push("/")         
     }
-    const updateStatus = (node)=>{
+    const updateStatus = (appInfo, node)=>{
         let notification = {}
-        if (node.hasOwnProperty("isRunning") && node.hasOwnProperty("servicesRunning")){
-            if(node.isRunning){
-                if(node.servicesRunning){
-                    notification={type:"info",content:"Syncing"}
-                }      
-                else if(!node.servicesRunning){
-                    notification={type:"info",content:"Initializing"}
-                }                              
+        if (appInfo.status === 'installed') {
+            if (node.hasOwnProperty("isRunning") && node.hasOwnProperty("servicesRunning")){
+                if(node.isRunning){
+                    if(node.servicesRunning){
+                        notification={type:"info",content:"Syncing"}
+                    }      
+                    else if(!node.servicesRunning){
+                        notification={type:"info",content:"Initializing"}
+                    }                              
+                }
+                else{
+                    notification={type:"error",content:"Not running"}   
+                }                    
             }
-            else{
-                notification={type:"error",content:"Not running"}   
-            }                    
-        }
-        else if(node.hasOwnProperty("isRunning") ){
-            if(node.isRunning){
-                notification={type:"info",content:"Running"}
-            }   
-            else{
-                notification={type:"error",content:"Not running"}   
-            }
+            else if(node.hasOwnProperty("isRunning") ){
+                if(node.isRunning) {
+                    notification={type:"info",content:"Running"}
+                }   
+                else{
+                    notification={type:"error",content:"Not running"}   
+                }
+            } 
         }
         return notification
     }
@@ -108,7 +107,7 @@ const DApps = ({children}) => {
             const appId = window.location.pathname.split("/")[pathNameSplitCount - 1]  
             if(isValidApp(appId)){
                 const node = getNode(appId)
-                const notification = updateStatus(node)      
+                const notification = updateStatus(app, node)      
                 const appInfo = {id: appId, notificationContents: [notification]}                       
                 setApp(appInfo)
             }
@@ -122,10 +121,10 @@ const DApps = ({children}) => {
             <RestartModal name={app.name} node={app.id} isOpen={restartModal} closeModal={closeRestartModal}/>
             <ResyncModal name={app.name} node={app.id} isOpen={resyncModal} closeModal={closeResyncModal}/>
             {!hasSelectedApp ?
-            <ebox.AppDashboardCon style={{backgroundColor:"#1E1E26",color:"white"}} iconWidth={130} iconHeight={130} onClick={onClick}/>
-            :<ebox.AppInfoCon onRestart={onRestart} onResync={onResync}  style={{color:"white"}} info={app} onBack={onBack}>
+            <store.AppDashboardCon style={{backgroundColor:"#1E1E26",color:"white"}} iconWidth={130} iconHeight={130} onClick={onClick}/>
+            :<store.AppInfoCon onRestart={onRestart} onResync={onResync}  style={{color:"white"}} info={app} onBack={onBack}>
                 {children(app.id, node)}
-            </ebox.AppInfoCon>}
+            </store.AppInfoCon>}
         </div>
     )
 }
