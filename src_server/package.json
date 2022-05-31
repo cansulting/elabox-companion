@@ -26,7 +26,8 @@
     "tail": "^2.2.3",
     "url-exist": "2.0.2",
     "uuid": "^8.3.2",
-    "web3": "^1.5.2"
+    "web3": "^1.5.2",
+    "workerpool": "^6.2.1"
   },
   "scripts": {
     "start": "nodemon --ignore ./storage/ index.js",

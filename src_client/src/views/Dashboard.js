@@ -1,118 +1,44 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
+import {useLocation} from "react-router-dom"
+import {EboxEvent} from "elabox-foundation"
 import NodePreview from "./components/NodePreviewer"
 import RootStore from "../store"
 import { observer } from "mobx-react"
 import Copy from "./components/Copy"
 import DApps from "../dapp-store"
 
+const elaboxEvent = new EboxEvent(window.location.hostname)
 const Dashboard = ({ isMobile }) => {
   const { ela, eid, esc,feeds,carrier } = RootStore.blockchain
-  useEffect(() => {}, [])
-
-  var cardChartData1 = {
-    labels: ["       ", " ", " ", " ", " ", " ", " ", " ", " ", "       "],
-    datasets: [{ data: RootStore.blockchain.ela.blockSizes.slice().reverse() }],
-  }
-
-  var cardChartOpts1 = {
-    tooltips: {
-      enabled: true,
-    },
-    maintainAspectRatio: false,
-    legend: {
-      display: false,
-    },
-    scales: {
-      xAxes: [
-        {
-          gridLines: {
-            color: "transparent",
-            zeroLineColor: "transparent",
-          },
-          ticks: {
-            fontSize: 2,
-            fontColor: "transparent",
-          },
-        },
-      ],
-      yAxes: [
-        {
-          display: false,
-          ticks: {
-            display: false,
-            min: Math.min.apply(Math, cardChartData1.datasets[0].data) - 1000,
-            max: Math.max.apply(Math, cardChartData1.datasets[0].data) + 1000,
-          },
-        },
-      ],
-    },
-    elements: {
-      line: {
-        borderWidth: 2,
-        borderColor: "#2C71F6",
-        fill: false,
-      },
-      point: {
-        radius: 4,
-        backgroundColor: "#2C71F6",
-        hitRadius: 10,
-        hoverRadius: 6,
-      },
-    },
-  }
-
-  // Card Chart 2
-  const cardChartData2 = {
-    labels: ["       ", " ", " ", " ", " ", " ", " ", " ", " ", "       "],
-    datasets: [{ data: RootStore.blockchain.ela.nbOfTxs.slice().reverse() }],
-  }
-
-  const cardChartOpts2 = {
-    tooltips: {
-      enabled: true,
-    },
-    maintainAspectRatio: false,
-    legend: {
-      display: false,
-    },
-    scales: {
-      xAxes: [
-        {
-          gridLines: {
-            color: "transparent",
-            zeroLineColor: "transparent",
-          },
-          ticks: {
-            fontSize: 2,
-            fontColor: "transparent",
-          },
-        },
-      ],
-      yAxes: [
-        {
-          display: false,
-          ticks: {
-            display: false,
-            min: Math.min.apply(Math, cardChartData2.datasets[0].data) - 5,
-            max: Math.max.apply(Math, cardChartData2.datasets[0].data) + 5,
-          },
-        },
-      ],
-    },
-    elements: {
-      line: {
-        borderWidth: 2,
-        borderColor: "#2C71F6",
-        fill: false,
-      },
-      point: {
-        radius: 4,
-        backgroundColor: "#2C71F6",
-        hitRadius: 10,
-        hoverRadius: 6,
-      },
-    },
-  }
+  const location = useLocation()
+  useEffect(() => {
+    if(location.pathname.includes('ela.mainchain')){
+      elaboxEvent.subscribe("ela.mainchain.action.UPDATE", res =>{
+        console.log(res)
+      })      
+      elaboxEvent.on("ela.mainchain", args => {
+        const updatedEla = {...ela,...args.data}
+        RootStore.blockchain.ela.update(updatedEla)
+      })          
+    }
+    else if(location.pathname.includes("ela.esc")){
+      elaboxEvent.subscribe("ela.esc.action.UPDATE", res =>{
+        console.log(res)
+      })      
+      elaboxEvent.on("ela.esc", args => {
+        const updatedEsc = {...esc,...args.data}
+        RootStore.blockchain.esc.update(updatedEsc)
+      })                
+    }
+    else{
+      elaboxEvent.off("ela.mainchain")
+      elaboxEvent.off("ela.esc")
+    }
+     return ()=>{
+      elaboxEvent.off("ela.mainchain")
+      elaboxEvent.off("ela.esc")      
+    }
+  }, [location.pathname])
   return (
     <div
       id="main"

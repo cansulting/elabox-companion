@@ -15,6 +15,11 @@ const loading = () => <Landing/>;
 class App extends React.Component {
   constructor(props) {
     super(props);
+  }
+  state = {
+    loading: true,
+  };
+  async componentDidMount(){
     try {
       RootStore.blockchain.ela.fetchData();
       RootStore.blockchain.eid.fetchData();
@@ -30,12 +35,8 @@ class App extends React.Component {
       });
     } catch (e) {
       this.setState({ loading: false });
-    }
+    }    
   }
-
-  state = {
-    loading: true,
-  };
   render() {
     if (this.state.loading) {
       return (

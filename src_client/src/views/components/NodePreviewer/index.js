@@ -1,5 +1,6 @@
 import React, { useState, useEffect} from 'react'
 import {  Line } from "react-chartjs-2";
+import {observer} from "mobx-react"
 import { ButtonGroup, CardBody, Col, Row, Card, CardGroup } from "reactstrap";
 import Widget02 from "../../widgets/Widget02";
 import Widget04 from "../../widgets/Widget04";
@@ -181,4 +182,4 @@ const Previewer = (props) => {
     )
 }
 
-export default Previewer
+export default observer(Previewer)

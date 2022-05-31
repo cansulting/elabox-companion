@@ -1,18 +1,20 @@
 const processhelper = require("./helper");
-const delay = require("delay")
-const { exec } = require("child_process")
-const config = require("./config")
+const workerpool = require('workerpool');
+const pool = workerpool.pool("./helper/socketWorker");
+const delay = require("delay");
+const WebSocket = require("ws");
+const { exec } = require("child_process");
+const config = require("./config");
 const maxBufferSize = 10000
 const syslog = require("./logger");
 const { isPortTaken } = require("./utilities/isPortTaken");
 const binaryName = "ela.mainchain"
-const { eboxEventInstance } = require("./helper/eventHandler");
+const { eboxEventInstance , broadcast } = require("./helper/eventHandler");
 const { 
   ELA_SYSTEM_RESTART_APP, 
   ELA_SYSTEM_TERMINATE_APP, 
   ELA_SYSTEM_CLEAR_APP_DATA 
 } = require("./config");
-
 // contains procedures that manages the mainchain process 
 class MainchainHandler {
     async init() {
@@ -21,6 +23,36 @@ class MainchainHandler {
           syslog.write(syslog.create().debug(`Mainchain start response ${response}`).addCategory("mainchain"))
         })
     }
+    listen() {
+          let ws;
+          try {
+              ws = new WebSocket(`ws://localhost:${config.ELA_SOCKET_PORT}`)
+          }catch(e) {
+              console.log("Ela socket error", e)
+          }
+          ws.on("open", () => {
+            syslog.write(syslog.create().info(`Ela socket connected.`).addCategory("mainchain"))
+          })
+          ws.on("close", (code, reason) => {
+              setTimeout(()=>{
+                this.listen()
+              }, 5000)
+          })
+          ws.on("message",(data) => {
+              const output = Buffer.from(data).toString()
+              const result = JSON.parse(output).Result
+              if(result.hasOwnProperty("height")){
+                pool.exec("ElaSocketEvent",[result])
+                .then(result => {
+                  broadcast("ela.mainchain", "ela.mainchain.action.UPDATE",result)                      
+                })
+              }
+          })
+          ws.on("error", (err) => {
+              console.log("Ela websocket error.")            
+              syslog.write(syslog.create().error("Uncaught Exception thrown", err).addCaller())            
+          })
+      }
     getBlockSize(height) {
         return new Promise(function (resolve, reject) {
           exec(

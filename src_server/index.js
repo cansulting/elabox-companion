@@ -497,6 +497,7 @@ router.get("/regenerateOnion", async (req, res) => {
   res.send({ onion: await getOnionAddress() });
 });
 
+// use to check if elabox was already activated
 router.get("/elabox_activated", async (req, res) => {
   try {
     const activated = await licenseChecker.isElaboxActivated()
@@ -789,6 +790,7 @@ async function processDownloadPackage(req, res) {
         );
       })
       .catch((err) => {
+        syslog.write(syslog.create().error('failed to initiate download update', err))
         //revert back
         eventhandler.broadcast(
           config.INSTALLER_PK_ID,
@@ -834,8 +836,13 @@ const startServer = () => {
     });
     await mainchain.init();
     mainchain.setOnComplete(async () => {
+      mainchain.listen()      
+      await esc.init()
+      esc.setOnComplete(()=>{
+        esc.listen();
+      })      
       await eid.init();
-      await eid.setOnComplete(() => esc.init());
+      await eid.setOnComplete();
     });
   });
 };

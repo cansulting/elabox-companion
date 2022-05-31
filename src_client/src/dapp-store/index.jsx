@@ -16,11 +16,11 @@ export default ({services,children}) => {
         const path = `/ela.companion/dashboard/${appInfo.id}`
         appInfo = {...appInfo,notificationContents:[notification]}
         setApp(appInfo)
-        window.history.pushState({}, '',path)
+        history.push(path)
     }    
     const onBack = ()=>{
         setApp({})
-        window.history.pushState({}, '',"/")        
+        history.push("/")         
     }
     const updateStatus = (appInfo, node)=>{
         let notification = {}
@@ -65,19 +65,19 @@ export default ({services,children}) => {
         let node = {};
         switch (appId) {
             case "ela.mainchain":
-                node = services.ela
+                node = ela
                 break;
             case "ela.eid":
-                node = services.eid
+                node = eid
                 break;
             case "ela.esc":
-                node = services.esc
+                node = esc
                 break;
             case "ela.feeds":
-                node = services.feeds 
+                node = feeds 
                 break;
             case "ela.carrier":
-                node = services.carrier             
+                node = carrier             
                 break;
             default:
                 node  = {}
@@ -128,3 +128,5 @@ export default ({services,children}) => {
         </div>
     )
 }
+
+export default observer(DApps)
