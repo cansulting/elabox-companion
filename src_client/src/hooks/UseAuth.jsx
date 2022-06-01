@@ -10,6 +10,12 @@ export default function UseAuth(clearWindowAddress=false) {
     const [seconds,setTimer]=useState(0)    
     const [isProcessing, setProcessing] = useState(false)    
     const [isProcessingDid,setProcessingDid] = useState(false)
+    const [isDIDAvailable, setDidAvailability] = useState(false)
+    useEffect(() => {
+      if (!isDIDAvailable) {
+        DidAuth.isDidAvailable().then( available => setDidAvailability(available))
+      }
+    })
     useEffect(()=>{
       if(clearWindowAddress){
         window.localStorage.removeItem('address');    
@@ -77,13 +83,16 @@ export default function UseAuth(clearWindowAddress=false) {
       return new Promise( async (resolve,reject) => {
         try {
           setProcessingDid(true)            
-          const presentation = await DidAuth.signin()
-          if(presentation !== null){
-            const result = presentation.toJSON()     
+          const authResult = await DidAuth.signin()
+          if (authResult.code === 200) {
+            const account = authResult.message
             localStorage.setItem('logedin', true)
-            // localStorage.setItem('address', "EMx4pcKoPJSHKUzdyretPSjG5XxwBRdLSD") 
-            resolve(result)
-          } 
+            localStorage.setItem('address', account.wallet) 
+            resolve(authResult)
+          } else {
+            reject(authResult.code + ":" + authResult.message)
+          }
+          
         } catch (error) {
           reject(error)
         }
@@ -98,6 +107,7 @@ export default function UseAuth(clearWindowAddress=false) {
     isBlocked,
     isProcessing,
     isProcessingDid,
+    isDIDAvailable,
     handleLogin,
     handleDidSignin
   }

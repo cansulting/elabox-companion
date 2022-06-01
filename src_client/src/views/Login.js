@@ -9,7 +9,15 @@ const CLEAR_WINDOW_ADDRESS = true
 function Login() {
   const [pwd,setPwd]=useState("")
   const [isLoggedIn, setLoggedIn] = useState(false)  
-  const {seconds,isBlocked,isProcessing,isProcessingDid, handleLogin, handleDidSignin } = useAuth(CLEAR_WINDOW_ADDRESS)
+  const {
+    seconds,
+    isBlocked,
+    isProcessing,
+    isProcessingDid, 
+    handleLogin, 
+    handleDidSignin,
+    isDIDAvailable
+   } = useAuth(CLEAR_WINDOW_ADDRESS)
   function login() {
     handleLogin(pwd).then(_=>{
       setLoggedIn(true)
@@ -60,7 +68,8 @@ function Login() {
               if (!isProcessing) login();
             }}
           >
-            <Button block style={{marginBottom:10}} onClick={didlogin}>Login via essentials</Button>                        
+            { isDIDAvailable && <Button block style={{marginBottom:10}} onClick={didlogin}>
+              Login via essentials</Button>                        }
             <Input
               data-testid="password"
               type="password"
