@@ -92,7 +92,7 @@ class App extends React.Component {
 function PrivateRoute({ children, ...rest }) {
   const isConfiged = localStorage.getItem("isconfiged");
   console.log(localStorage);
-  console.log(isConfiged);
+  //console.log(isConfiged);
   return (
     <Route
       {...rest}

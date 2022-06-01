@@ -1,9 +1,21 @@
-import { useState, useEffect,useRef } from "react"
+import { useState, useEffect } from "react"
 import backend from "../api/backend"
+import DIDAuth from "../utils/did"
 import {validCharacters} from "../utils/auth"
+
+const DidAuth = new DIDAuth()
+DidAuth._initConnector()
+
 export default function UseAuth(clearWindowAddress=false) {
     const [seconds,setTimer]=useState(0)    
     const [isProcessing, setProcessing] = useState(false)    
+    const [isProcessingDid,setProcessingDid] = useState(false)
+    const [isDIDAvailable, setDidAvailability] = useState(false)
+    useEffect(() => {
+      if (!isDIDAvailable) {
+        DidAuth.isDidAvailable().then( available => setDidAvailability(available))
+      }
+    })
     useEffect(()=>{
       if(clearWindowAddress){
         window.localStorage.removeItem('address');    
@@ -67,11 +79,36 @@ export default function UseAuth(clearWindowAddress=false) {
           })   
       }) 
     }    
+    const handleDidSignin = () =>{
+      return new Promise( async (resolve,reject) => {
+        try {
+          setProcessingDid(true)            
+          const authResult = await DidAuth.signin()
+          if (authResult.code === 200) {
+            const account = authResult.message
+            localStorage.setItem('logedin', true)
+            localStorage.setItem('address', account.wallet) 
+            resolve(authResult)
+          } else {
+            reject(authResult.code + ":" + authResult.message)
+          }
+          
+        } catch (error) {
+          reject(error)
+        }
+        finally{
+          setProcessingDid(false)
+        }
+      })
+    }
     const isBlocked= seconds>0     
   return {
     seconds,
     isBlocked,
     isProcessing,
+    isProcessingDid,
+    isDIDAvailable,
     handleLogin,
+    handleDidSignin
   }
 }
