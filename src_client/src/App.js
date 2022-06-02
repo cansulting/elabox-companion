@@ -31,6 +31,7 @@ class App extends React.Component {
           window.location.href = "/ela.setup"
           return
         }
+        localStorage.setItem("isconfiged","true")
         this.setState({ loading: false });
       });
     } catch (e) {
