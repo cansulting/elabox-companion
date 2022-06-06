@@ -53,9 +53,9 @@ class NodeHandler {
           }
           return
         }).on("connected",()=>{
-          syslog.write(syslog.create().info(`ela.esc socket connected.`).addCategory("ela.esc"))                        
+          syslog.write(syslog.create().info(this.options.binaryName + ` socket connected.`).addCategory("ela.esc"))                        
         }).on("error",err=>{
-            syslog.write(syslog.create().error("Uncaught Exception thrown", err).addCaller())                      
+            syslog.write(syslog.create().error("failed running " + this.options.binaryName , err).addCaller())                      
         })
   }
   _initWeb3() {
