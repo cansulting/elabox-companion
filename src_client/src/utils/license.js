@@ -9,7 +9,7 @@ export const isActivated = async () => {
 }
 
 export const activateLicense = async () => {
-    const did = await DID.getInstance().signin()
+    const did = await DID.getInstance().request()
     //const did = "asdfsadf"
     if (did && did.holder) {
         const holder = did.holder.toJSON()

@@ -31,7 +31,7 @@ export default class Did {
         return false
     }
 
-    async signin() {
+    async request() {
         if (this.connector.hasWalletConnectSession())
             await this.connector.disconnectWalletConnect()
         const didAccess = new DID.DIDAccess()
@@ -40,6 +40,16 @@ export default class Did {
             const presentation = await didAccess.requestCredentials(
                 {claims: [DID.standardNameClaim("Activate elabox", false)]}
             );
+            return presentation
+        } catch (error) {
+            console.log(error);
+            return null
+        }
+    }
+
+    async signin() {
+        try {
+            const presentation = await this.request()
             const res = await this._authenticate(presentation)
             if (res.code === 200) {
                 // console.log("signin error", res)
