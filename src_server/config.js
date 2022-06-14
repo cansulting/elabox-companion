@@ -23,7 +23,7 @@ const web3Config = {
   // Enable auto reconnection
   reconnect: {
       auto: true,
-      delay: 20000, // ms
+      delay: 60000, // ms
       maxAttempts: 10000,
       onTimeout: false
   }
