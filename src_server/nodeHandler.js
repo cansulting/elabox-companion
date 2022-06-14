@@ -11,7 +11,8 @@ const { eboxEventInstance, broadcast } = require("./helper/eventHandler");
 const { 
   ELA_SYSTEM_RESTART_APP, 
   ELA_SYSTEM_TERMINATE_APP, 
-  ELA_SYSTEM_CLEAR_APP_DATA 
+  ELA_SYSTEM_CLEAR_APP_DATA,
+  WEB3_CONFIG
 } = require("./config");
 
 
@@ -21,6 +22,27 @@ const STARTED = 1;
 const STOPPING = 2;
 const STOPPED = 3;
 const ERROR = 4;
+//function for listening node changes
+function listen(web3,options) {
+  web3.eth.subscribe("newBlockHeaders",(err,latestBlocks)=>{
+    if (!err){
+      if(latestBlocks !== null){
+        pool.exec("EscSocketEvent",[latestBlocks])
+        .then(result => {
+          broadcast(options.binaryName, options.binaryName + ".action.UPDATE",result)                      
+        }).catch(err=>{
+          console.log(err)
+        })
+      }
+    }
+    return
+  }).on("connected",()=>{
+    syslog.write(syslog.create().info(options.binaryName + ` socket connected.`).addCategory("ela.esc"))                        
+  }).on("error",err=>{
+      syslog.write(syslog.create().error("failed running " + this.options.binaryName , err).addCaller())                      
+  })
+}
+
 // class that manages nodes( ESC, EID and other related nodes) 
 class NodeHandler {
   // @binaryName: name of binary to be executed
@@ -29,40 +51,23 @@ class NodeHandler {
   // @wsport: port where ws api is accessible
   constructor(options = { binaryName: "", cwd: "", dataPath: "", wsport: 0, rpcport: 0 }) {
     this.options = options;
-    this.wspath = "ws://localhost:" + options.wsport;
+    this.provider = new Web3.providers.WebsocketProvider("ws://localhost:" + options.wsport, WEB3_CONFIG);    
     this.status = STOPPED;
   }
   async init() {
     await this.start()
     this._initWeb3()
-    this.listen()
+    const web3 = this.web3;
+    const options = this.options
+    this.provider.on('connect',()=>{
+      listen(web3,options)
+    });        
     //setupWS()
-  }
-
-  listen() {
-        this.web3.eth.subscribe("newBlockHeaders",(err,latestBlocks)=>{
-          if (!err){
-            if(latestBlocks !== null){
-              pool.exec("EscSocketEvent",[latestBlocks])
-              .then(result => {
-                broadcast(this.options.binaryName, this.options.binaryName + ".action.UPDATE",result)                      
-              }).catch(err=>{
-                console.log(err)
-              })
-            }
-          }
-          return
-        }).on("connected",()=>{
-          syslog.write(syslog.create().info(this.options.binaryName + ` socket connected.`).addCategory("ela.esc"))                        
-        }).on("error",err=>{
-            syslog.write(syslog.create().error("failed running " + this.options.binaryName , err).addCaller())                      
-        })
   }
   _initWeb3() {
     if (this.web3) return
-    this.web3 = new Web3(this.wspath,  );
+    this.web3 = new Web3(this.provider);
   }
-
   async start(callback = () => {}) {
     if (
       !(await processhelper.checkProcessingRunning(this.options.binaryName))
