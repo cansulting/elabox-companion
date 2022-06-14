@@ -75,3 +75,10 @@ a:hover {
 .modal-header button.close{
   color: white !important;  
 }
+.transactions {
+  color: white !important;
+}
+.transactions a{
+  color:blue !important;
+  text-decoration: underline !important;
+}

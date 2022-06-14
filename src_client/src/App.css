@@ -28,6 +28,9 @@
 .App-link {
   color: #61dafb;
 }
+.transactions > * {
+  color:white;
+}
 
 @keyframes App-logo-spin {
   from {
