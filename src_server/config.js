@@ -20,22 +20,11 @@ const elaboxVersion = process.env.ELAVERSION
 
 const web3Config = {
   timeout: 30000, // ms
-
-  clientConfig: {
-      // Useful if requests are large
-      maxReceivedFrameSize: 100000000,   // bytes - default: 1MiB
-      maxReceivedMessageSize: 100000000, // bytes - default: 8MiB
-
-      // Useful to keep a connection alive
-      keepalive: true,
-      keepaliveInterval: -1 // ms
-  },
-
   // Enable auto reconnection
   reconnect: {
       auto: true,
-      delay: 3000, // ms
-      maxAttempts: 0,
+      delay: 20000, // ms
+      maxAttempts: 10000,
       onTimeout: false
   }
 }
