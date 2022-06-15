@@ -181,8 +181,8 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
       {
       ENABLE_ACTIVATION && !activated &&
       <p 
-        style={{color:"white",left:"5vw", 
-        position: "absolute", top: "83vh", 
+        style={{color:"white",left:"27%", 
+        position: "absolute", top: "80%", 
         cursor: "pointer" }} 
         onClick={handleShowActivation}>Activate Elabox</p>       
       }
