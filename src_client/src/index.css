@@ -75,7 +75,7 @@ a:hover {
 .modal-header button.close{
   color: white !important;  
 }
-.transactions {
+.transactions td,.transactions th {
   color: white !important;
 }
 .transactions a{
