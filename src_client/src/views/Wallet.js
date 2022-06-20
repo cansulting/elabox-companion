@@ -464,10 +464,10 @@ class Wallet extends Component {
               </CardHeader>
               <CardBody>
                 <Table
+                  className="transactions"
                   data-testid="transactions-table"
                   responsive
                   striped
-                  style={{ color: "white" }}
                 >
                   <thead>
                     <tr>
