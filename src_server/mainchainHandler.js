@@ -97,6 +97,8 @@ class MainchainHandler {
     }
 
     async start(callback = () => {}) {
+        // let the system handle the starting of mainchain
+        return 
         if ( !await processhelper.checkProcessingRunning(binaryName)) {
           syslog.write(syslog.create().info(`Start spawning mainchain`).addCategory("mainchain"))
           await eboxEventInstance.sendSystemRPC(ELA_SYSTEM_RESTART_APP, binaryName)

@@ -9,6 +9,7 @@
             "internalConsoleOptions": "neverOpen",
             "name": "Server",
             "program": "${workspaceFolder}/src_server/index.js",
+            "cwd": "${workspaceFolder}/src_server",
             "request": "launch",
             "restart": true,
             "runtimeExecutable": "nodemon",
