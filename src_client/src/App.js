@@ -10,7 +10,6 @@ import RootStore from "./store";
 import Socket from "./Socket";
 import Landing from "./views/components/Landing"
 const Auth = React.lazy(() => import("./views/Auth"));
-const Download = React.lazy(() => import("./views/Download"));
 const loading = () => <Landing/>;
 class App extends React.Component {
   constructor(props) {
@@ -65,9 +64,6 @@ class App extends React.Component {
             <div>
               <React.Suspense fallback={loading()}>
                 <Switch>
-                  <Route path="/download">
-                    <Download />
-                  </Route>
                   <Route path="/check">
                     <pre
                       style={{ wordWrap: "break-word", whiteSpace: "pre-wrap" }}
