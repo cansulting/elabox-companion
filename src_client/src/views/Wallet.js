@@ -18,6 +18,7 @@ import {
   ModalFooter,
   ModalBody,
   Spinner,
+  Alert,
 } from "reactstrap";
 // import BootstrapTable from 'react-bootstrap-table-next';
 import copy from "copy-to-clipboard";
@@ -352,6 +353,12 @@ class Wallet extends Component {
         <CardDeck>
           {/* <Row>
           <Col xs="12" md="4"> */}
+          <Col xs="12">
+            <Alert color="warning">
+            Starting August, ela keystore will be remove in Elabox. 
+            Elabox will be limited to viewing of transactions and it is the user responsibility to transfer all coins to the essentials wallet address.
+            </Alert>
+          </Col>
           <Card style={{ backgroundColor: "#272A3D", color: "white" }}>
             <CardHeader>
               <strong>Balance</strong>
