@@ -54,8 +54,8 @@ class MainchainHandler {
               }
           })
           ws.on("error", (err) => {
-              console.log("Ela websocket error.")            
-              syslog.write(syslog.create().error("Uncaught Exception thrown", err).addCaller())            
+              //console.log("Ela websocket error.")            
+              //syslog.write(syslog.create().error("Uncaught Exception thrown", err).addCaller())            
           })
       }
     getBlockSize(height) {

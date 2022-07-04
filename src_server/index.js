@@ -24,13 +24,13 @@ const NodeHandler = require("./nodeHandler");
 const MainchainHandler = require("./mainchainHandler");
 const feedsHandler = require("./feeds");
 const mainchain = MainchainHandler.instance;
-const eid = new NodeHandler({
-  binaryName: "ela.eid",
-  cwd: config.EID_DIR,
-  dataPath: config.EIDDATA_DIR + "/blocks",
-  wsport: config.EID_PORT,
-  rpcport: config.RPC_PORT_EID,
-});
+// const eid = new NodeHandler({
+//   binaryName: "ela.eid",
+//   cwd: config.EID_DIR,
+//   dataPath: config.EIDDATA_DIR + "/blocks",
+//   wsport: config.EID_PORT,
+//   rpcport: config.RPC_PORT_EID,
+// });
 const esc = new NodeHandler({
   binaryName: "ela.esc",
   cwd: config.ESC_DIR,
@@ -835,11 +835,9 @@ const startServer = () => {
         });
     });
     await mainchain.init();
-    mainchain.setOnComplete(async () => {  
-      await esc.init()
+    mainchain.setOnComplete(async () => { 
       esc.setOnComplete( async ()=>{
-          await eid.init();
-          await eid.setOnComplete();
+          //wait eid.setOnComplete();
       })      
     });
   });

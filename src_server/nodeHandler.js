@@ -2,6 +2,7 @@ const processhelper = require("./helper");
 const workerpool = require('workerpool');
 const pool = workerpool.pool("./helper/socketWorker");
 //const eventhandler = require("./helper/eventHandler")
+const WebSocket = require("ws")
 const delay = require("delay");
 const Web3 = require("web3");
 const { isPortTaken } = require("./utilities/isPortTaken");
@@ -24,7 +25,11 @@ const STOPPED = 3;
 const ERROR = 4;
 //function for listening node changes
 function listen(web3,options) {
+  web3.eth.subscribe("logs",{},(err,log)=>{
+    console.log(err, log)
+  })
   web3.eth.subscribe("newBlockHeaders",(err,latestBlocks)=>{
+    console.log(newBlock.number);
     if (!err){
       if(latestBlocks !== null){
         pool.exec("EscSocketEvent",[latestBlocks])
@@ -51,22 +56,53 @@ class NodeHandler {
   // @wsport: port where ws api is accessible
   constructor(options = { binaryName: "", cwd: "", dataPath: "", wsport: 0, rpcport: 0 }) {
     this.options = options;
-    this.provider = new Web3.providers.WebsocketProvider("ws://localhost:" + options.wsport, WEB3_CONFIG);    
+    //this.provider = new Web3.providers.WebsocketProvider("ws://192.168.119.25:" + options.wsport, WEB3_CONFIG);    
     this.status = STOPPED;
+    this.init().then( _ => console.log("initialized..."))
   }
   async init() {
     await this.start()
     this._initWeb3()
     const web3 = this.web3;
     const options = this.options
-    this.provider.on('connect',()=>{
+    //this.provider.on('connect',()=>{
       listen(web3,options)
-    });        
-    //setupWS()
+    //});        
+    this.setupWS()
   }
   _initWeb3() {
     if (this.web3) return
-    this.web3 = new Web3(this.provider);
+    this.web3 = new Web3("ws://192.168.119.25:" + this.options.wsport);
+  }
+  setupWS() {
+      let ws;
+      try {
+          ws = new WebSocket("ws://192.168.119.25:" + this.options.wsport)
+      }catch(e) {
+          console.log("SetupWS error", e)
+      }
+
+      ws.on("open", () => {
+          const input = {"id": 1, "method": "eth_subscribe", "params": ["syncing"]}
+          ws.send(JSON.stringify(input), (err) => {
+              if (err)
+                  console.log("Sent ERROR", err)
+          })
+
+      })
+      ws.on("close", (code, reason) => {
+          console.log("Closed GETH WS", Buffer.from( reason).toString())
+          console.log("Reconnecting")
+          setTimeout(setupWS, 5000)
+      })
+      ws.on("message", (data) => {
+          const output = Buffer.from(data).toString()
+          console.log(output)
+          //eventhandler.broadcast(config.ELA_EID, config.ELA_EID_UPDATE_ACTION, block)
+      })
+      ws.on("error", (err) => {
+          console.log("GETH websocker error ")
+      })
   }
   async start(callback = () => {}) {
     if (
