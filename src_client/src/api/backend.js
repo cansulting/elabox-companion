@@ -1,4 +1,5 @@
 import axios from "axios";
+const axiosController = new AbortController();
 const PUBLIC_URI = window.location.hostname + ":3001";
 class API {
   constructor() {
@@ -27,28 +28,28 @@ class API {
     }).then(response=>response.json())
   }
   fetchEla = async () => {
-    const response = await this.axios.get("/ela");
+    const response = await this.axios.get("/ela",{signal: axiosController.signal});
     return response.data;
   };
 
   fetchEID = async () => {
-    const response = await this.axios.get("/eid");
+    const response = await this.axios.get("/eid",{signal: axiosController.signal});
     //console.log(response)
     return response.data;
   };
 
   fetchESC = async () => {
-    const response = await this.axios.get("/esc");
+    const response = await this.axios.get("/esc",{signal: axiosController.signal});
     //console.log(response)
     return response.data;
   };
 
   fetchCarrier = async () => {
-    const response = await this.axios.get("/carrier");
+    const response = await this.axios.get("/carrier",{signal: axiosController.signal});
     return response.data;
   };
   fetchFeeds = async () => {
-    const response = await this.axios.get("/feeds");
+    const response = await this.axios.get("/feeds",{signal: axiosController.signal});
     return response.data;
   };
 
@@ -267,6 +268,7 @@ class API {
     return data;
   };
   restart = async () => {
+    axiosController.abort()
     await axios.post(`http://${PUBLIC_URI}/restart`);
   };  
   shutdown = async () => {
