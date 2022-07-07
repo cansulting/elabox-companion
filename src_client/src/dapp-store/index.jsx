@@ -4,11 +4,7 @@ import RootStore from "../store"
 import * as store from "elabox-dapp-store.lib"
 import RestartModal from "./RestartModal"
 import ResyncModal from "./ResyncModal"
-import { 
-    EboxEventInstance,
-    STORE_PKID,
-    AC_RETRIEVE_PKG
-} from "../config"
+import { EboxEventInstance } from "../config"
 
 store.initialize(EboxEventInstance)
 export default ({children}) => {  
