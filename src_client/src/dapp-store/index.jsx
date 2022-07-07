@@ -7,7 +7,6 @@ import ResyncModal from "./ResyncModal"
 import { 
     EboxEventInstance,
     STORE_PKID,
-    INSTALL_STATE,
     AC_RETRIEVE_PKG
 } from "../config"
 
@@ -109,37 +108,25 @@ export default ({children}) => {
         }        
         return isValid
     }
-    const updateNotifications = (appId) =>{
-        EboxEventInstance.sendRPC(STORE_PKID,AC_RETRIEVE_PKG,appId).then(data => {
-            let appInfo = JSON.parse(data.message)
-            const node = getNode(appInfo.id)
-            const notification = updateStatus(appInfo, node)      
-            appInfo = {...appInfo,notificationContents: [notification]}                       
-            setApp(appInfo)                                                            
-
-        })
+    const updateNotifications = (appInfo) =>{
+        const node = getNode(appInfo.id)
+        const notification = updateStatus(appInfo, node)      
+        appInfo = {...appInfo,notificationContents: [notification]}                       
+        setApp(appInfo)                                                            
+    }
+    const handleAppStateChanged = appInfo => {
+        updateNotifications(appInfo)
     }
     useEffect(()=>{
         const checkRoute = () => {
             const pathNameSplitCount = window.location.pathname.split("/").length
             const appId = window.location.pathname.split("/")[pathNameSplitCount - 1]  
             if(isValidApp(appId)){
-                updateNotifications(appId)
+                setApp({id:appId})
             }
         }       
         checkRoute()
     },[])    
-    useEffect(()=>{
-        EboxEventInstance.on(INSTALL_STATE, args => {
-            const data = JSON.parse(args.data)
-            if(data.packageId === app.id){
-                setApp({...app,status:data.status})
-            }
-        })                       
-        return () => {
-            EboxEventInstance.off(INSTALL_STATE)
-        }                    
-    },[app.id])
      const node = getNode(app.id)
      const hasSelectedApp = app.hasOwnProperty("id")
      return (
@@ -148,7 +135,10 @@ export default ({children}) => {
             <ResyncModal name={app.name} node={app.id} isOpen={resyncModal} closeModal={closeResyncModal}/>
             {!hasSelectedApp ?
             <store.AppDashboardCon style={{backgroundColor:"#1E1E26",color:"white"}} iconWidth={130} iconHeight={130} onClick={onClick}/>
-            :<store.AppInfoCon onRestart={onRestart} onResync={onResync} style={{color:"white"}} info={app} onBack={onBack}>
+            :<store.AppInfoCon 
+            onRestart={onRestart} onResync={onResync} 
+            style={{color:"white"}} info={app} 
+            onBack={onBack} onAppStateChanged={handleAppStateChanged}>
                 {children(app, node)}
             </store.AppInfoCon>}
         </div>
