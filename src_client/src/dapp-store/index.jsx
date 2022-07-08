@@ -118,6 +118,12 @@ export default ({services,children}) => {
         }       
         checkRoute()
     },[])    
+    useEffect(()=>{
+        const {pathname} = history.location
+        if(pathname === "/dashboard" || pathname === "/"){
+            setApp({})
+        }
+    },[history.location.pathname])
      const node = getNode(app.id)
      const hasSelectedApp = app.hasOwnProperty("id")
      return (
