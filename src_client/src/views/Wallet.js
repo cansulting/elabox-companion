@@ -355,7 +355,7 @@ class Wallet extends Component {
           <Col xs="12" md="4"> */}
           <Col xs="12">
             <Alert color="warning">
-            Starting August, ela keystore will be remove in Elabox. 
+            Starting September, ela keystore will be remove in Elabox. 
             Elabox will be limited to viewing of transactions and it is the user responsibility to transfer all coins to the essentials wallet address.
             </Alert>
           </Col>
