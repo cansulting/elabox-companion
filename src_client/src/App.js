@@ -4,6 +4,9 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
+import {
+  Helmet
+} from "react-helmet";
 
 import backend from "./api/backend";
 import RootStore from "./store";
@@ -42,6 +45,11 @@ class App extends React.Component {
       return (
         <Router basename={process.env.PUBLIC_URL}>
           <div>
+            <Helmet>
+                <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+                <meta http-equiv="Pragma" content="no-cache" />
+                <meta http-equiv="Expires" content="0" />
+            </Helmet>            
             <React.Suspense fallback={loading()}>
               <Switch>
                 <Route path="/check">
@@ -62,6 +70,11 @@ class App extends React.Component {
         <Router basename={process.env.PUBLIC_URL}>
           <Socket>
             <div>
+              <Helmet>
+                  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+                  <meta http-equiv="Pragma" content="no-cache" />
+                  <meta http-equiv="Expires" content="0" />
+              </Helmet>                
               <React.Suspense fallback={loading()}>
                 <Switch>
                   <Route path="/check">

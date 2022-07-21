@@ -26,7 +26,7 @@ const Navbar = ({ logOut, onMenuClick }) => {
   };
   useEffect(() => {
     const handleCheckElaboxStatus= () => {
-      if(modalProperties.status==="Restarting..."){
+      if(modalProperties.status==="Rebooting please wait..."){
         setInterval(async ()=>{
           const status = await backend.checkElaboxStatus()
           if(status){
@@ -36,9 +36,9 @@ const Navbar = ({ logOut, onMenuClick }) => {
       }
     }
     handleCheckElaboxStatus()
-  },[modalProperties.status==="Restarting..."])
+  },[modalProperties.status==="Rebooting please wait..."])
   const handleRestart = () => {
-    setModalProperties({show:true,status:"Restarting..."})    
+    setModalProperties({show:true,status:"Rebooting please wait..."})    
     backend.restart()
   }
   const handleShutDown = () => {
