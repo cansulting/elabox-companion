@@ -11,7 +11,6 @@ const Dashboard = ({ isMobile }) => {
   const { ela, eid, esc,feeds,carrier } = RootStore.blockchain
   const location = useLocation()
   useEffect(() => {
-    console.log(location.pathname)
     if(location.pathname.includes('ela.mainchain')){
       EboxEventInstance.subscribe("ela.mainchain", res =>{
         console.log(res)
@@ -55,10 +54,10 @@ const Dashboard = ({ isMobile }) => {
     >
       <DApps services={{ela,eid,esc,feeds,carrier}}>
         {
-          (appId,node) => {
+          (app,node) => {
             let blockData = node;
             let MetaMask = <></>
-            switch (appId) {
+            switch (app.id) {
               case "ela.esc":
                   MetaMask = <div style={{ marginTop: 20 }}>
                     <h4>Access details</h4>
@@ -67,7 +66,7 @@ const Dashboard = ({ isMobile }) => {
                   </div>     
                   break;
             }
-            if(blockData !== ""){
+            if(blockData !== "" && app.status === "installed"){
               return <>
                   <NodePreview blockdata={blockData} label="" />            
                   {MetaMask}                  
