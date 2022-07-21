@@ -9,8 +9,3 @@ export const STORE_PKID = "ela.store"
 // action ids
 export const AC_AUTHENTICATE_DID = "account.actions.AUTH_DID"
 export const AC_DID_SETUP_CHECK = "account.actions.DID_SETUP_CHECK" // use to check if did was setup to the device
-export const AC_RETRIEVE_PKG = "ela.store.actions.RETRIEVE_PACKAGE";
-
-// broadcast ids
-
-export const INSTALL_STATE = "ela.store.broadcast.INSTALL_STATE"
