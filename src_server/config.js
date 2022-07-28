@@ -17,6 +17,17 @@ const elaTmpPath = "/tmp/ela"
 const elaInstaller = path.join(elaTmpPath, packageInstallerName)
 const buildMode = process.env.ELAENV || "DEBUG"
 const elaboxVersion = process.env.ELAVERSION
+
+const web3Config = {
+  timeout: 30000, // ms
+  // Enable auto reconnection
+  reconnect: {
+      auto: true,
+      delay: 60000, // ms
+      maxAttempts: 10000,
+      onTimeout: false
+  }
+}
 console.log(buildMode + " MODE")
 console.log("Version " + elaboxVersion)
 console.log("Binaries @" + homeapps)
@@ -81,6 +92,7 @@ module.exports = {
   INSTALLER_SOCKET_URL: "http://localhost",
   FEEDS_URL: feedsUrl,
   FEEDS_DIR: feedsDir,
+  WEB3_CONFIG: web3Config,
   PORT: process.env.PORT || 3001,                     // where companion server port will listen to
   LOG_FILE: "/var/log/elabox.log",                    // the log file
   isDebug: buildMode === "DEBUG"
