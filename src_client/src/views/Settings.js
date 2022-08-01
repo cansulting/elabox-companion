@@ -477,7 +477,9 @@ class Settings extends Component {
   }  
   getDeviceSerial = async () => {
     const deviceSerial = await getSerial()
-    this.setState({deviceSerial})
+    if(deviceSerial?.length > 0){
+      this.setState({deviceSerial})
+    }
   }
   render() {
     const { isMobile ,auth} = this.props;

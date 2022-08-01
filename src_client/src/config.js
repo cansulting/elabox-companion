@@ -9,4 +9,6 @@ export const STORE_PKID = "ela.store"
 // action ids
 export const AC_AUTHENTICATE_DID = "account.actions.AUTH_DID"
 export const AC_DID_SETUP_CHECK = "account.actions.DID_SETUP_CHECK" // use to check if did was setup to the device
-export const AC_DEVICE_SERIAL = "account.actions.DEVICE_SERIAL" //use to get serial
+
+//system ids
+export const AC_DEVICE_SERIAL = "ela.system.DEVICE_SERIAL" //use to get serial
