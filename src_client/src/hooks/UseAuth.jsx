@@ -10,9 +10,9 @@ export default function UseAuth(clearWindowAddress=false) {
     const [seconds,setTimer]=useState(0)    
     const [isProcessing, setProcessing] = useState(false)    
     const [isProcessingDid,setProcessingDid] = useState(false)
-    const [isDIDAvailable, setDidAvailability] = useState(false)
+    const [isDIDAvailable, setDidAvailability] = useState(null)
     useEffect(() => {
-      if (!isDIDAvailable) {
+      if ( isDIDAvailable === null) {
         DidAuth.isDidAvailable().then( available => setDidAvailability(available))
       }
     })
@@ -101,13 +101,14 @@ export default function UseAuth(clearWindowAddress=false) {
         }
       })
     }
-    const isBlocked= seconds>0     
+  const isBlocked= seconds>0     
+  const isdidavail = isDIDAvailable === null ? false : isDIDAvailable
   return {
     seconds,
     isBlocked,
     isProcessing,
     isProcessingDid,
-    isDIDAvailable,
+    isdidavail,
     handleLogin,
     handleDidSignin
   }
