@@ -29,6 +29,7 @@ import errorLogo from "./images/error.png";
 import checkLogo from "./images/check.png";
 
 import {withAuth} from "../hooks/UseHook"
+import { getSerial } from "../utils/device"
 
 class Settings extends Component {
   constructor(props) {
@@ -36,6 +37,7 @@ class Settings extends Component {
     this.uploadKeyStoreRef = React.createRef();
     this.state = {
       pwd: "",
+      deviceSerial : "",
       mainchainRestartModal: false,
       mainchainResyncModal: false,
       eidRestartModal: false,
@@ -80,6 +82,7 @@ class Settings extends Component {
   }
 
   componentWillMount() {
+    this.getDeviceSerial();    
     this.getVersion();
     this.getOnion();
   }
@@ -472,12 +475,19 @@ class Settings extends Component {
   handleHideUploadConsentModal = () =>{
     this.setState({uploadKeyStoreConsentModal:false})    
   }  
+  getDeviceSerial = async () => {
+    const deviceSerial = await getSerial()
+    if(deviceSerial?.length > 0){
+      this.setState({deviceSerial})
+    }
+  }
   render() {
     const { isMobile ,auth} = this.props;
     const {seconds, isBlocked } = auth ;   
 
     const {
       update,
+      deviceSerial,
       checkUpdateModal,
       networkErrorModal,
       updateNowModal,
@@ -818,6 +828,25 @@ class Settings extends Component {
                 </b>
               </CardBody>
             </Card>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Card
+                style={{
+                  backgroundColor: "#272A3D",
+                  color: "white",
+                  fontSize: "16px",
+                  marginTop: "40px",
+                }}
+              >
+                <CardHeader>Device Serial</CardHeader>
+                <CardBody>
+                  <b>
+                    {deviceSerial}
+                  </b>
+                </CardBody>
+              </Card>            
           </Col>
         </Row>
         <Row>
