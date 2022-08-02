@@ -7484,10 +7484,10 @@ ejs@^3.1.6:
   dependencies:
     jake "^10.8.5"
 
-elabox-dapp-store.lib@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/elabox-dapp-store.lib/-/elabox-dapp-store.lib-0.2.0.tgz#3fccfa048eda04010fd1542c6ef15e8980e041e0"
-  integrity sha512-Eqe1cFg8lnUNZ/+xO98Cfhdw6jStAvkUcu9/h/CYduWi52DNE8OOXid2C/BSg/5oIUcR1kUvn53vYacD8sqLaQ==
+elabox-dapp-store.lib@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/elabox-dapp-store.lib/-/elabox-dapp-store.lib-0.2.3.tgz#75d89ea8567e1b253f5e44a160cd00b52f2a2541"
+  integrity sha512-NSUtP3wwYIJZ1kpvmpseE6YFr3toy6nwKmGQmVN3mf5VANgXQVCSjLRWXKF4M2LV425UvEZbhw7irGJToUkPiw==
   dependencies:
     "@types/react" "^17.0.44"
     "@types/react-dom" "^17.0.16"
@@ -7499,6 +7499,7 @@ elabox-dapp-store.lib@^0.2.0:
     react-chartjs-2 "^4.0.1"
     react-dom "^16.12.0"
     react-feather "^2.0.9"
+    react-hot-toast "^2.2.0"
     react-scripts "5.0.0"
     reactstrap "^8.4.1"
     regenerator-transform "^0.14.2"
@@ -9435,6 +9436,11 @@ globrex@^0.1.2:
   version "0.1.2"
   resolved "https://registry.npmjs.org/globrex/-/globrex-0.1.2.tgz"
   integrity sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==
+
+goober@^2.1.10:
+  version "2.1.10"
+  resolved "https://registry.yarnpkg.com/goober/-/goober-2.1.10.tgz#058def43ba1e3b06f973dbb372a4978aa42f1049"
+  integrity sha512-7PpuQMH10jaTWm33sQgBQvz45pHR8N4l3Cu3WMGEWmHShAcTuuP7I+5/DwKo39fwti5A80WAjvqgz6SSlgWmGA==
 
 got@9.6.0:
   version "9.6.0"
@@ -15821,6 +15827,13 @@ react-helmet@^6.1.0:
     prop-types "^15.7.2"
     react-fast-compare "^3.1.1"
     react-side-effect "^2.1.0"
+
+react-hot-toast@^2.2.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/react-hot-toast/-/react-hot-toast-2.3.0.tgz#70b3d183ac2a4afb6b17cda4a7f4cfe02e730415"
+  integrity sha512-/RxV+bfjld7tSJR1SCLzMAXgFuNW7fCpK6+vbYqfmbGSWcqTMz2rizrvfWKvtcPH5HK0NqxmBaC5SrAy1F42zA==
+  dependencies:
+    goober "^2.1.10"
 
 react-icons@^3.10.0:
   version "3.11.0"
