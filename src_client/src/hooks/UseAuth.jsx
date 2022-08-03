@@ -59,6 +59,7 @@ export default function UseAuth(clearWindowAddress=false) {
               localStorage.setItem('address', responseJson.address);
               resolve("")
             } else {
+              console.log(responseJson)
               if(responseJson.err!=="Too many auth request from this IP"){
                 reject("Wrong password")
               }
