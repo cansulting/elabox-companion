@@ -366,11 +366,7 @@ router.post("/getBalance", (req, res) => {
 });
 
 router.get("/checkInstallation", async (req, res) => {
-  let isExist = await checkFile(config.KEYSTORE_PATH)
-  if (!isExist) {
-    isExist = await checkFile(config.OLD_KEYSTORE_PATH)
-  }
-  res.send({ configed: isExist });
+  res.send({ configed: config.CONFIG });
 });
 
 router.post("/update", (req, res) => {
@@ -835,13 +831,8 @@ const startServer = () => {
         });
     });
     await mainchain.init();
-    mainchain.setOnComplete(async () => {  
-      await esc.init()
-      esc.setOnComplete( async ()=>{
-          await eid.init();
-          await eid.setOnComplete();
-      })      
-    });
+    await esc.init()
+    await eid.init();
   });
 };
 

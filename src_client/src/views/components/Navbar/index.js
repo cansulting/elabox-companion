@@ -26,7 +26,7 @@ const Navbar = ({ logOut, onMenuClick }) => {
   };
   useEffect(() => {
     const handleCheckElaboxStatus= () => {
-      if(modalProperties.status==="Restarting..."){
+      if(modalProperties.status==="Rebooting please wait..."){
         setInterval(async ()=>{
           const status = await backend.checkElaboxStatus()
           if(status){
@@ -36,14 +36,17 @@ const Navbar = ({ logOut, onMenuClick }) => {
       }
     }
     handleCheckElaboxStatus()
-  },[modalProperties.status==="Restarting..."])
+  },[modalProperties.status==="Rebooting please wait..."])
   const handleRestart = () => {
-    setModalProperties({show:true,status:"Restarting..."})    
+    setModalProperties({show:true,status:"Rebooting please wait..."})    
     backend.restart()
   }
   const handleShutDown = () => {
-    setModalProperties({show:true,status:"Shutting down..."})    
+    setModalProperties({show:true,status:"Elabox is shutting down..."})    
     backend.shutdown()
+    setTimeout(()=>{
+      setModalProperties({show:true,status:"Elabox was shutdown successfully"})  
+    },10 * 1000)
   }
   const handleSysOperation = operation=>{
     setCurrentSysOperation(operation)    
@@ -71,7 +74,7 @@ const Navbar = ({ logOut, onMenuClick }) => {
         <Modal isOpen={modalProperties.show} centered dark>
           <ModalHeader>Elabox</ModalHeader>
           <ModalBody>
-            Elabox is {modalProperties.status}
+           {modalProperties.status}
           </ModalBody>
         </Modal> 
         <Modal isOpen={currentSysOperation?.length>0} centered dark>

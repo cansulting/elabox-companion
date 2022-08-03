@@ -29,8 +29,6 @@ class HelpCentre extends Component {
       success: false,
       failure: false,
       isMobile: props.isMobile,
-
-
     }
   }
 
@@ -42,11 +40,12 @@ class HelpCentre extends Component {
       <Formik
         initialValues={{ email: '', name: '', problem: '' }}
         validateOnChange={false}
-        onSubmit={async (values) => {
+        onSubmit={async (values,{resetForm}) => {
           this.setState({ success: false, failure: false })
           try {
             const response = await master.submitForm(values)
             if (response.ok) {
+              resetForm({ email: '', name: '', problem: '' })
               this.setState({ success: true })
 
             }

@@ -1,4 +1,4 @@
-import { VerifiableCredential } from '@elastosfoundation/did-js-sdk';
+//import { VerifiableCredential } from '@elastosfoundation/did-js-sdk';
 import { connectivity, DID } from '@elastosfoundation/elastos-connectivity-sdk-js';
 import { EssentialsConnector } from '@elabox/essentials-connector-client-browser';
 import { ACCOUNT_PKID, AC_AUTHENTICATE_DID, AC_DID_SETUP_CHECK, EboxEventInstance } from "../config";

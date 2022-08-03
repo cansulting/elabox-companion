@@ -28,6 +28,12 @@ const web3Config = {
       onTimeout: false
   }
 }
+let isConfig = false
+if ( process.env.config === "1" ||
+  process.env.config === undefined || 
+  process.env.config === null) {
+  isConfig = true
+} 
 console.log(buildMode + " MODE")
 console.log("Version " + elaboxVersion)
 console.log("Binaries @" + homeapps)
@@ -95,5 +101,6 @@ module.exports = {
   WEB3_CONFIG: web3Config,
   PORT: process.env.PORT || 3001,                     // where companion server port will listen to
   LOG_FILE: "/var/log/elabox.log",                    // the log file
-  isDebug: buildMode === "DEBUG"
+  isDebug: buildMode === "DEBUG",
+  CONFIG: isConfig                                    // true if system is already configured
 }
