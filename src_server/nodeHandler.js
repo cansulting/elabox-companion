@@ -35,7 +35,6 @@ class NodeHandler {
   async init() {
     await this.start()
     this._initWeb3()
-    this.listen()
     //setupWS()
   }
 
@@ -52,15 +51,22 @@ class NodeHandler {
             }
           }
           return
-        }).on("connected",()=>{
+        })
+        .on("connected",()=>{
           syslog.write(syslog.create().info(this.options.binaryName + ` socket connected.`).addCategory("ela.esc"))                        
         }).on("error",err=>{
             syslog.write(syslog.create().error("failed running " + this.options.binaryName , err).addCaller())                      
-        })
+            setTimeout( () => {
+              console.log("reconnecting", this.options.binaryName )
+              this.web3 = null
+              this._initWeb3()
+            }, 5000)
+          })
   }
   _initWeb3() {
     if (this.web3) return
     this.web3 = new Web3(this.wspath,  );
+    this.listen()
   }
 
   async start(callback = () => {}) {

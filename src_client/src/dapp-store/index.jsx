@@ -27,22 +27,17 @@ export default ({children}) => {
     }
     const updateStatus = (appInfo, node)=>{
         let notification = {}
-        if (appInfo.status === 'installed') {
-            if (node.hasOwnProperty("isRunning") && node.hasOwnProperty("servicesRunning")){
-                if(node.isRunning){
-                    if(node.servicesRunning){
-                        notification={type:"info",content:"Syncing"}
-                    }      
-                    else if(!node.servicesRunning){
-                        notification={type:"info",content:"Initializing"}
-                    }                              
-                }
-                else{
-                    notification={type:"error",content:"Not running"}   
-                }                    
+        if (appInfo.status === 'installed' && appInfo.enabled) {
+            if (appInfo.isRunning === true && node.hasOwnProperty("servicesRunning")){
+                if(node.servicesRunning){
+                    notification={type:"info",content:"Syncing"}
+                }      
+                else {
+                    notification={type:"info",content:"Initializing"}
+                }                  
             }
-            else if(node.hasOwnProperty("isRunning") ){
-                if(node.isRunning) {
+            else {
+                if(appInfo.isRunning === true) {
                     notification={type:"info",content:"Running"}
                 }   
                 else{
@@ -136,13 +131,14 @@ export default ({children}) => {
             <RestartModal name={app.name} node={app.id} isOpen={restartModal} closeModal={closeRestartModal}/>
             <ResyncModal name={app.name} node={app.id} isOpen={resyncModal} closeModal={closeResyncModal}/>
             {!hasSelectedApp ?
-            <store.AppDashboardCon style={{backgroundColor:"#1E1E26",color:"white"}} iconWidth={130} iconHeight={130} onClick={onClick}/>
-            :<store.AppInfoCon 
-            onRestart={onRestart} onResync={onResync} 
-            style={{color:"white"}} info={app} 
-            onBack={onBack} onAppStateChanged={handleAppStateChanged}>
-                {children(app, node)}
-            </store.AppInfoCon>}
+                <store.AppDashboardCon style={{backgroundColor:"#1E1E26",color:"white"}} iconWidth={130} iconHeight={130} onClick={onClick}/>
+                :<store.AppInfoCon 
+                    onRestart={onRestart} onResync={onResync} 
+                    style={{color:"white"}} info={app} 
+                    onBack={onBack} onAppStateChanged={handleAppStateChanged}>
+                        {app.enabled && children(app, node)}
+                </store.AppInfoCon>
+            }
         </div>
     )
 }
