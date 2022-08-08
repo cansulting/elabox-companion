@@ -1,5 +1,5 @@
 #!/bin/bash
-CARRIER_PATH=/home/elabox/apps/ela.carrier
+CARRIER_PATH=/usr/ela/system/ela.carrier
 BOOTSTRAP_FILE=${CARRIER_PATH}/bootstrapd.conf
 CURRENT_IP=$(curl -s ifconfig.me)
 echo "$CURRENT_IP"
