@@ -17,12 +17,7 @@ const elaTmpPath = "/tmp/ela"
 const elaInstaller = path.join(elaTmpPath, packageInstallerName)
 const buildMode = process.env.ELAENV || "DEBUG"
 const elaboxVersion = process.env.ELAVERSION
-let isConfig = false
-if ( process.env.config === "1" ||
-  process.env.config === undefined || 
-  process.env.config === null) {
-  isConfig = true
-} 
+
 console.log(buildMode + " MODE")
 console.log("Version " + elaboxVersion)
 console.log("Binaries @" + homeapps)
@@ -90,5 +85,5 @@ module.exports = {
   PORT: process.env.PORT || 3001,                     // where companion server port will listen to
   LOG_FILE: "/var/log/elabox.log",                    // the log file
   isDebug: buildMode === "DEBUG",
-  CONFIG: isConfig                                    // true if system is already configured
+  CONFIG: process.env.config === "1" ? true : false                                    // true if system is already configured
 }
