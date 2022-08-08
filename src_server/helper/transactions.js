@@ -2,8 +2,8 @@
 const mainchain = require("../mainchainHandler")
 const dateFns = require("date-fns")
 
-async function retrieveTransactionViaMainchain(isRemote,walletAddr = "") {
-    return await mainchain.instance.retrieveUTX(isRemote,walletAddr)
+async function retrieveTransactionViaMainchain(walletAddr = "",isRemote = false) {
+    return await mainchain.instance.retrieveUTX(walletAddr,isRemote)
 }
 
 async function retrieveTransaction(walletAddr = "") {
@@ -17,12 +17,12 @@ async function retrieveTransaction(walletAddr = "") {
             const isSync = dateFns.differenceInDays(timestamp,blockTime * 1000) === 0
             if (localRunning && isSync) {
                 //use local mainchain
-                return await retrieveTransactionViaMainchain(false,walletAddr)
+                return await retrieveTransactionViaMainchain(walletAddr)
             }         
         }
     }
     //use remote mainchain
-    return await retrieveTransactionViaMainchain(true,walletAddr) 
+    return await retrieveTransactionViaMainchain(walletAddr,true) 
 }
 
 module.exports = {

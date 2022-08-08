@@ -190,7 +190,7 @@ class MainchainHandler {
         }
         callback()
     }
-    async retrieveUTX(isRemote,walletAddr = "") {
+    async retrieveUTX(walletAddr = "",isRemote = false) {
       const wallet_transaction_url = isRemote ? config.REMOTE_WALLET_TRANSACTION_URL : config.WALLET_TRANSACTION_URL
       const utx_details_url = isRemote ? config.REMOTE_UTX_DETAILS_URL : config.UTX_DETAILS_URL
       const res = await fetch(wallet_transaction_url + "/" + walletAddr, {method: 'GET'})
