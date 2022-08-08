@@ -56,7 +56,8 @@ module.exports = {
   INSTALLER_PK_ID: "ela.installer",
   WALLET_TRANSACTION_URL: "http://localhost:20334/api/v1/asset/utxos",
   UTX_DETAILS_URL: "http://localhost:20334/api/v1/transaction",
-
+  REMOTE_WALLET_TRANSACTION_URL: "http://admin.elabox.com:20334/api/v1/asset/utxos",
+  REMOTE_UTX_DETAILS_URL: "http://admin.elabox.com:20334/api/v1/transaction",
   // for ela system actions
   ELA_EID_UPDATE_ACTION: "ela.eid.action.UPDATE",     // action id for updating system
   ELA_SYSTEM_BROADCAST: "ela.system.BROADCAST",       // id for broadcasting message to system

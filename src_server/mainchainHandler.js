@@ -190,9 +190,11 @@ class MainchainHandler {
         }
         callback()
     }
-    async retrieveUTX(walletAddr = "") {
+    async retrieveUTX(isRemote,walletAddr = "") {
+      const wallet_transaction_url = isRemote ? config.REMOTE_WALLET_TRANSACTION_URL : config.WALLET_TRANSACTION_URL
+      const utx_details_url = isRemote ? config.REMOTE_UTX_DETAILS_URL : config.UTX_DETAILS_URL
       //console.log("retrieveUTX")
-      const res = await fetch(config.WALLET_TRANSACTION_URL + "/" + walletAddr, {method: 'GET'})
+      const res = await fetch(wallet_transaction_url + "/" + walletAddr, {method: 'GET'})
       const json = await res.json()
       const txids = {}
       //console.log(json)
@@ -203,7 +205,7 @@ class MainchainHandler {
           for (const itemUtx of transacRes.UTXO) {
             txids[itemUtx.Txid] = itemUtx.Value
             promises.push(
-              fetch(config.UTX_DETAILS_URL + "/" + itemUtx.Txid, {method:'GET'})
+              fetch(utx_details_url + "/" + itemUtx.Txid, {method:'GET'})
             )
           }
         }
