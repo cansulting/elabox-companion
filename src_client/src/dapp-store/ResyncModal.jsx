@@ -98,7 +98,7 @@ const ResyncModal = ({isOpen,name,closeModal, node })=> {
               type="password"
               id="pwd"
               name="pwd"
-              placeholder="Enter wallet password"
+              placeholder="Enter password"
               required
               onChange={hamdleChangePassword}
             />
