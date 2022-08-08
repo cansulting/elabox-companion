@@ -193,44 +193,44 @@ class MainchainHandler {
     async retrieveUTX(isRemote,walletAddr = "") {
       const wallet_transaction_url = isRemote ? config.REMOTE_WALLET_TRANSACTION_URL : config.WALLET_TRANSACTION_URL
       const utx_details_url = isRemote ? config.REMOTE_UTX_DETAILS_URL : config.UTX_DETAILS_URL
-      //console.log("retrieveUTX")
       const res = await fetch(wallet_transaction_url + "/" + walletAddr, {method: 'GET'})
       const json = await res.json()
       const txids = {}
-      //console.log(json)
       if (json.Error === 0) {
         const promises = []
-        for (const transacRes of json.Result) {
-          if (transacRes.AssetName !== 'ELA') continue
-          for (const itemUtx of transacRes.UTXO) {
-            txids[itemUtx.Txid] = itemUtx.Value
-            promises.push(
-              fetch(utx_details_url + "/" + itemUtx.Txid, {method:'GET'})
-            )
+        if(json.Result!== null) {
+          for (const transacRes of json.Result) {
+            if (transacRes.AssetName !== 'ELA') continue
+            for (const itemUtx of transacRes.UTXO) {
+              txids[itemUtx.Txid] = itemUtx.Value
+              promises.push(
+                fetch(utx_details_url + "/" + itemUtx.Txid, {method:'GET'})
+              )
+            }
           }
-        }
-        const utxList = await Promise.all(promises);
-        const output = []
-        let i = 0
-        for (const detailedUtx of utxList) {
-          const detailedJson = await detailedUtx.json()
-          // console.log(detailedJson)
-          let totalAmount = txids[detailedJson.Result.txid];
-          const type = detailedJson.Result.vout[0].address === walletAddr ? "income": "expense"
-          if (type === 'expense')
-            totalAmount = detailedJson.Result.vout[0].value
-          output[i] = {
-            Value: parseFloat( totalAmount) * 100000000,
-            Type: type,
-            CreateTime: detailedJson.Result.time,
-            Status: detailedJson.Result.confirmations > 0 ? "confirmed" : "pending",
-            Txid: detailedJson.Result.txid
+          const utxList = await Promise.all(promises);
+          const output = []
+          let i = 0
+          for (const detailedUtx of utxList) {
+            const detailedJson = await detailedUtx.json()
+            // console.log(detailedJson)
+            let totalAmount = txids[detailedJson.Result.txid];
+            const type = detailedJson.Result.vout[0].address === walletAddr ? "income": "expense"
+            if (type === 'expense')
+              totalAmount = detailedJson.Result.vout[0].value
+            output[i] = {
+              Value: parseFloat( totalAmount) * 100000000,
+              Type: type,
+              CreateTime: detailedJson.Result.time,
+              Status: detailedJson.Result.confirmations > 0 ? "confirmed" : "pending",
+              Txid: detailedJson.Result.txid
+            }
+            i++
           }
-          i++
+          return output.sort((a,b) => a.CreateTime < b.CreateTime ? 1 : -1)
+          //console.log(output)
+          //return output
         }
-        return output.sort((a,b) => a.CreateTime < b.CreateTime ? 1 : -1)
-        //console.log(output)
-        //return output
       }
       return []
     }
