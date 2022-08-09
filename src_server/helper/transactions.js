@@ -2,16 +2,8 @@
 const mainchain = require("../mainchainHandler")
 const dateFns = require("date-fns")
 
-function retrieveTransactionElephant(address = "") { 
-    return fetch(
-        "https://node1.elaphant.app/api/3/history/" +
-        address +
-          "?pageNum=1&pageSize=10&order=desc"
-      ).then((response) => response.json());
-}
-
-async function retrieveTransactionViaLocal(walletAddr = "") {
-    return await mainchain.instance.retrieveUTX(walletAddr)
+async function retrieveTransactionViaMainchain(walletAddr = "",isRemote = false) {
+    return await mainchain.instance.retrieveUTX(walletAddr,isRemote)
 }
 
 async function retrieveTransaction(walletAddr = "") {
@@ -24,11 +16,13 @@ async function retrieveTransaction(walletAddr = "") {
             const timestamp = Date.now();
             const isSync = dateFns.differenceInDays(timestamp,blockTime * 1000) === 0
             if (localRunning && isSync) {
-                return await retrieveTransactionViaLocal(walletAddr)
+                //use local mainchain
+                return await retrieveTransactionViaMainchain(walletAddr)
             }         
         }
     }
-    return await retrieveTransactionElephant(walletAddr) 
+    //use remote mainchain
+    return await retrieveTransactionViaMainchain(walletAddr,true) 
 }
 
 module.exports = {
