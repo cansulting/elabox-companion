@@ -85,5 +85,5 @@ module.exports = {
   PORT: process.env.PORT || 3001,                     // where companion server port will listen to
   LOG_FILE: "/var/log/elabox.log",                    // the log file
   isDebug: buildMode === "DEBUG",
-  CONFIG: process.env.config === "1" ? true : false                                    // true if system is already configured
+  CONFIG: process.env.config === "1" || process.env.config === undefined ? true : false                                    // true if system is already configured
 }
