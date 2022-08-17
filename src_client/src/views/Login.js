@@ -38,6 +38,9 @@ function Login() {
     const value = target.type === 'checkbox' ? target.checked : target.value;
     setPwd(value);
   }
+  function handleCreateDid(){
+    window.location.href="/ela.setup/config"
+  }
   if (isLoggedIn) {
     return <Redirect to="/" />;
   }  
@@ -68,8 +71,11 @@ function Login() {
               if (!isProcessing) login();
             }}
           >
-            { isDIDAvailable && <Button block style={{marginBottom:10}} onClick={didlogin}>
-              Login via essentials</Button>                        }
+            { isDIDAvailable? 
+             <Button block style={{marginBottom:10}} onClick={didlogin}>
+              Login via essentials</Button>: 
+              <Button block style={{marginBottom:10}} onClick={handleCreateDid}>
+              Setup DID</Button>}
             <Input
               data-testid="password"
               type="password"
