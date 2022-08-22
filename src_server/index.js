@@ -574,36 +574,6 @@ router.get("/download_package", processDownloadPackage);
 
 //end ota routes
 
-const checkFile = (file) => {
-  var prom = new Promise((resolve, reject) => {
-    try {
-      fs.access(file, fs.constants.R_OK, (err) => {
-        if (err)
-          syslog.write(
-            syslog
-              .create()
-              .error(`File ${file} is not readable.`, err)
-              .addCaller()
-          );
-        return err ? resolve(false) : resolve(true);
-      });
-    } catch (err) {
-      if (err) {
-        resolve(false);
-      }
-    }
-  }).catch((error) => {
-    syslog.write(
-      syslog
-        .create()
-        .error(`Error while checking file ${file}`, error)
-        .addCaller()
-    );
-  });
-
-  return prom;
-};
-
 const getOnionAddress = () => {
   return new Promise((resolve, reject) => {
     exec(

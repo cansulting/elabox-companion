@@ -496,11 +496,6 @@ class Settings extends Component {
       onion,
       showOnion,
       elaboxVersion,
-      mainchainVersion,
-      eidVersion,
-      escVersion,
-      feedsVersion,
-      carrierVersion,
       env,
     } = this.state;
     return (
