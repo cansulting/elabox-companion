@@ -355,8 +355,8 @@ class Wallet extends Component {
           <Col xs="12" md="4"> */}
           <Col xs="12">
             <Alert color="warning">
-            Starting September, ela keystore will be remove in Elabox. 
-            Elabox will be limited to viewing of transactions and it is the user responsibility to transfer all coins to the essentials wallet address.
+            NOTICE: ela keystore will be remove in Elabox. 
+            Elabox Wallet will be limited to viewing of transactions and it is the user responsibility to transfer all coins to the essentials wallet address.
             </Alert>
           </Col>
           <Card style={{ backgroundColor: "#272A3D", color: "white" }}>

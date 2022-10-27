@@ -109,7 +109,7 @@ export default function UseAuth(clearWindowAddress=false) {
     isBlocked,
     isProcessing,
     isProcessingDid,
-    isdidavail,
+    isDIDAvailable:isdidavail,
     handleLogin,
     handleDidSignin
   }

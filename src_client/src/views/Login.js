@@ -71,11 +71,14 @@ function Login() {
               if (!isProcessing) login();
             }}
           >
-            { isDIDAvailable? 
-             <Button block style={{marginBottom:10}} onClick={didlogin}>
-              Login via essentials</Button>: 
+            { isDIDAvailable &&
+              <Button block style={{marginBottom:10}} onClick={didlogin}>
+                Login via essentials
+              </Button>}
+            { !isDIDAvailable && 
               <Button block style={{marginBottom:10}} onClick={handleCreateDid}>
-              Setup DID</Button>}
+                Setup DID
+              </Button>}
             <Input
               data-testid="password"
               type="password"
