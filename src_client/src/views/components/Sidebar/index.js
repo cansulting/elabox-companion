@@ -86,7 +86,7 @@ export default function SideBar({ updatesCount, isOpen, onClose }) {
                     height: "30px",
                     paddingRight: "10px",
                   }}
-                />{" "}
+                />
                 Dashboard
               </Link>
             </div>
