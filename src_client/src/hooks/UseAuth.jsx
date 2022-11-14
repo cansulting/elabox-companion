@@ -90,10 +90,10 @@ export default function UseAuth(clearWindowAddress=false) {
             localStorage.setItem('logedin', true)
             localStorage.setItem('address', account.wallet) 
             resolve(authResult)
-          } else {
+          // not cancelled
+          } else if (authResult.code !== 201) {
             reject(authResult.code + ":" + authResult.message)
           }
-          
         } catch (error) {
           reject(error)
         }

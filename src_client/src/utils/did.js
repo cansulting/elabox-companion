@@ -50,6 +50,7 @@ export default class Did {
     async signin() {
         try {
             const presentation = await this.request()
+            if (presentation) {
                 const res = await this._authenticate(presentation)
                 if (res.code === 200) {
                     // console.log("signin error", res)
@@ -57,11 +58,16 @@ export default class Did {
                     res.message = JSON.parse(res.message)
                 }
                 return res 
+            } else {
+                return {
+                    code: 201,
+                    message: "cancelled"
+                }
+            }
         } catch (error) {
             console.log(error);
             return error
         }
-        
     }
 
     async _authenticate(presentation) {
