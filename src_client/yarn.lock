@@ -1907,9 +1907,9 @@
   resolved "https://registry.yarnpkg.com/@csstools/selector-specificity/-/selector-specificity-2.0.1.tgz#b6b8d81780b9a9f6459f4bfe9226ac6aefaefe87"
   integrity sha512-aG20vknL4/YjQF9BSV7ts4EWm/yrjagAN7OWBNmlbEOUiu0llj4OGrFoOKK3g2vey4/p2omKCoHrWtPxSwV3HA==
 
-"@elabox/client@1.7.9":
+"@elabox/client@1.7.9", "@elabox/client@^1.7.8":
   version "1.7.9"
-  resolved "https://registry.npmjs.org/@elabox/client/-/client-1.7.9.tgz"
+  resolved "https://registry.yarnpkg.com/@elabox/client/-/client-1.7.9.tgz#b9e32963df0147d4e449a9a8b4dd54d1fd390a40"
   integrity sha512-FJ5b1UNesFqDs4eFtXxM8e6c1jAfFya3EoIC+7TZJbWA8b/13i9H8QIMlnznVYPhzYQryJb+wgXpgFO5FgrmFA==
   dependencies:
     "@types/crypto-js" "^4.1.1"
@@ -1921,25 +1921,23 @@
     crypto-js "^4.1.1"
     tslib "^2.4.0"
 
-"@elabox/essentials-connector-client-browser@^1.0.46":
-  version "1.0.46"
-  resolved "https://registry.npmjs.org/@elabox/essentials-connector-client-browser/-/essentials-connector-client-browser-1.0.46.tgz"
-  integrity sha512-JJS9bAYClDDe8lW6Kfc7jnBBmqvmqv2SycboPXwsVLgubZf4YoEv//5t2eQOBIQtKtjk/wyHAGTVTDwSaxGxKA==
+"@elabox/essentials-connector-client-browser@^1.0.47":
+  version "1.0.47"
+  resolved "https://registry.yarnpkg.com/@elabox/essentials-connector-client-browser/-/essentials-connector-client-browser-1.0.47.tgz#db7660b8adf66a6280ca31ab127398ea5dbc8dfc"
+  integrity sha512-my+CD8qzxyNvzoQCtwHzt1n3rs64tl46RiaqeJLPEPLWyS5gbO2agqzkIwgHxOJM3L8huy+2++88+NaBJqp51Q==
   dependencies:
-    "@elabox/client" "1.7.9"
-    "@elabox/web3-provider" "1.7.13"
-    "@elastosfoundation/did-js-sdk" "^2.1.0"
-    "@walletconnect/browser-utils" "1.7.0"
-    "@walletconnect/types" "1.7.0"
-    "@walletconnect/utils" "1.7.0"
+    "@elabox/client" "^1.7.8"
+    "@elabox/web3-provider" "^1.7.8"
+    "@elastosfoundation/did-js-sdk" "^2.2.7"
+    "@walletconnect/utils" "^1.7.8"
     moment "^2.29.1"
     rxjs "^7.5.1"
     web3 "^1.6.1"
     web3-core "^1.6.1"
 
-"@elabox/web3-provider@1.7.13":
+"@elabox/web3-provider@^1.7.8":
   version "1.7.13"
-  resolved "https://registry.npmjs.org/@elabox/web3-provider/-/web3-provider-1.7.13.tgz"
+  resolved "https://registry.yarnpkg.com/@elabox/web3-provider/-/web3-provider-1.7.13.tgz#f023a4ec722fff10ebdd7f0adc30228ebd3fd00d"
   integrity sha512-Cvf6+hk3dSxNTPCQCNAGN/Ms5qMlNgpiRL1I6bMFnQ/5SrNdxUMuiKnVFmPqtcFu5owWi0BOtSycfCzp4ZNyDg==
   dependencies:
     "@elabox/client" "1.7.9"
@@ -1950,7 +1948,7 @@
     "@walletconnect/utils" "1.7.0"
     web3-provider-engine "16.0.1"
 
-"@elastosfoundation/did-js-sdk@^2.1.0", "@elastosfoundation/did-js-sdk@^2.2.7", "@elastosfoundation/did-js-sdk@^2.2.9":
+"@elastosfoundation/did-js-sdk@^2.2.7", "@elastosfoundation/did-js-sdk@^2.2.9":
   version "2.2.9"
   resolved "https://registry.npmjs.org/@elastosfoundation/did-js-sdk/-/did-js-sdk-2.2.9.tgz"
   integrity sha512-m1MD1YwbMyRldUbyFIFM0A+5R09LPPtVucE8YA4FCdTnED9bQoJQfEF7Mb1I3cDtr99qaA4MYR7HrkzFliGpNg==
@@ -1979,13 +1977,15 @@
     typedoc "0.22.11"
     util "0.12.4"
 
-"@elastosfoundation/elastos-connectivity-sdk-js@^1.0.23":
-  version "1.0.23"
-  resolved "https://registry.npmjs.org/@elastosfoundation/elastos-connectivity-sdk-js/-/elastos-connectivity-sdk-js-1.0.23.tgz"
-  integrity sha512-neTbQM2QTcXBVfkm5v8lpj+bnmQhEhHTbIm07/Wiqfpow2AJ/1uPDoZPa6gCKO3qWVbKIQR5o6hY6kIXrGZDkQ==
+"@elastosfoundation/elastos-connectivity-sdk-js@^1.1.4":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@elastosfoundation/elastos-connectivity-sdk-js/-/elastos-connectivity-sdk-js-1.1.4.tgz#7e436f6dfd42353c2e898a94e81bf7918b51ff8e"
+  integrity sha512-eKKPS1Puk6lqIsfNcr3+HzhKid3H7g4HfPK5ZOB5kELSkXY4RaamvsQlcPHf64ZEEu9QWoYEdVUyfymVY9wAjQ==
   dependencies:
     "@elastosfoundation/did-js-sdk" "^2.2.7"
+    "@types/promise-queue" "^2.2.0"
     moment "^2.29.1"
+    promise-queue "^2.2.5"
     rxjs "^7.5.1"
     svelte-copy-to-clipboard "^0.2.5"
     svelte-i18n "^3.3.6"
@@ -3438,6 +3438,11 @@
   version "2.6.0"
   resolved "https://registry.npmjs.org/@types/prettier/-/prettier-2.6.0.tgz"
   integrity sha512-G/AdOadiZhnJp0jXCaBQU449W2h716OW/EoXeYkCytxKL06X1WCXB4DZpp8TpZ8eyIJVS1cw4lrlkkSYU21cDw==
+
+"@types/promise-queue@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@types/promise-queue/-/promise-queue-2.2.0.tgz#cdba35f1b2c0bd8aa2bf925c2b1ed02958067a0a"
+  integrity sha512-9QLtid6GxEWqpF+QImxBRG6bSVOHtpAm2kXuIyEvZBbSOupLvqhhJv8uaHbS8kUL8FDjzH3RWcSyC/52WOVtGw==
 
 "@types/prop-types@*":
   version "15.7.5"
@@ -15444,6 +15449,11 @@ promise-inflight@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/promise-inflight/-/promise-inflight-1.0.1.tgz"
   integrity sha1-mEcocL8igTL8vdhoEputEsPAKeM=
+
+promise-queue@^2.2.5:
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/promise-queue/-/promise-queue-2.2.5.tgz#2f6f5f7c0f6d08109e967659c79b88a9ed5e93b4"
+  integrity sha512-p/iXrPSVfnqPft24ZdNNLECw/UrtLTpT3jpAAMzl/o5/rDsGCPo3/CQS2611flL6LkoEJ3oQZw7C8Q80ZISXRQ==
 
 promise-to-callback@^1.0.0:
   version "1.0.0"

@@ -50,13 +50,13 @@ export default class Did {
     async signin() {
         try {
             const presentation = await this.request()
-            const res = await this._authenticate(presentation)
-            if (res.code === 200) {
-                // console.log("signin error", res)
-                // throw res
-                res.message = JSON.parse(res.message)
-            }
-            return res
+                const res = await this._authenticate(presentation)
+                if (res.code === 200) {
+                    // console.log("signin error", res)
+                    // throw res
+                    res.message = JSON.parse(res.message)
+                }
+                return res 
         } catch (error) {
             console.log(error);
             return error
@@ -66,7 +66,7 @@ export default class Did {
 
     async _authenticate(presentation) {
         const res = await EboxEventInstance.sendRPC(ACCOUNT_PKID, AC_AUTHENTICATE_DID, "", presentation)
-        console.log(res)
+        //console.log(res)
         return res
     }
 
